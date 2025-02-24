@@ -1,11 +1,12 @@
 import { MaxLength } from "class-validator";
 import { Roles } from "global/enum.global";
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
-
+import { Exclude } from 'class-transformer';
 @Entity({name: "users"})
 @Unique(["email"])
 export class User {
     @PrimaryGeneratedColumn("uuid")
+    @Exclude()
     user_id : string
 
     @Column()
@@ -25,6 +26,7 @@ export class User {
     email: string
 
     @Column()
+    @Exclude()
     @MaxLength(61)
     password: string
 
@@ -39,7 +41,8 @@ export class User {
     @Column()
     dob: Date
 
-    @Column({default: Roles.USER})
+    @Column({default: Roles.ADMIN})
+    @Exclude()
     @MaxLength(10)
     role: Roles
 }

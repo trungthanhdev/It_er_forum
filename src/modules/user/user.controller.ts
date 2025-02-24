@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -7,8 +7,12 @@ import { User } from './entities/user.entity';
 import { HttpMessage, HttpCode } from 'global/enum.global';
 import { RegisterDto } from 'dto/register.dto';
 import { AuthService } from '../auth/auth.service';
+import { AuthGuard } from 'guard/auth.guard';
+import { LoginDto } from 'dto/login.dto';
+import { RoleGuard } from 'guard/role.guard';
 
 @Controller('user')
+@UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService,
               private readonly authService: AuthService
@@ -32,6 +36,8 @@ export class UserController {
   }
 
   @Get()
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(AuthGuard)
   async findAll() {
     try {
       return new ResponseData<User[]>(
@@ -76,6 +82,11 @@ export class UserController {
   @Post("/register")
   async register(@Body() registerDto: RegisterDto){
     return await this.authService.register(registerDto)
+  }
+
+  @Post("/login")
+  async login(@Body() loginDto: LoginDto){
+    return await this.authService.login(loginDto)
   }
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
