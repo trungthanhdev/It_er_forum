@@ -1,11 +1,11 @@
 export class ResponseData<D>{
-    data : D | D[]
-    statusCode: number
-    message: string
-    constructor(data : D | D[], statusCode: number, message: string){
+    data : D | D[] | {msg: string,  access_token: string}
+    HttpCode: number
+    HttpMessage: string
+    constructor(data : D | D[] | {msg: string,  access_token: string} , HttpCode: number, HttpMessage: string){
         this.data = data,
-        this.statusCode = statusCode,
-        this.message = message
+        this.HttpCode = HttpCode,
+        this.HttpMessage = HttpMessage
         return this
     }
 }

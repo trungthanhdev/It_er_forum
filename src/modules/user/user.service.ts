@@ -11,21 +11,22 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepo : Repository<User>
   ){}
+
   async createUser(createUserDto: CreateUserDto){
     const newUser = await this.userRepo.create(createUserDto)
     return this.userRepo.save(newUser)
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll() {
+    return await this.userRepo.find();
   }
 
   findOne(id: number) {
     return `This action returns a #${id} user`;
   }
 
-  findByEmail(email: string){
-    return `find by email`
+  async findByEmail(email: string){
+    return await this.userRepo.findOneBy({email})
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
