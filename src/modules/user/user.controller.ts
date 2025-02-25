@@ -11,7 +11,7 @@ import { AuthGuard } from 'guard/auth.guard';
 import { LoginDto } from 'dto/login.dto';
 import { RoleGuard } from 'guard/role.guard';
 
-@Controller('user')
+@Controller('/api/v1/user')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService,
@@ -39,6 +39,8 @@ export class UserController {
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)
   async findAll() {
+    console.log(`Fetch successfully!`);
+    
     try {
       return new ResponseData<User[]>(
         await this.userService.findAll(),

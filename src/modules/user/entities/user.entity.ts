@@ -9,11 +9,11 @@ export class User {
     @Exclude()
     user_id : string
 
-    @Column()
+    @Column({nullable: true})
     @MaxLength(20)
     first_name: string
 
-    @Column()
+    @Column({nullable: true})
     @MaxLength(20)
     last_name: string
 
@@ -30,7 +30,7 @@ export class User {
     @MaxLength(61)
     password: string
 
-    @Column()
+    @Column({nullable: true})
     @MaxLength(11)
     phone_num: number
 
