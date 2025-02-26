@@ -14,3 +14,9 @@ export enum HttpMessage{
     INVALID_EMAIL = "INVALID_EMAIL"
 }
 
+export enum PostStatus{
+    PENDING = "PENDING",
+    APPROVED = "APPROVED",
+    REJECTED = "REJECTED"
+}
+

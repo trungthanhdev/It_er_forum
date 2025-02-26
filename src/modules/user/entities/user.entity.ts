@@ -1,7 +1,8 @@
 import { MaxLength } from "class-validator";
 import { Roles } from "global/enum.global";
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { Exclude } from 'class-transformer';
+import { Post } from "src/modules/post/entities/post.entity";
 @Entity({name: "users"})
 @Unique(["email"])
 export class User {
@@ -45,6 +46,9 @@ export class User {
     @Exclude()
     @MaxLength(10)
     role: Roles
+
+    @OneToMany(() => Post, (post) => post.user)
+    posts: Post[]
 }
 
 
