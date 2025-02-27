@@ -9,7 +9,7 @@ import { UserModule } from '../user/user.module';
     imports: [
       JwtModule.register({
       global: true,
-      signOptions: { expiresIn: '1d' },
+      signOptions: { expiresIn: '1h' },
     }),
     forwardRef(() => UserModule)
     ],

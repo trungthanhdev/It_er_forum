@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -82,14 +82,24 @@ export class UserController {
   }
 
   @Post("/register")
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(AuthGuard)
+  @UsePipes(ValidationPipe)
   async register(@Body() registerDto: RegisterDto){
     return await this.authService.register(registerDto)
   }
 
   @Post("/login")
+  @UsePipes(ValidationPipe)
   async login(@Body() loginDto: LoginDto){
     return await this.authService.login(loginDto)
   }
+
+  @Post("/refresh-token")
+  refreshToken(@Body() {refresh_token}){
+    return this.authService.refreshToken(refresh_token)
+  }
+  
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);

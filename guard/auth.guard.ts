@@ -19,7 +19,7 @@ export class AuthGuard implements CanActivate {
     // console.log(token)
 
     if(!token){
-      throw new BadRequestException("Token expired!")
+      throw new BadRequestException("Token not found")
     }
     const payload = await this.jwtService.verifyAsync(token, {secret: process.env.JWT_TOKEN})
     // console.log(payload)
@@ -32,7 +32,7 @@ export class AuthGuard implements CanActivate {
 
     request.currentUser = user
     // console.log(request.currentUser)
-    console.log("1");
+    // console.log("1");
     // console.log(user);
     
     
@@ -41,7 +41,7 @@ export class AuthGuard implements CanActivate {
       if(error instanceof BadRequestException){
         throw error
       }
-      throw new UnauthorizedException("Internal server error!")
+      throw new UnauthorizedException("Token expired!")
     }
     return true
   }
