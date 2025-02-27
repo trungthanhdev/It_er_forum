@@ -23,9 +23,9 @@ export class AuthService {
         }
 
         const isMatch = await bcrypt.compare(loginDto.password,user.password );
-        console.log(isMatch)
-        console.log("password nhap vao :", loginDto.password)
-        console.log("password trong db :", user.password)
+        // console.log(isMatch)
+        // console.log("password nhap vao :", loginDto.password)
+        // console.log("password trong db :", user.password)
         if(!isMatch){
             throw new UnauthorizedException("Wrong password")
         }

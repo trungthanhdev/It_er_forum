@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
     // console.log(payload)
 
     const user = await this.userService.findByEmail(payload.email)
-    console.log(user)
+    // console.log(user)
     if(!user){
       throw new BadRequestException("Please login again!")
     }
@@ -41,7 +41,7 @@ export class AuthGuard implements CanActivate {
       if(error instanceof BadRequestException){
         throw error
       }
-      throw new UnauthorizedException("Login or register again!")
+      throw new UnauthorizedException("Internal server error!")
     }
     return true
   }
