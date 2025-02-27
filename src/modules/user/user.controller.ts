@@ -82,7 +82,7 @@ export class UserController {
   }
 
   @Post("/register")
-  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(new RoleGuard(['ADMIN'])) //admin dang nhap vao moi tao tk cho admin khac dc
   @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   async register(@Body() registerDto: RegisterDto){
@@ -99,7 +99,7 @@ export class UserController {
   refreshToken(@Body() {refresh_token}){
     return this.authService.refreshToken(refresh_token)
   }
-  
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);

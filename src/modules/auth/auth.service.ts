@@ -101,9 +101,7 @@ export class AuthService {
 
             const access_token = await this.jwtService.signAsync(payload,{secret: process.env.JWT_TOKEN})
 
-            const refresh_token = await this.jwtService.signAsync(payload,{secret: process.env.JWT_REFRESH_TOKEN})
-
-            return {access_token, refresh_token}
+            return {access_token}
         } catch (error) {
             if(error in UnauthorizedException){
                 throw error
