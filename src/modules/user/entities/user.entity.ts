@@ -42,6 +42,9 @@ export class User {
     @Column()
     dob: Date
 
+    // @Column({nullable: true, default: null})
+    // refresh_token: string
+
     @Column({default: Roles.ADMIN})
     @Exclude()
     @MaxLength(10)

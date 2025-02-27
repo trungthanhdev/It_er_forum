@@ -37,6 +37,8 @@ export class AuthService {
 
         const access_token =  await this.jwtService.signAsync(payload,{secret: process.env.JWT_TOKEN})
         const refresh_token = await this.jwtService.signAsync(payload,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: '1d'})
+        
+    
         return {msg: "Login successfully!",
             HttpCode: HttpCode.SUCCESS,
             HttpMessage: HttpMessage.SUCCESS,

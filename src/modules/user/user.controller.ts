@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards, UsePipes, ValidationPipe, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -55,8 +55,15 @@ export class UserController {
       )
     }
   }
+  // @Get("/current-user")
+  // @UseGuards(AuthGuard)
+  // getCurrentUser(@Req() req : Request){
+  //   return req.currentUser
+  // }
 
   @Get('/email')
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(AuthGuard)
   async findByEmail(@Query("email") email: string) {
       try {
         const userEmail = await this.userService.findByEmail(email)
@@ -96,13 +103,15 @@ export class UserController {
   }
 
   @Post("/refresh-token")
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(AuthGuard)
   refreshToken(@Body() {refresh_token}){
     return this.authService.refreshToken(refresh_token)
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+    return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
