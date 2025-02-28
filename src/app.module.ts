@@ -12,6 +12,7 @@ import { pgConfig } from 'dbconfig';
 
 @Module({
   imports: [UserModule, PostModule, AuthModule,
+    
     TypeOrmModule.forRoot(pgConfig)
   ],
   controllers: [AppController, AuthController],

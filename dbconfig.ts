@@ -8,6 +8,7 @@
 //     synchronize: true
 // }
 
+
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 
@@ -24,4 +25,7 @@ export const pgConfig: TypeOrmModuleOptions = {
   autoLoadEntities: true,
   synchronize: true,
 //   entities: [__dirname+'/**/*.entitiy{.ts,.js}']
+
 };
+
+

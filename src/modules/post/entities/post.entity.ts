@@ -26,7 +26,7 @@ export class Post {
     date_updated: Date
 
     @Column({ default : 0})
-    upnvote : number
+    upvote : number
 
     @Column({ default : 0})
     downvote : number
