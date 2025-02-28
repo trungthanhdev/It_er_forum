@@ -10,6 +10,7 @@ import { AuthService } from '../auth/auth.service';
 import { AuthGuard } from 'guard/auth.guard';
 import { LoginDto } from 'dto/login.dto';
 import { RoleGuard } from 'guard/role.guard';
+import { ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
 
 @Controller('/api/v1/user')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -19,6 +20,9 @@ export class UserController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: 'Tạo một item mới' })
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({ status: 201, description: 'Item đã được tạo thành công.' })
   async create(@Body() createUserDto: CreateUserDto) {
     try {
       return new ResponseData<User>(
@@ -63,8 +67,8 @@ export class UserController {
 
   @Get('/email')
   @UseGuards(new RoleGuard(['ADMIN']))
-  @UseGuards(AuthGuard)
-  async findByEmail(@Query("email") email: string) {
+  @UseGuards(AuthGuard) 
+   async findByEmail(@Query("email") email: string) {
       try {
         const userEmail = await this.userService.findByEmail(email)
         if(!userEmail){

@@ -19,15 +19,12 @@ export class RegisterDto {
     @MaxLength(20)
     last_name: string
     
-    @IsNumber()
     phone_num: number
     
     @IsNotEmpty({message: "Country is empty!"})
     @MaxLength(20)
     country: string
     
-    @IsNotEmpty({message: "Birthday is empty!"})
-    @IsDate()
     dob: Date
 }
 

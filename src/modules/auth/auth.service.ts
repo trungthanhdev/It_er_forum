@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from 'dto/login.dto';
 import { UserService } from '../user/user.service';
@@ -9,6 +9,7 @@ import { emitWarning } from 'process';
 import { log } from 'console';
 import e from 'express';
 import { STATUS_CODES } from 'http';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 @Injectable()
 export class AuthService {
     constructor(private readonly jwtService: JwtService,
@@ -30,7 +31,7 @@ export class AuthService {
         }
         
         const payload = {
-            id: user.user_id,
+            sub: user.user_id,
             role: user.role,
             email: user.email
         }
@@ -63,26 +64,27 @@ export class AuthService {
             registerDto.password = hashPassword
 
             const saveUser = await this.userService.createUser(registerDto)
+            
+            // const payload = {
+            //     id: saveUser.user_id,
+            //     role: saveUser.role,
+            //     email: saveUser.email
+            // }
 
-            const payload = {
-                id: saveUser.user_id,
-                role: saveUser.role,
-                email: saveUser.email
-            }
-
-            const access_token =  await this.jwtService.signAsync(payload,{secret: process.env.JWT_TOKEN})
-            const refresh_token = await this.jwtService.signAsync(payload,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: '1d'})
+            // const access_token =  await this.jwtService.signAsync(payload,{secret: process.env.JWT_TOKEN})
+            // const refresh_token = await this.jwtService.signAsync(payload,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: '1d'})
             return {msg: "Register successfully!",
                     HttpCode: HttpCode.SUCCESS,
                     HttpMessage: HttpMessage.SUCCESS,
-                    access_token,
-                    refresh_token}
+                    // access_token,
+                    // refresh_token}
+            }
 
         } catch (error) {
             if(error instanceof BadRequestException){
                 throw error
             }
-            throw new BadRequestException('Something went wrong')
+            throw new InternalServerErrorException(error.message || 'Something went wrong');
         }
 
     }

@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
     if(!user){
       throw new BadRequestException("Please login again!")
     }
-
+    
     request.currentUser = user
     // console.log("currentUser from authguard: ",request.currentUser)
     // console.log(request.currentUser)

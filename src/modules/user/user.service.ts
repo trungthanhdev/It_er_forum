@@ -2,7 +2,7 @@ import { BadRequestException, HttpException, Inject, Injectable } from '@nestjs/
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -42,7 +42,8 @@ export class UserService {
       throw new BadRequestException("User not found")
     }
     let newUser = this.userRepo.merge(user, updateUserDto)
-    return  this.userRepo.save(newUser)
+    this.userRepo.save(newUser)
+    return  newUser  
   }
 
   remove(id: number) {
