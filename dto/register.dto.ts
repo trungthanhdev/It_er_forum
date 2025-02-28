@@ -19,7 +19,7 @@ export class RegisterDto {
     @MaxLength(20)
     last_name: string
     
-    phone_num: number
+    phone_num: string
     
     @IsNotEmpty({message: "Country is empty!"})
     @MaxLength(20)

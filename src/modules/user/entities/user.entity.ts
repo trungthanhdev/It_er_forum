@@ -33,7 +33,7 @@ export class User {
 
     @Column({nullable: true})
     @MaxLength(11)
-    phone_num: number
+    phone_num: string
 
     @Column()
     @MaxLength(20)

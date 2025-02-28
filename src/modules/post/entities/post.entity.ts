@@ -16,15 +16,20 @@ export class Post {
     @MaxLength(255)
     post_content: string
 
-    @Column({nullable: true})
-    @MaxLength(255)
-    img_url: string
+    @Column("text",{nullable: true, array: true})
+    img_url: string[]
 
     @CreateDateColumn()
     date_created: Date
 
     @UpdateDateColumn()
     date_updated: Date
+
+    @Column({ default : 0})
+    upnvote : number
+
+    @Column({ default : 0})
+    downvote : number
 
     @Column({default: PostStatus.PENDING})
     status: PostStatus

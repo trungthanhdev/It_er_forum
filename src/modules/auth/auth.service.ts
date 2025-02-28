@@ -9,7 +9,6 @@ import { emitWarning } from 'process';
 import { log } from 'console';
 import e from 'express';
 import { STATUS_CODES } from 'http';
-import { CreateUserDto } from '../user/dto/create-user.dto';
 @Injectable()
 export class AuthService {
     constructor(private readonly jwtService: JwtService,
@@ -63,7 +62,7 @@ export class AuthService {
             const hashPassword = await bcrypt.hash(registerDto.password, 10);
             registerDto.password = hashPassword
 
-            const saveUser = await this.userService.createUser(registerDto)
+            const saveUser = await this.userService.createNewAdmin(registerDto)
             
             // const payload = {
             //     id: saveUser.user_id,
