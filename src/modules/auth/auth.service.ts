@@ -5,10 +5,6 @@ import { UserService } from '../user/user.service';
 import { RegisterDto } from 'dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { HttpCode, HttpMessage } from 'global/enum.global';
-import { emitWarning } from 'process';
-import { log } from 'console';
-import e from 'express';
-import { STATUS_CODES } from 'http';
 @Injectable()
 export class AuthService {
     constructor(private readonly jwtService: JwtService,
@@ -18,9 +14,9 @@ export class AuthService {
     async login(loginDto : LoginDto){
         try {
             const user = await this.userService.findByEmail(loginDto.email)
-            // console.log(user)
+        
         if(!user){
-            throw new BadRequestException("Email or password is wrong")
+            throw new BadRequestException("Email doesn't exist!")
         }
 
         const isMatch = await bcrypt.compare(loginDto.password,user.password );
@@ -48,7 +44,7 @@ export class AuthService {
             if(error instanceof UnauthorizedException || error instanceof BadRequestException){
                 throw error
             }
-            throw new Error("Inveral server")
+            throw new Error(error.message || "Inveral server")
         }
         
     }
@@ -91,7 +87,7 @@ export class AuthService {
     async refreshToken(refreshToken : string){
         try {
             const token = await this.jwtService.verifyAsync(refreshToken, {secret: process.env.JWT_REFRESH_TOKEN})
-            console.log(token)
+            // console.log(token)
             if(!token){
                 throw new UnauthorizedException("Refresh_token not found")
             }
@@ -106,10 +102,12 @@ export class AuthService {
 
             return {access_token}
         } catch (error) {
-            if(error in UnauthorizedException){
+            if(error instanceof UnauthorizedException){
                 throw error
             }
-            throw new HttpException("Refresh token is not valid", HttpStatus.BAD_REQUEST)
+            throw new HttpException( error.message  || "Refresh token is not valid", HttpStatus.BAD_REQUEST)
         }
     }
+
+   
 }

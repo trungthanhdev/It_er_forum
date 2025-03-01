@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards, UsePipes, ValidationPipe, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards, UsePipes, ValidationPipe, Res, Req, UnauthorizedException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ResponseData } from 'reponsedata/responsedata';
@@ -9,7 +9,7 @@ import { AuthService } from '../auth/auth.service';
 import { AuthGuard } from 'guard/auth.guard';
 import { LoginDto } from 'dto/login.dto';
 import { RoleGuard } from 'guard/role.guard';
-import { ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
+import {Response, Request} from 'express'
 
 @Controller('/api/v1/user')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -22,7 +22,7 @@ export class UserController {
   @Get()
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)
-  async findAll() {
+  async findAllUser() {
     console.log(`Fetch successfully!`);
     
     try {
@@ -86,6 +86,23 @@ export class UserController {
     return await this.authService.login(loginDto)
   }
 
+  @Post("/log-out")
+  @UseGuards(AuthGuard)
+   logout(@Res() res: Response, @Req() req: Request){
+    const refreshToken = req.cookies['refresh_token']
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('No refresh token found');
+    }
+    
+    res.clearCookie('refresh_token',{
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict'
+    })
+    return ({msg: "Log out successfully"})
+  }
+
   @Post("/refresh-token")
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)
@@ -98,6 +115,20 @@ export class UserController {
     return this.userService.updateProfile(id, updateUserDto);
   }
 
+  @Get("/:user_name")
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(AuthGuard)
+  searchUserByUserName(
+    @Param("user_name") user_name : string){
+      return this.userService.searchUserByUserName(user_name)
+  }
+
+  @Get("/user-detail/:id")
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(AuthGuard)
+  async findUserById(@Param('id') id : string){
+    return await this.userService.findUserById(id)
+  }
   
 }
 

@@ -1,4 +1,4 @@
-import { IsEmail, MaxLength, IsNotEmpty, IsDate, IsNumber,IsOptional } from "class-validator"
+import { IsEmail, MaxLength, IsNotEmpty } from "class-validator"
 
 export class RegisterDto {
     @IsEmail()
@@ -19,9 +19,10 @@ export class RegisterDto {
     @MaxLength(20)
     last_name: string
     
+    
+    @MaxLength(11)
     phone_num: string
     
-    @IsNotEmpty({message: "Country is empty!"})
     @MaxLength(20)
     country: string
     

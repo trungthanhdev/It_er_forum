@@ -1,9 +1,11 @@
-import { BadRequestException, HttpException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { RegisterDto } from 'dto/register.dto';
+import { error } from 'console';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class UserService {
@@ -28,12 +30,14 @@ export class UserService {
   async findByEmail(email: string ){
     return await this.userRepo.findOneBy({email})
   }
+  
 
-   async searchUser(email: string , user_name: string){
-    return await this.userRepo.findOne({where: {
-      email : email,
-      user_name : user_name
-    }})
+  async searchUserByUserName(user_name: string){
+      let users =  await this.userRepo.find({where: {
+        user_name : user_name.trim().replace(/\s+/g, ' ')
+      }})
+      if(users.length === 0 ){ throw new NotFoundException(`User name "${user_name} invalid"`)}
+      return users
   }
 
   async updateProfile(id: string, updateUserDto: Partial<UpdateUserDto>) {
@@ -45,6 +49,20 @@ export class UserService {
     this.userRepo.save(newUser)
     return  newUser  
   }
-}
 
+  async findUserById(id: string) {
+
+    if (!isUUID(id)) {
+        throw new NotFoundException(`ID "${id}" invalid`);
+    }
+
+    const user = await this.userRepo.findOne({ where: { user_id: id } });
+
+    if (!user) {
+        throw new NotFoundException(`Id "${id}" not found !`);
+    }
+
+    return user;
+  }
+}
 

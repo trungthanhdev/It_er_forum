@@ -12,7 +12,7 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 
-dotenv.config(); // Load biến môi trường từ file .env
+dotenv.config(); 
 
 export const pgConfig: TypeOrmModuleOptions = {
   type: 'postgres',
