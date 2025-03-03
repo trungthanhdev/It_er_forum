@@ -10,12 +10,17 @@ import { AuthGuard } from 'guard/auth.guard';
 import { LoginDto } from 'dto/login.dto';
 import { RoleGuard } from 'guard/role.guard';
 import {Response, Request} from 'express'
+import { JwtService } from '@nestjs/jwt';
+import { BlacklistService } from '../blacklist/blacklist.service';
+import { UpdatePasswordDto } from 'dto/updatePassword.dto';
 
 @Controller('/api/v1/user')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService,
-              private readonly authService: AuthService
+              private readonly authService: AuthService ,
+              private readonly jwtService: JwtService,
+              private readonly blacklistService: BlacklistService         
   ) {}
 
 
@@ -88,16 +93,27 @@ export class UserController {
 
   @Post("/log-out")
   @UseGuards(AuthGuard)
-   logout(@Res() res: Response, @Req() req: Request){
+  async logout(@Res() res: Response, @Req() req: Request){
     const refreshToken = req.cookies['refresh_token']
 
     if (!refreshToken) {
       throw new UnauthorizedException('No refresh token found');
     }
+    console.log("rf from UserController ",refreshToken);
+    
+    try {
+      let payload = await this.jwtService.verifyAsync(refreshToken, {secret: process.env.JWT_REFRESH_TOKEN})
+      let rf_id = payload.id
+      await this.blacklistService.addToBlacklist(rf_id)
+
+    } catch (error) {
+      throw error
+    }
+    
     
     res.clearCookie('refresh_token',{
       httpOnly: true,
-      secure: true,
+      // secure: true,
       sameSite: 'strict'
     })
     return ({msg: "Log out successfully"})
@@ -130,6 +146,13 @@ export class UserController {
     return await this.userService.findUserById(id)
   }
   
+  @Post("/:id/update-password")
+  updatePassword(
+    @Param("id") id : string,
+    @Body() updatPasswordDto: UpdatePasswordDto){
+    return this.userService.updatePassword(id,updatPasswordDto)
+  }
+
 }
 
 

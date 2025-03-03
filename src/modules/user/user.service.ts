@@ -4,9 +4,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { RegisterDto } from 'dto/register.dto';
-import { error } from 'console';
 import { isUUID } from 'class-validator';
-
+import { UpdatePasswordDto } from 'dto/updatePassword.dto';
+import * as bcrypt from 'bcrypt';
+import { log } from 'console';
 @Injectable()
 export class UserService {
   constructor(
@@ -63,6 +64,40 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async updatePassword(id: string, updatPasswordDto : UpdatePasswordDto){
+   try {
+    let user = await this.findUserById(id)
+    if(!user) {
+      throw new NotFoundException()
+    }
+    
+    const isMatch = await bcrypt.compare(updatPasswordDto.oldPassword, user.password);
+    
+    if(!isMatch){
+      throw new BadRequestException("Old password is incorrect!")
+    }
+   
+    const hashNewPassword = await bcrypt.hash(updatPasswordDto.newPassword, 10);
+    
+    const isMatchNewPassword = await bcrypt.compare(updatPasswordDto.newPassword,user.password);
+    
+    if(isMatchNewPassword){
+      throw new BadRequestException("New password and old password are same!")
+    }
+
+    user.password = hashNewPassword
+
+    await this.userRepo.save(user)
+  
+    return ({
+      message: "Change password successfully!"
+    })
+   } catch (error) {
+      throw error
+   }
+
   }
 }
 

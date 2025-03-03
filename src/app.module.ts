@@ -8,12 +8,13 @@ import { AuthService } from './modules/auth/auth.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { pgConfig } from 'dbconfig';
+import { BlacklistModule } from './modules/blacklist/blacklist.module';
 
 
 @Module({
   imports: [UserModule, PostModule, AuthModule,
     
-    TypeOrmModule.forRoot(pgConfig)
+    TypeOrmModule.forRoot(pgConfig), BlacklistModule
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],

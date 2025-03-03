@@ -1,10 +1,12 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from 'dto/login.dto';
 import { UserService } from '../user/user.service';
 import { RegisterDto } from 'dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { HttpCode, HttpMessage } from 'global/enum.global';
+import { v4 as uuidv4 } from 'uuid';
+import { UpdatePasswordDto } from 'dto/updatePassword.dto';
 @Injectable()
 export class AuthService {
     constructor(private readonly jwtService: JwtService,
@@ -19,20 +21,27 @@ export class AuthService {
             throw new BadRequestException("Email doesn't exist!")
         }
 
-        const isMatch = await bcrypt.compare(loginDto.password,user.password );
+        const isMatch = await bcrypt.compare(loginDto.password,user.password);
         
         if(!isMatch){
             throw new UnauthorizedException("Wrong password")
         }
         
-        const payload = {
+        const payload_accesstoken = {
             sub: user.user_id,
+            id: uuidv4(),
+            role: user.role,
+            email: user.email
+        }
+        const payload_refreshtoken = {
+            sub: user.user_id,
+            id: uuidv4(),
             role: user.role,
             email: user.email
         }
 
-        const access_token =  await this.jwtService.signAsync(payload,{secret: process.env.JWT_TOKEN})
-        const refresh_token = await this.jwtService.signAsync(payload,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: '1d'})
+        const access_token =  await this.jwtService.signAsync(payload_accesstoken,{secret: process.env.JWT_TOKEN})
+        const refresh_token = await this.jwtService.signAsync(payload_refreshtoken,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: '1d'})
         
     
         return {msg: "Login successfully!",
@@ -111,3 +120,5 @@ export class AuthService {
 
    
 }
+
+

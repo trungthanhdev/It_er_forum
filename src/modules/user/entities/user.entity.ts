@@ -51,7 +51,9 @@ export class User {
     role: Roles
 
     @OneToMany(() => Post, (post) => post.user)
-    posts: Post[]
+    posts: Post[] 
+
 }
+
 
 
