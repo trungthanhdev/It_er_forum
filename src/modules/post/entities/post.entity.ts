@@ -1,8 +1,9 @@
 import { MaxLength } from "class-validator";
 import { PostStatus } from "global/enum.global";
 import { User } from "src/modules/user/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Report } from "src/modules/report/entities/report.entity";
+import { Comment } from "src/modules/comment/entities/comment.entity";
 @Entity({name : "posts"})
 export class Post {
     @PrimaryGeneratedColumn("uuid")
@@ -37,4 +38,11 @@ export class Post {
     @ManyToOne(() => User,(user) => user.posts)
     @JoinColumn({name: "user_id"})
     user: User
+
+    @OneToMany(() => Report, (report) => report.post)
+    reports: Report[]
+
+    @OneToMany(() => Comment, (comment) => comment.post)
+    comments: Comment[]
+
 }

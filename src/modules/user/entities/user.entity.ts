@@ -3,6 +3,8 @@ import { Roles } from "global/enum.global";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { Exclude } from 'class-transformer';
 import { Post } from "src/modules/post/entities/post.entity";
+import { Report } from "src/modules/report/entities/report.entity";
+import { Comment } from "src/modules/comment/entities/comment.entity";
 @Entity({name: "users"})
 @Unique(["email"])
 export class User {
@@ -53,6 +55,11 @@ export class User {
     @OneToMany(() => Post, (post) => post.user)
     posts: Post[] 
 
+    @OneToMany(() => Report, (report) => report.user)
+    reports: Report[]
+
+    @OneToMany(() => Comment, (comment) => comment.user)
+    comments: Comment[]
 }
 
 

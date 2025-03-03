@@ -20,3 +20,23 @@ export enum PostStatus{
     REJECTED = "REJECTED"
 }
 
+export enum ReportSubject{
+    COMMENT = "Comment",
+    USER = "User",
+    POST = "Post"
+}
+
+export enum ReportTitle{
+    PRETENDING_TO_BE_SOMEONE = "Pretending to be someone",
+    FAKE_ACCOUNT = "Fake account",
+    FAKE_NAME = "Fake name",
+    HARASSMENT_OR_BULLYING = "Harassment or bullying",
+    PROBLEM_INVOLVING_MINORS = "Problem involving someone under 18",
+    SUICIDE_OR_SELF_HARM = "Suicide or self-harm",
+    VIOLENT_HATEFUL_CONTENT = "Violent hateful or disturbing content",
+    SELLING_RESTRICTED_ITEMS = "Selling or promoting restricted items",
+    ADULT_CONTENT = "Adult content",
+    SCAM_FRAUD_FALSE_INFO = "Scam fraud or false information",
+    DONT_WANT_TO_SEE_THIS = "I don’t want to see this"
+}
+
