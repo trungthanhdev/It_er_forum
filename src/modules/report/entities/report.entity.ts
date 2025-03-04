@@ -24,11 +24,11 @@ export class Report{
     @JoinColumn({name : "reported_user_id"})
     user: User
 
-    @ManyToOne(() => Post, (post) => {post.reports})
+    @ManyToOne(() => Post, (post) => {post.reports},{nullable : true})
     @JoinColumn({name : "post_id"})
     post: Post
 
-    @ManyToOne(() => Comment, (comment) => {comment.reports})
+    @ManyToOne(() => Comment, (comment) => {comment.reports},{nullable : true})
     @JoinColumn({name: "comment_id"})
     comment: Comment
     

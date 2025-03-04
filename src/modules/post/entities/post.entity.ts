@@ -4,6 +4,7 @@ import { User } from "src/modules/user/entities/user.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Report } from "src/modules/report/entities/report.entity";
 import { Comment } from "src/modules/comment/entities/comment.entity";
+import { TagedByEntity } from "src/modules/tag_by/entities/Taged_by.entity";
 @Entity({name : "posts"})
 export class Post {
     @PrimaryGeneratedColumn("uuid")
@@ -44,5 +45,8 @@ export class Post {
 
     @OneToMany(() => Comment, (comment) => comment.post)
     comments: Comment[]
+
+    @OneToMany(() => TagedByEntity, (taged_by) => taged_by.post)
+    taged_bys: TagedByEntity[]
 
 }

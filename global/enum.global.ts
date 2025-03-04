@@ -40,3 +40,30 @@ export enum ReportTitle{
     DONT_WANT_TO_SEE_THIS = "I don’t want to see this"
 }
 
+export enum TagName{
+    STUDENT = 'Student',
+    INTERN = 'Intern',
+    WEB_DEVELOPER = 'Web developer',
+    GAME_DEVELOPER = 'Game developer',
+    MOBILE_DEVELOPER = 'Mobile developer',
+    SHARING = 'Sharing',
+    PROBLEM = 'I have a problem',
+    PROBLEM_SOLVING = 'Problem solving',
+    AMA = 'Ask me anything',
+    RECRUITMENT = 'Recruitment',
+    NEWS = 'News',
+    PROGRAMMING_LANGUAGE = 'Programming language',
+    FRAMEWORK = 'Framework',
+    TECHNOLOGY = 'Technology',
+    GAME = 'Game',
+    WHAT_IF = 'What if?',
+    QUIZ = 'Quiz',
+}
+
+export enum TagCategory{
+    PURPOSE = 'Purpose',
+    TOPIC = 'Topic',
+    SUITABLE_FOR = 'Suitable for',
+    ENTERTAINMENT = 'Entertainment',
+}
+

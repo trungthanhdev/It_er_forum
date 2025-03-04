@@ -5,6 +5,8 @@ import { Exclude } from 'class-transformer';
 import { Post } from "src/modules/post/entities/post.entity";
 import { Report } from "src/modules/report/entities/report.entity";
 import { Comment } from "src/modules/comment/entities/comment.entity";
+import { NotificationEntity } from "src/modules/notification/entities/notification.entity";
+import { InvalidTokenEntity } from "src/modules/blacklist/entities/refreshtoken.entity";
 @Entity({name: "users"})
 @Unique(["email"])
 export class User {
@@ -60,6 +62,12 @@ export class User {
 
     @OneToMany(() => Comment, (comment) => comment.user)
     comments: Comment[]
+    
+    @OneToMany(() => NotificationEntity, (notification) => notification.user)
+    notifications: NotificationEntity[]
+    
+    @OneToMany(() => InvalidTokenEntity, (invalidToken) => invalidToken.user)
+    invalidated_tokens: NotificationEntity[]
 }
 
 

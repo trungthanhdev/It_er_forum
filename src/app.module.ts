@@ -11,12 +11,15 @@ import { pgConfig } from 'dbconfig';
 import { BlacklistModule } from './modules/blacklist/blacklist.module';
 import { ReportModule } from './modules/report/report.module';
 import { CommentModule } from './modules/comment/comment.module';
+import { NotificationModule } from './modules/notification/notification.module';
+import { TagModule } from './modules/tag/tag.module';
+import { TagByModule } from './modules/tag_by/tag_by.module';
 
 
 @Module({
   imports: [UserModule, PostModule, AuthModule,
     
-    TypeOrmModule.forRoot(pgConfig), BlacklistModule, ReportModule, CommentModule
+    TypeOrmModule.forRoot(pgConfig), BlacklistModule, ReportModule, CommentModule, NotificationModule, TagModule, TagByModule
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],
