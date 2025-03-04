@@ -27,6 +27,11 @@ export enum PostStatus{
     REJECTED = "REJECTED"
 }
 
+export enum PostStatusAction{
+    APPROVED= "APPROVED",
+    REJECTED= "REJECTED"
+}
+
 export enum ReportSubject{
     COMMENT = "Comment",
     USER = "User",
