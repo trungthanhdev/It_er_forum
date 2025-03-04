@@ -3,6 +3,13 @@ export enum Roles{
     ADMIN = "ADMIN"
 }
 
+export enum UserStatus{
+    ACTIVE = "Active",
+    BANNED = "Banned",
+    RESTRICTED = "Restricted",
+}
+
+
 export enum HttpCode{
     SUCCESS = 200,
     ERROR = 404

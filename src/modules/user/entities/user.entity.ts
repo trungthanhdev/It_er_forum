@@ -1,5 +1,5 @@
 import { MaxLength } from "class-validator";
-import { Roles } from "global/enum.global";
+import { Roles, UserStatus } from "global/enum.global";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { Exclude } from 'class-transformer';
 import { Post } from "src/modules/post/entities/post.entity";
@@ -46,8 +46,8 @@ export class User {
     @Column()
     dob: Date
 
-    // @Column({nullable: true, default: null})
-    // refresh_token: string
+    @Column({default: UserStatus.ACTIVE})
+    status: UserStatus
 
     @Column({default: Roles.ADMIN})
     @Exclude()

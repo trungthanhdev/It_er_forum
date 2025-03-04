@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards, UsePipes, ValidationPipe, Res, Req, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards, UsePipes, ValidationPipe, Res, Req, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ResponseData } from 'reponsedata/responsedata';
 import { User } from './entities/user.entity';
-import { HttpMessage, HttpCode } from 'global/enum.global';
+import { HttpMessage, HttpCode, UserStatus } from 'global/enum.global';
 import { RegisterDto } from 'dto/register.dto';
 import { AuthService } from '../auth/auth.service';
 import { AuthGuard } from 'guard/auth.guard';
@@ -13,6 +13,7 @@ import {Response, Request} from 'express'
 import { JwtService } from '@nestjs/jwt';
 import { BlacklistService } from '../blacklist/blacklist.service';
 import { UpdatePasswordDto } from 'dto/updatePassword.dto';
+import { UpdateUserStatusDto } from 'dto/userstatus.dto';
 
 @Controller('/api/v1/user')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -151,6 +152,24 @@ export class UserController {
     @Param("id") id : string,
     @Body() updatPasswordDto: UpdatePasswordDto){
     return this.userService.updatePassword(id,updatPasswordDto)
+  }
+
+  @Patch("/admin/:id")
+  @UsePipes(new ValidationPipe)
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(AuthGuard)
+  async changeUserStatus(@Param("id") id: string, @Body() updateUserStatusdto : UpdateUserStatusDto){
+      switch (updateUserStatusdto.status) {
+        case UserStatus.ACTIVE:
+          return await this.userService.changeUserStatustoRestricted(id, updateUserStatusdto)
+        case UserStatus.RESTRICTED:
+          return await this.userService.changeUserStatustoBanned(id, updateUserStatusdto)
+        case UserStatus.BANNED:
+          return { message: "User is already banned" }
+        default:
+          throw new BadRequestException("Invalid status")
+      }
+      // return await this.userService.changeUserStatus(id, updateUserStatusdto)
   }
 
 }

@@ -1,13 +1,14 @@
-import { BadRequestException, HttpException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { RegisterDto } from 'dto/register.dto';
 import { isUUID } from 'class-validator';
 import { UpdatePasswordDto } from 'dto/updatePassword.dto';
 import * as bcrypt from 'bcrypt';
-import { log } from 'console';
+import { UpdateUserStatusDto } from 'dto/userstatus.dto';
+import { UserStatus } from 'global/enum.global';
 @Injectable()
 export class UserService {
   constructor(
@@ -99,5 +100,60 @@ export class UserService {
    }
 
   }
+
+  async changeUserStatustoRestricted(id: string, status: UpdateUserStatusDto){
+      if (!isUUID(id)) {
+        throw new BadRequestException("Invalid UUID format or wrong UUID");
+      }
+      
+      let user = await this.userRepo.findOne({where : {user_id: id}})
+      if(!user){
+        throw new BadRequestException("User not found")
+      }
+      
+      user.status = UserStatus.RESTRICTED
+      return await this.userRepo.save(user)
+  }
+
+  async changeUserStatustoBanned(id: string, status: UpdateUserStatusDto){
+    if (!isUUID(id)) {
+      throw new BadRequestException("Invalid UUID format or wrong UUID");
+    }
+
+    let user = await this.userRepo.findOne({where : {user_id: id}})
+
+    if(!user){
+      throw new BadRequestException("User not found")
+    }
+
+    user.status = UserStatus.BANNED
+    return await this.userRepo.save(user)
+  }
+
+  // async changeUserStatus(id: string, status: UpdateUserStatusDto){
+  //   switch (status.status) {
+  //     case UserStatus.ACTIVE:
+  //       let user = await this.userRepo.findOne({where : {user_id: id}})
+
+  //       if(!user){
+  //         throw new NotFoundException("User not found")
+  //       }
+
+  //       user.status = UserStatus.RESTRICTED
+  //       return await this.userRepo.save(user)
+    
+  //     case UserStatus.RESTRICTED:
+  //         let restrictedUser = await this.userRepo.findOne({where : {user_id: id}})
+
+  //       if(!restrictedUser){
+  //         throw new NotFoundException("User not found")
+  //       }
+
+  //       restrictedUser.status = UserStatus.BANNED
+  //       return await this.userRepo.save(restrictedUser)
+  //     default:
+  //       throw new BadRequestException("Invalid status")
+  //   }
+  // }
 }
 

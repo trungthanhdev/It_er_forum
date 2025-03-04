@@ -12,23 +12,12 @@ export class AuthGuard implements CanActivate {
   async canActivate(
     context: ExecutionContext,
   ):  Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    console.log("request from guard:",request?.cookies);
-    
+    const request = context.switchToHttp().getRequest();    
     try {
     const token = request.headers.authorization?.split(' ')[1]
-    console.log("token from guard:",token);
-    
 
     if(!token){
       throw new UnauthorizedException("Token not found")
-    }
-
-    const refreshToken = await request.cookies?.refreshToken;
-    console.log("rf from guard:",refreshToken);
-    
-    if (!refreshToken) {
-      throw new UnauthorizedException('Refresh token not found');
     }
 
     const payload = await this.jwtService.verifyAsync(token, {secret: process.env.JWT_TOKEN})
