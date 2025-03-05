@@ -22,7 +22,21 @@ export class ReportService {
       }
       return await this.reportRepo.find({
         where : {subject : subject},
-        relations: ["user", "post","comment"]})
+        relations: ["user", "post","comment"],
+        select: {
+            report_id: true,
+            report_title: true,
+            user: {
+                user_id: true,
+                user_name:true
+            },
+            post:{
+                post_id: true
+            },
+            comment: {
+                comment_id: true
+            }
+        }})
    }
 
 }

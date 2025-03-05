@@ -7,7 +7,7 @@ import { RoleGuard } from 'guard/role.guard';
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 
-  @Get('/:subject')
+  @Get('/admin/:subject')
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)
   async getReportbySubject(@Param("subject") subject : string){
