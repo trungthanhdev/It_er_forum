@@ -33,6 +33,10 @@ export class PostService {
     }
   }
 
+  async findAllPost(){
+    return await this.postRepo.find()
+  }
+
 }
 
 

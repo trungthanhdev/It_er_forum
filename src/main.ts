@@ -14,10 +14,10 @@ async function bootstrap() {
 
 // 
   const options = new DocumentBuilder()
-  .setTitle('API Example')
-  .setDescription('Mô tả chi tiết API của ứng dụng')
+  .setTitle('It_er forum API')
+  .setDescription('API for Admin only!')
   .setVersion('1.0')
-  .addTag('example')
+  // .addTag('example')
   .build();
   
   const document = SwaggerModule.createDocument(app, options);

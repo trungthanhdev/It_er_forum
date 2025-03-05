@@ -25,6 +25,7 @@ export class UserService {
     let newAdmin = await this.userRepo.save(admin) 
     return newAdmin
   }
+  
   async findAllUser() {
     return await this.userRepo.find();
   }
@@ -32,7 +33,6 @@ export class UserService {
   async findByEmail(email: string ){
     return await this.userRepo.findOneBy({email})
   }
-  
 
   async searchUserByUserName(user_name: string){
       let users =  await this.userRepo.find({where: {

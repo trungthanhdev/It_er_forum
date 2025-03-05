@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Report } from './entities/report.entity';
 import { Repository } from 'typeorm';
 import { PostService } from '../post/post.service';
 import { UserService } from '../user/user.service';
+import { ReportSubject } from 'global/enum.global';
 
 @Injectable()
 export class ReportService {
@@ -14,15 +15,14 @@ export class ReportService {
         private readonly userService: UserService
     ){}
 
-   async getUserReport(){
-        return await this.userService.findAllUser()
+   async getReportbySubject(subject: ReportSubject){
+        console.log(subject);
+      if(!Object.values(ReportSubject).includes(subject)){
+        throw new BadRequestException("Invalid subject!")
+      }
+      return await this.reportRepo.find({
+        where : {subject : subject},
+        relations: ["user", "post","comment"]})
    }
 
-   getPostReport(){
-        return `reported post`
-   }
-
-   getCommentReport(){
-        return `reported Comment`
-   }
 }

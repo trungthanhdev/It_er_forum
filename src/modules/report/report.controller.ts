@@ -1,21 +1,17 @@
-import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, UseGuards } from '@nestjs/common';
 import { ReportService } from './report.service';
 import { ReportSubject } from 'global/enum.global';
+import { AuthGuard } from 'guard/auth.guard';
+import { RoleGuard } from 'guard/role.guard';
 @Controller('/api/v1/report')
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 
   @Get('/:subject')
-  getReportbySubject(@Param("subject") subject : string){
-    switch (subject) {
-      case ReportSubject.USER:
-        return this.reportService.getUserReport();
-      case ReportSubject.POST:
-        return this.reportService.getPostReport();
-      case ReportSubject.COMMENT:
-        return this.reportService.getCommentReport();
-      default:
-        return { message: 'Subject must be "User", "Comment", or "Post"' };
-    }
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(AuthGuard)
+  async getReportbySubject(@Param("subject") subject : string){
+      let subjectModify = subject as ReportSubject;
+      return await this.reportService.getReportbySubject(subjectModify) 
   }
 }
