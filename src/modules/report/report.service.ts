@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Report } from './entities/report.entity';
 import { Repository } from 'typeorm';
@@ -38,5 +38,53 @@ export class ReportService {
             }
         }})
    }
+
+   async searchSortReport(
+    subject: ReportSubject,
+    search_value: string,
+    sort_by: Date | null,
+    is_ascending: Boolean){
+        try {
+            //loc theo subject
+        if(!Object.values(ReportSubject).includes(subject)){
+            throw new BadRequestException(`Invalid subject, subject must be "User" or "Post" or "Comment"!`)
+        }
+        // console.log(typeof subject);
+        // console.log(typeof search_value);
+        // console.log(typeof sort_by);
+        // console.log(typeof is_ascending);
+        // console.log( subject);
+        // console.log( search_value);
+        // console.log( sort_by);
+        // console.log( is_ascending);
+        
+        let object = await this.reportRepo.find({
+            where: {subject : subject}
+        })
+        // console.log(object);
+        
+        //loc theo search
+        if(search_value){
+            // console.log("chay vao search_value");
+            object = object.filter(report => report.report_title.toLowerCase().includes(search_value.toLowerCase()) ||
+                report.report_body.toLocaleLowerCase().includes(search_value.toLowerCase())) 
+            // if(object.length === 0){
+            //     throw new NotFoundException(`There is no report for value ${search_value}`)
+            // }
+        }
+        //sort_by(neu co)
+        if(sort_by !== null){
+            object.sort((a, b) => {
+                // console.log("chay vao sort");
+                return is_ascending ? a.date_reported.getTime() - b.date_reported.getTime()
+                    : b.date_reported.getTime() - a.date_reported.getTime();
+            })
+        }
+        return object
+        
+        } catch (error) {
+            throw error
+        }
+    }
 
 }

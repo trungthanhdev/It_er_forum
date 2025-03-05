@@ -46,6 +46,9 @@ export class User {
     @Column()
     dob: Date
 
+    @Column({nullable: true})
+    ava_img_path: string
+
     @Column({default: UserStatus.ACTIVE})
     status: UserStatus
 
