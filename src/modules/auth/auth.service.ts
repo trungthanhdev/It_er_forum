@@ -45,8 +45,6 @@ export class AuthService {
         
     
         return {msg: "Login successfully!",
-            HttpCode: HttpCode.SUCCESS,
-            HttpMessage: HttpMessage.SUCCESS,
             access_token,
             refresh_token}
         } catch (error) {

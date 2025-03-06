@@ -11,7 +11,7 @@ import { InvalidTokenEntity } from "src/modules/blacklist/entities/refreshtoken.
 @Unique(["email"])
 export class User {
     @PrimaryGeneratedColumn("uuid")
-    @Exclude()
+    // @Exclude()
     user_id : string
 
     @Column({nullable: true})

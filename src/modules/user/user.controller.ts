@@ -144,7 +144,7 @@ export class UserController {
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)
   async findUserById(@Param('id') id : string){
-    return await this.userService.findUserById(id)
+    return await this.userService.getUserById(id)
   }
   
   @Post("/:id/update-password")
@@ -160,6 +160,8 @@ export class UserController {
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)
   async changeUserStatus(@Param("id") id: string, @Body() updateUserStatusdto : UpdateUserStatusDto){
+    console.log(updateUserStatusdto.status);
+    
       switch (updateUserStatusdto.status) {
         case UserStatus.ACTIVE:
           return await this.userService.changeUserStatustoRestricted(id, updateUserStatusdto)

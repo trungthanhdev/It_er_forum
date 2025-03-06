@@ -6,6 +6,7 @@ import { PostService } from '../post/post.service';
 import { UserService } from '../user/user.service';
 import { ReportSubject } from 'global/enum.global';
 import { error } from 'console';
+import { GetReportBySubjectDto } from 'dto/getReportBySubject.dto';
 
 @Injectable()
 export class ReportService {
@@ -17,27 +18,25 @@ export class ReportService {
     ){}
 
    async getReportbySubject(subject: ReportSubject){
-        console.log(subject);
       if(!Object.values(ReportSubject).includes(subject)){
         throw new BadRequestException("Invalid subject!")
       }
-      return await this.reportRepo.find({
+      let report = await this.reportRepo.find({
         where : {subject : subject},
         relations: ["user", "post","comment"],
-        select: {
-            report_id: true,
-            report_title: true,
-            user: {
-                user_id: true,
-                user_name:true
-            },
-            post:{
-                post_id: true
-            },
-            comment: {
-                comment_id: true
-            }
-        }})
+       })
+       if(!report){
+        throw error
+       }
+       let response = report.map((report) => {
+            let resElement = new GetReportBySubjectDto()
+            resElement.user_id = report.user.user_id,
+            resElement.user_name = report.user.user_name,
+            resElement.report_title = report.report_title,
+            resElement.ava_img_path = report.user.ava_img_path
+            return resElement
+       })
+       return response
    }
 
    async searchSortReport(
@@ -46,42 +45,35 @@ export class ReportService {
     sort_by: Date | null,
     is_ascending: Boolean){
         try {
-            //loc theo subject
         if(!Object.values(ReportSubject).includes(subject)){
             throw new BadRequestException(`Invalid subject, subject must be "User" or "Post" or "Comment"!`)
         }
-        // console.log(typeof subject);
-        // console.log(typeof search_value);
-        // console.log(typeof sort_by);
-        // console.log(typeof is_ascending);
-        // console.log( subject);
-        // console.log( search_value);
-        // console.log( sort_by);
-        // console.log( is_ascending);
         
         let object = await this.reportRepo.find({
             where: {subject : subject}
         })
         // console.log(object);
-        
-        //loc theo search
+        let response = object.map((obj) => {
+            return {
+                report_title: obj.report_title,
+                subject: obj.subject,
+                date_reported:obj.date_reported
+            }})
+
         if(search_value){
             // console.log("chay vao search_value");
-            object = object.filter(report => report.report_title.toLowerCase().includes(search_value.toLowerCase()) ||
-                report.report_body.toLocaleLowerCase().includes(search_value.toLowerCase())) 
-            // if(object.length === 0){
-            //     throw new NotFoundException(`There is no report for value ${search_value}`)
-            // }
+            response = response.filter(report => report.report_title.toLowerCase().includes(search_value.toLowerCase()) )
+            // || report.report_body.toLocaleLowerCase().includes(search_value.toLowerCase())) 
         }
-        //sort_by(neu co)
+
         if(sort_by !== null){
-            object.sort((a, b) => {
+            response.sort((a, b) => {
                 // console.log("chay vao sort");
                 return is_ascending ? a.date_reported.getTime() - b.date_reported.getTime()
                     : b.date_reported.getTime() - a.date_reported.getTime();
             })
         }
-        return object
+        return response
         
         } catch (error) {
             throw error
@@ -89,8 +81,6 @@ export class ReportService {
    }
 
    async getReportDetail(subject: ReportSubject, id: string){
-        console.log(subject);
-    
         if(!Object.values(ReportSubject).includes(subject)){
             throw new BadRequestException("Invalid Subject!")
         }
@@ -100,6 +90,60 @@ export class ReportService {
         if(!report){
             throw error
         }
-        return report
+        switch (subject) {
+            case ReportSubject.USER:
+                return {
+                    reported_user_id : report.user.user_id,
+                    reported_id: report.report_id,
+                    report_title: report.report_title,
+                    report_body: report.report_body,
+                    subject: subject,
+                    date_reported: report.date_reported,
+                    content: {
+                        user_id: report?.user?.user_id,
+                        ava_img_path: report?.user?.ava_img_path,
+                        email: report?.user?.email,
+                        user_name: report?.user?.user_name,
+                        status: report?.user?.status,
+                        role: report?.user?.role
+                    }
+                }
+            case ReportSubject.COMMENT:
+                return {
+                    reported_user_id : report.user.user_id,
+                    reported_id: report.report_id,
+                    report_title: report.report_title,
+                    report_body: report.report_body,
+                    subject: subject,
+                    date_reported: report.date_reported,
+                    content: {
+                        post_id: report?.post?.post_id,
+                        post_title: report?.post?.post_title,
+                        post_content: report?.post?.post_content,
+                        img_url : report?.post?.img_url,
+                        comment_id: report?.comment?.comment_id,
+                        comment_content: report?.comment?.comment_content,
+                        comment_parent_id: report?.comment?.comment_parent
+                    }
+                }
+            case ReportSubject.POST:
+                return{
+                    reported_user_id : report.user.user_id,
+                    reported_id: report.report_id,
+                    report_title: report.report_title,
+                    report_body: report.report_body,
+                    subject: subject,
+                    date_reported: report.date_reported,
+                    content: {
+                        post_id: report?.post?.post_id, 
+                        post_title: report?.post?.post_title,
+                        post_content: report?.post?.post_content,
+                        img_url : report?.post?.img_url,
+                        date_updated: report?.post?.date_updated,
+                    }
+                }
+            default:
+                throw new error
+        }
    }
 }

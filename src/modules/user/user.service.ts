@@ -9,6 +9,7 @@ import { UpdatePasswordDto } from 'dto/updatePassword.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserStatusDto } from 'dto/userstatus.dto';
 import { UserStatus } from 'global/enum.global';
+import { UserDto } from 'dto/resSearchUserByUserName.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -39,7 +40,20 @@ export class UserService {
         user_name : user_name.trim().replace(/\s+/g, ' ')
       }})
       if(users.length === 0 ){ throw new NotFoundException(`User name "${user_name} invalid"`)}
-      return users
+
+     try {
+      let response = users.map((user) =>{
+        let userElement = new UserDto()
+          userElement.user_id = user.user_id
+          userElement.user_name = user.user_name
+          userElement.ava_img_path = user.ava_img_path
+          userElement.status = user.status
+          return userElement
+      })
+      return response
+     } catch (error) {
+        throw error
+     }
   }
 
   async updateProfile(id: string, updateUserDto: Partial<UpdateUserDto>) {
@@ -50,6 +64,31 @@ export class UserService {
     let newUser = this.userRepo.merge(user, updateUserDto)
     this.userRepo.save(newUser)
     return  newUser  
+  }
+
+  async getUserById(id: string) {
+
+    if (!isUUID(id)) {
+        throw new NotFoundException(`ID "${id}" invalid`);
+    }
+
+    const user = await this.userRepo.findOne({ where: { user_id: id } });
+
+    if (!user) {
+        throw new NotFoundException(`Id "${id}" not found !`);
+    }
+
+    return {
+      user_id: user.user_id,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      user_name: user.user_name,
+      email: user.email,
+      phone_num: user.phone_num,
+      age: user.dob, 
+      status: user.status,
+      ava_img_path: user.ava_img_path 
+    };
   }
 
   async findUserById(id: string) {
@@ -64,8 +103,9 @@ export class UserService {
         throw new NotFoundException(`Id "${id}" not found !`);
     }
 
-    return user;
+    return user
   }
+
 
   async updatePassword(id: string, updatPasswordDto : UpdatePasswordDto){
    try {
@@ -112,7 +152,18 @@ export class UserService {
       }
       
       user.status = UserStatus.RESTRICTED
-      return await this.userRepo.save(user)
+      await this.userRepo.save(user)
+      return {
+        user_id: user.user_id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        user_name: user.user_name,
+        email: user.email,
+        phone_num: user.phone_num,
+        age: user.dob,
+        status: user.status,
+        ava_img_path: user.ava_img_path
+      }
   }
 
   async changeUserStatustoBanned(id: string, status: UpdateUserStatusDto){
@@ -127,7 +178,18 @@ export class UserService {
     }
 
     user.status = UserStatus.BANNED
-    return await this.userRepo.save(user)
+    await this.userRepo.save(user)
+    return {
+      user_id: user.user_id,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      user_name: user.user_name,
+      email: user.email,
+      phone_num: user.phone_num,
+      age: user.dob,
+      status: user.status,
+      ava_img_path: user.ava_img_path
+    }
   }
 
   // async changeUserStatus(id: string, status: UpdateUserStatusDto){

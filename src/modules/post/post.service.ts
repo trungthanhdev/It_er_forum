@@ -4,7 +4,7 @@ import { Post } from './entities/post.entity';
 import { Repository } from 'typeorm';
 import { PostStatus, PostStatusAction } from 'global/enum.global';
 import { UpdatePostStatusDto } from 'dto/poststatus.dto';
-import { SearchSortPostDto } from 'dto/resSearchSortPost';
+import { SearchSortPostDto } from 'dto/resSearchSortPost.dto';
 import { map } from 'rxjs';
 
 @Injectable()
@@ -15,21 +15,36 @@ export class PostService {
   ){}
 
   async changePostStatus(id : string, status: UpdatePostStatusDto, action : PostStatusAction){
-    let post = await this.postRepo.findOne({where : {post_id : id}})
+    let post = await this.postRepo.findOne({
+      where : {post_id : id},
+      relations: ["user", "taged_bys", "taged_bys.tag"],
+      })
     
     if(!post){
       throw new BadRequestException("Post not found")
     }
-
     switch (action) {
       case PostStatusAction.APPROVED:
         post.status = PostStatus.APPROVED
-        return await this.postRepo.save(post)
+        break
       case PostStatusAction.REJECTED:
         post.status = PostStatus.REJECTED
-        return await this.postRepo.save(post)
+        break
       default:
         throw new BadRequestException("Unsupported action");
+    }
+    await this.postRepo.save(post)
+    return {
+      user_id: post.user.user_id,
+      user_name: post.user.user_name,
+      ava_img_path: post.user.ava_img_path,
+      tags: post.taged_bys.map((tags) => {return tags.tag.tag_name}),
+      post_title: post.post_title,
+      post_content: post.post_content,
+      img_url: post.img_url,
+      date_created: post.date_created,
+      date_updated: post.date_updated,
+      status: post.status
     }
   }
 
