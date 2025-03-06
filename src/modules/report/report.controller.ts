@@ -19,6 +19,8 @@ export class ReportController {
   }
 
   @Get('/admin/search/:subject')
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(AuthGuard)
   searchSortReport(
     @Param("subject") subject: string,
     @Query("search_value") search_value: string,
@@ -32,6 +34,8 @@ export class ReportController {
   }
 
   @Get("/admin/detail/:subject/:id") 
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(AuthGuard)
   getReportDetail(
     @Param("subject") subject: string,
     @Param("id") id : string)

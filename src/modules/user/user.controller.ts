@@ -148,6 +148,7 @@ export class UserController {
   }
   
   @Post("/:id/update-password")
+  @UseGuards(AuthGuard)
   updatePassword(
     @Param("id") id : string,
     @Body() updatPasswordDto: UpdatePasswordDto){

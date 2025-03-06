@@ -1,6 +1,4 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { Repository } from 'typeorm';
@@ -37,6 +35,38 @@ export class PostService {
     return await this.postRepo.find()
   }
 
+  async searchSortPostByStatus(status : PostStatus, sort_by: Date | null, is_ascending: Boolean){
+    if(!Object.values(PostStatus).includes(status)){
+      throw new BadRequestException(`Invalid status, status must be "Pending" or "Approved" or "Rejected"!`)
+    }
+    try {
+      let filter = await this.postRepo.find({
+        where: {status: status},
+        relations: ["user"],
+        select:{
+          post_title: true,
+          status: true,
+          date_updated:true,
+            user: {
+              user_name: true,
+              ava_img_path: true,
+              user_id: true
+            }
+        }
+      })
+
+    if(sort_by !== null){
+       filter.sort((a,b) => {
+        return is_ascending ? a.date_updated.getTime() - b.date_updated.getTime()
+                                  : b.date_updated.getTime() - a.date_updated.getTime()
+      })
+    }
+
+      return filter
+    } catch (error) {
+        throw error
+    }
+  }
 }
 
 
