@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { PostService } from '../post/post.service';
 import { UserService } from '../user/user.service';
 import { ReportSubject } from 'global/enum.global';
+import { error } from 'console';
 
 @Injectable()
 export class ReportService {
@@ -85,6 +86,20 @@ export class ReportService {
         } catch (error) {
             throw error
         }
-    }
+   }
 
+   async getReportDetail(subject: ReportSubject, id: string){
+    console.log(subject);
+    
+        if(!Object.values(ReportSubject).includes(subject)){
+            throw new BadRequestException("Invalid Subject!")
+        }
+        const report = await this.reportRepo.findOne({
+            where : {subject : subject, report_id : id},
+            relations: ["user", "post","comment"]})
+        if(!report){
+            throw error
+        }
+        return report
+   }
 }

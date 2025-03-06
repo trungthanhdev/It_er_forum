@@ -8,6 +8,8 @@ import { Subject } from 'rxjs';
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 
+
+
   @Get('/admin/:subject')
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)
@@ -28,4 +30,15 @@ export class ReportController {
       const modifyIsAscending = is_ascending === 'true'
       return this.reportService.searchSortReport(modifySubject,search_value,modifySortBy,modifyIsAscending)
   }
+
+  @Get("/admin/detail/:subject/:id") 
+  getReportDetail(
+    @Param("subject") subject: string,
+    @Param("id") id : string)
+  {
+      console.log("Controller received request:", subject, id); 
+      const modifySubjectDetail = subject as ReportSubject
+      return this.reportService.getReportDetail(modifySubjectDetail, id)              
+  }
+  
 }
