@@ -89,7 +89,7 @@ export class ReportService {
    }
 
    async getReportDetail(subject: ReportSubject, id: string){
-    console.log(subject);
+        console.log(subject);
     
         if(!Object.values(ReportSubject).includes(subject)){
             throw new BadRequestException("Invalid Subject!")

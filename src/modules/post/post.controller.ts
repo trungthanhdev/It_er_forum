@@ -5,11 +5,11 @@ import { UpdatePostStatusDto } from 'dto/poststatus.dto';
 import { RoleGuard } from 'guard/role.guard';
 import { AuthGuard } from 'guard/auth.guard';
 
-@Controller('/api/v1/admin')
+@Controller('/api/v1/post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  @Patch("/dashboard/:id")
+  @Patch("/admin/dashboard/:id")
   @UsePipes(new ValidationPipe)
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)
