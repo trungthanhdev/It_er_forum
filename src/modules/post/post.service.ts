@@ -4,6 +4,8 @@ import { Post } from './entities/post.entity';
 import { Repository } from 'typeorm';
 import { PostStatus, PostStatusAction } from 'global/enum.global';
 import { UpdatePostStatusDto } from 'dto/poststatus.dto';
+import { SearchSortPostDto } from 'dto/resSearchSortPost';
+import { map } from 'rxjs';
 
 @Injectable()
 export class PostService {
@@ -42,27 +44,30 @@ export class PostService {
     try {
       let filter = await this.postRepo.find({
         where: {status: status},
-        relations: ["user"],
-        select:{
-          post_title: true,
-          status: true,
-          date_updated:true,
-            user: {
-              user_name: true,
-              ava_img_path: true,
-              user_id: true
-            }
-        }
+        relations: ["user", "taged_bys"],
+      })
+
+      let response = filter.map((post) => {
+        let resElement = new SearchSortPostDto()
+          resElement.user_id = post.user.user_id
+          resElement.user_name = post.user.user_name
+          resElement.date_updated = post.date_updated
+          resElement.ava_img_path = post.user.ava_img_path
+          resElement.is_image = Boolean(post.img_url)
+          resElement.post_title = post.post_title
+          resElement.tags = post.taged_bys.map((tags) =>{ return tags.tag.tag_name})
+          resElement.status = post.status
+          return resElement
       })
 
     if(sort_by !== null){
-       filter.sort((a,b) => {
+       response.sort((a,b) => {
         return is_ascending ? a.date_updated.getTime() - b.date_updated.getTime()
                                   : b.date_updated.getTime() - a.date_updated.getTime()
       })
     }
 
-      return filter
+      return response
     } catch (error) {
         throw error
     }
