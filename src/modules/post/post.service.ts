@@ -47,27 +47,30 @@ export class PostService {
         relations: ["user", "taged_bys"],
       })
 
-      let response = filter.map((post) => {
-        let resElement = new SearchSortPostDto()
-          resElement.user_id = post.user.user_id
-          resElement.user_name = post.user.user_name
-          resElement.date_updated = post.date_updated
-          resElement.ava_img_path = post.user.ava_img_path
-          resElement.is_image = Boolean(post.img_url)
-          resElement.post_title = post.post_title
-          resElement.tags = post.taged_bys.map((tags) =>{ return tags.tag.tag_name})
-          resElement.status = post.status
-          return resElement
-      })
-
-    if(sort_by !== null){
-       response.sort((a,b) => {
-        return is_ascending ? a.date_updated.getTime() - b.date_updated.getTime()
-                                  : b.date_updated.getTime() - a.date_updated.getTime()
-      })
-    }
-
-      return response
+      try {
+        let response = filter.map((post) => {
+          let resElement = new SearchSortPostDto()
+            resElement.user_id = post.user.user_id
+            resElement.user_name = post.user.user_name
+            resElement.date_updated = post.date_updated
+            resElement.ava_img_path = post.user.ava_img_path
+            resElement.is_image = Boolean(post.img_url)
+            resElement.post_title = post.post_title
+            resElement.tags = post.taged_bys.map((tags) =>{ return tags.tag.tag_name})
+            resElement.status = post.status
+            return resElement
+        })
+        if(sort_by !== null){
+          response.sort((a,b) => {
+           return is_ascending ? a.date_updated.getTime() - b.date_updated.getTime()
+                                     : b.date_updated.getTime() - a.date_updated.getTime()
+         })
+       }
+   
+         return response
+      } catch (error) {
+        throw error
+      }
     } catch (error) {
         throw error
     }
