@@ -52,8 +52,8 @@ export class User {
     @Column({default: UserStatus.ACTIVE})
     status: UserStatus
 
-    @Column({default: Roles.ADMIN})
-    @Exclude()
+    @Column({default: Roles.USER})
+    // @Exclude()
     @MaxLength(10)
     role: Roles
 

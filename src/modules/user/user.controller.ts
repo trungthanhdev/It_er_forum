@@ -7,9 +7,9 @@ import { HttpMessage, HttpCode, UserStatus } from 'global/enum.global';
 import { RegisterDto } from 'dto/register.dto';
 import { AuthService } from '../auth/auth.service';
 import { AuthGuard } from 'guard/auth.guard';
-import { LoginDto } from 'dto/login.dto';
+
 import { RoleGuard } from 'guard/role.guard';
-import {Response, Request} from 'express'
+
 import { JwtService } from '@nestjs/jwt';
 import { BlacklistService } from '../blacklist/blacklist.service';
 import { UpdatePasswordDto } from 'dto/updatePassword.dto';
@@ -18,13 +18,8 @@ import { UpdateUserStatusDto } from 'dto/userstatus.dto';
 @Controller('/api/v1/user')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
-  constructor(private readonly userService: UserService,
-              private readonly authService: AuthService ,
-              private readonly jwtService: JwtService,
-              private readonly blacklistService: BlacklistService         
-  ) {}
-
-
+  constructor(private readonly userService: UserService) {}
+  
   @Get()
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)
@@ -76,55 +71,6 @@ export class UserController {
           HttpMessage.INVALID_EMAIL
         )
       }
-  }
-
-  @Post("/register")
-  @UseGuards(new RoleGuard(['ADMIN'])) //admin dang nhap vao moi tao tk cho admin khac dc
-  @UseGuards(AuthGuard)
-  @UsePipes(ValidationPipe)
-  async register(@Body() registerDto: RegisterDto){
-    return await this.authService.register(registerDto)
-  }
-
-  @Post("/login")
-  @UsePipes(ValidationPipe)
-  async login(@Body() loginDto: LoginDto){
-    return await this.authService.login(loginDto)
-  }
-
-  @Post("/log-out")
-  @UseGuards(AuthGuard)
-  async logout(@Res() res: Response, @Req() req: Request){
-    const refreshToken = req.cookies['refresh_token']
-
-    if (!refreshToken) {
-      throw new UnauthorizedException('No refresh token found');
-    }
-    console.log("rf from UserController ",refreshToken);
-    
-    try {
-      let payload = await this.jwtService.verifyAsync(refreshToken, {secret: process.env.JWT_REFRESH_TOKEN})
-      let rf_id = payload.id
-      await this.blacklistService.addToBlacklist(rf_id)
-
-    } catch (error) {
-      throw error
-    }
-    
-    
-    res.clearCookie('refresh_token',{
-      httpOnly: true,
-      // secure: true,
-      sameSite: 'strict'
-    })
-    return ({msg: "Log out successfully"})
-  }
-
-  @Post("/refresh-token")
-  @UseGuards(new RoleGuard(['ADMIN']))
-  @UseGuards(AuthGuard)
-  refreshToken(@Body() {refresh_token}){
-    return this.authService.refreshToken(refresh_token)
   }
 
   @Patch(':id')

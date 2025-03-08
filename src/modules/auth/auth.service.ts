@@ -6,7 +6,6 @@ import { RegisterDto } from 'dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { HttpCode, HttpMessage } from 'global/enum.global';
 import { v4 as uuidv4 } from 'uuid';
-import { UpdatePasswordDto } from 'dto/updatePassword.dto';
 @Injectable()
 export class AuthService {
     constructor(private readonly jwtService: JwtService,
