@@ -14,6 +14,8 @@ import { CommentModule } from './modules/comment/comment.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { TagModule } from './modules/tag/tag.module';
 import { TagByModule } from './modules/tag_by/tag_by.module';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from 'interceptor/httpException.interceptor';
 
 
 @Module({
@@ -21,7 +23,12 @@ import { TagByModule } from './modules/tag_by/tag_by.module';
     TypeOrmModule.forRoot(pgConfig), BlacklistModule, ReportModule, CommentModule, NotificationModule, TagModule, TagByModule
   ],
   controllers: [AppController, AuthController],
-  providers: [AppService, AuthService],
+  providers: [AppService, AuthService,
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
 export class AppModule  {
   
