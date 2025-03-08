@@ -1,9 +1,10 @@
-import { Controller, Get, Body, Patch, Param, UsePipes, ValidationPipe, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, UsePipes, ValidationPipe, UseGuards, Query, UseInterceptors } from '@nestjs/common';
 import { PostService } from './post.service';
 import { PostStatus, PostStatusAction } from 'global/enum.global';
 import { UpdatePostStatusDto } from 'dto/poststatus.dto';
 import { RoleGuard } from 'guard/role.guard';
 import { AuthGuard } from 'guard/auth.guard';
+import { NSFWFilteredInterceptor } from 'interceptor/filterNSFW.interceptor';
 
 @Controller('/api/v1/posts')
 export class PostController {
@@ -37,6 +38,7 @@ export class PostController {
   }
 
   @Get("/admin/dashboard")
+  @UseInterceptors(NSFWFilteredInterceptor)
   getPostAfterNSFWFiltered(){
     return this.postService.getPostAfterNSFWFiltered()
   }
