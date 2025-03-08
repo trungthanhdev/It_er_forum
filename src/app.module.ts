@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './modules/user/user.module';
@@ -18,10 +18,11 @@ import { TagByModule } from './modules/tag_by/tag_by.module';
 
 @Module({
   imports: [UserModule, PostModule, AuthModule,
-    
     TypeOrmModule.forRoot(pgConfig), BlacklistModule, ReportModule, CommentModule, NotificationModule, TagModule, TagByModule
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],
 })
-export class AppModule {}
+export class AppModule  {
+  
+}

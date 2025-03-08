@@ -21,7 +21,7 @@ export class PostController {
       return this.postService.changePostStatus(id, status,normalizedAction)
   }
 
-  @Get("/admin/dashboard")
+  @Get("/admin/dashboard/search")
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)
   filterPostByStatus(
@@ -34,5 +34,15 @@ export class PostController {
     const modifyIsAscending = is_ascending === 'true'
     return this.postService.searchSortPostByStatus(modifyStatus,modifySortBy,modifyIsAscending)
 
+  }
+
+  @Get("/admin/dashboard")
+  getPostAfterNSFWFiltered(){
+    return this.postService.getPostAfterNSFWFiltered()
+  }
+
+  @Get("/admin/dashboard/:id")
+  getPostDetailAfterNSFWFiltered(@Param("id") id: string){
+    return this.postService.getPostDetailAfterNSFWFiltered(id)
   }
 }

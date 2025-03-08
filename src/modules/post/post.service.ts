@@ -6,6 +6,7 @@ import { PostStatus, PostStatusAction } from 'global/enum.global';
 import { UpdatePostStatusDto } from 'dto/poststatus.dto';
 import { SearchSortPostDto } from 'dto/resSearchSortPost.dto';
 import { map } from 'rxjs';
+import { PostNSFWDto } from 'dto/resPostAfterFilterNSFW';
 
 @Injectable()
 export class PostService {
@@ -48,8 +49,50 @@ export class PostService {
     }
   }
 
-  async findAllPost(){
-    return await this.postRepo.find()
+  async getPostAfterNSFWFiltered(){
+    let post = await this.postRepo.find({
+      relations: ["user", "taged_bys"]
+    })
+    if(!post){
+      throw new NotFoundException("Not found post!")
+    }
+    let response = post.map((post) => {
+      let postElement = new PostNSFWDto()
+      postElement.user_id = post.user.user_id,
+      postElement.user_name = post.user.user_name,
+      postElement.is_image = Boolean(post.img_url),
+      postElement.ava_img_path = post.user.ava_img_path,
+      postElement.post_title = post.post_title,
+      postElement.tags = post.taged_bys.map(tags => {return tags.tag.tag_name}),
+      postElement.date_updated = post.date_updated,
+      postElement.status = post.status,
+      postElement.post_id = post.post_id
+      return postElement
+    })
+    response.sort((a,b) => {
+      return a.date_updated.getTime() - b.date_updated.getTime()
+    })
+
+    return response
+  }
+
+  async getPostDetailAfterNSFWFiltered(id: string){
+    let post = await this.postRepo.findOne({
+      where : {post_id : id},
+      relations: ["user", "taged_bys"]
+    })
+    return {
+      user_id: post?.user.user_id,
+      user_name: post?.user.user_name,
+      ava_img_path: post?.user.ava_img_path,
+      post_id: post?.post_id,
+      post_title: post?.post_title,
+      post_content: post?.post_content,
+      img_url: post?.img_url,
+      date_updated: post?.date_updated,
+      tags: post?.taged_bys.map(tags => {return tags.tag.tag_name}),
+      status: post?.status
+    }
   }
 
   async searchSortPostByStatus(status : PostStatus, sort_by: Date | null, is_ascending: Boolean){
