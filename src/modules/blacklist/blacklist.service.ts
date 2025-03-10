@@ -10,13 +10,21 @@ import { UserService } from '../user/user.service';
 export class BlacklistService {
     constructor(
         @InjectRepository(InvalidTokenEntity)
-        private readonly rfTokenRepo : Repository<InvalidTokenEntity>,
+        private readonly blackListRepo : Repository<InvalidTokenEntity>,
         // private readonly userRepo: UserService
     ){}
 
     async addToBlacklist(object: BlacklistDto){
-        const refreshToken = this.rfTokenRepo.create(object)
+        const refreshToken = this.blackListRepo.create(object)
         // console.log("object from blacklistService:", object);
-        return await this.rfTokenRepo.save(refreshToken)
+        return await this.blackListRepo.save(refreshToken)
+    }
+
+    async findTokenInBlacklist(token_id : string){
+        const token = await this.blackListRepo.findOne({where: {token_id: token_id}})
+        if(token){
+            return true
+        }
+        return false
     }
 }

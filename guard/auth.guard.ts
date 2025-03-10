@@ -1,13 +1,14 @@
 
 import { Injectable, CanActivate, ExecutionContext, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Observable } from 'rxjs';
+import { BlacklistService } from 'src/modules/blacklist/blacklist.service';
 import { UserService } from 'src/modules/user/user.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(private readonly userService: UserService,
-              private readonly jwtService: JwtService
+              private readonly jwtService: JwtService,
+              private readonly blacklistService: BlacklistService
   ){}
   async canActivate(
     context: ExecutionContext,
@@ -16,13 +17,15 @@ export class AuthGuard implements CanActivate {
     try {
     const access_token = request.headers.authorization?.split(' ')[1]
 
-    // const refresh_token = request.headers["refresh-token"]
     if(!access_token ){
       throw new UnauthorizedException("Token not found")
     }
 
     const access_payload = await this.jwtService.verifyAsync(access_token, {secret: process.env.JWT_TOKEN})
-    // const refresh_payload = await this.jwtService.verifyAsync(access_token, {secret: process.env.JWT_REFRESH_TOKEN})
+
+    if(await this.blacklistService.findTokenInBlacklist(access_payload.id)){
+      throw new UnauthorizedException("Please login again!")
+    }
 
     const user = await this.userService.findByEmail(access_payload.email)
 
@@ -31,7 +34,7 @@ export class AuthGuard implements CanActivate {
     }
     
     request.currentUser = user
-    request.tokens = {access_token }//, refresh_token}
+    request.tokens = {access_token}
     
     } catch (error) {
       if(error instanceof UnauthorizedException || error instanceof BadRequestException){

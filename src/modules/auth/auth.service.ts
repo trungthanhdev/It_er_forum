@@ -126,7 +126,6 @@ export class AuthService {
             if(typeof refresh_token === 'object'){
                 refresh_token = refresh_token.refresh_token
             }
-
             // save refresh_token id
             const refreshPayload = await this.jwtService.verifyAsync(
                 refresh_token,{secret: process.env.JWT_REFRESH_TOKEN})   

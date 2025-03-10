@@ -5,6 +5,6 @@ export class BlacklistDto{
     @IsString()
     token_id?: string
 
-    @IsString()
-    user_id?: User
+    // @IsString()
+    // user_id?: User
 }
