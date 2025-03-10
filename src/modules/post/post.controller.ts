@@ -22,7 +22,7 @@ export class PostController {
       return this.postService.changePostStatus(id, status,normalizedAction)
   }
 
-  @Get("/admin/dashboard/search")
+  @Get("/admin/dashboard/filter")
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)
   filterPostByStatus(

@@ -14,21 +14,24 @@ export class AuthGuard implements CanActivate {
   ):  Promise<boolean> {
     const request = context.switchToHttp().getRequest();    
     try {
-    const token = request.headers.authorization?.split(' ')[1]
+    const access_token = request.headers.authorization?.split(' ')[1]
 
-    if(!token){
+    // const refresh_token = request.headers["refresh-token"]
+    if(!access_token ){
       throw new UnauthorizedException("Token not found")
     }
 
-    const payload = await this.jwtService.verifyAsync(token, {secret: process.env.JWT_TOKEN})
+    const access_payload = await this.jwtService.verifyAsync(access_token, {secret: process.env.JWT_TOKEN})
+    // const refresh_payload = await this.jwtService.verifyAsync(access_token, {secret: process.env.JWT_REFRESH_TOKEN})
 
-    const user = await this.userService.findByEmail(payload.email)
+    const user = await this.userService.findByEmail(access_payload.email)
 
     if(!user){
       throw new BadRequestException("Please login again!")
     }
     
     request.currentUser = user
+    request.tokens = {access_token }//, refresh_token}
     
     } catch (error) {
       if(error instanceof UnauthorizedException || error instanceof BadRequestException){

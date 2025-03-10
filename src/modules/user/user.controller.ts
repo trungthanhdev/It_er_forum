@@ -9,7 +9,7 @@ import { RoleGuard } from 'guard/role.guard';
 import { UpdatePasswordDto } from 'dto/updatePassword.dto';
 import { UpdateUserStatusDto } from 'dto/userstatus.dto';
 
-@Controller('/api/v1/user')
+@Controller('/api/v1/users')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) {}

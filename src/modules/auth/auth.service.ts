@@ -6,10 +6,16 @@ import { RegisterDto } from 'dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { HttpCode, HttpMessage } from 'global/enum.global';
 import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { InvalidTokenEntity } from '../blacklist/entities/invalidatedToken.entity';
+import { BlacklistService } from '../blacklist/blacklist.service';
+import { BlacklistDto } from 'dto/blacklist.dto';
 @Injectable()
 export class AuthService {
     constructor(private readonly jwtService: JwtService,
-                private readonly userService: UserService
+                private readonly userService: UserService,
+                private readonly blacklistService: BlacklistService
     ){}
 
     async login(loginDto : LoginDto){
@@ -115,7 +121,33 @@ export class AuthService {
         }
     }
 
+    async logout(refresh_token: any){
+        try {
+            // console.log(refresh_token);
+            // console.log("vao service logout");
+            if(typeof refresh_token === 'object'){
+                refresh_token = refresh_token.refresh_token
+                // console.log(refresh_token);    
+            }
+
+            const payload = await this.jwtService.verifyAsync(
+                refresh_token,{secret: process.env.JWT_REFRESH_TOKEN})
+            // console.log("giai ma xong");
+                
+            let refreshtoken_id = payload.id
+            let user_id = payload.sub
+            let user = await this.userService.getUserById(user_id)
+            // let res = user.user_id
+            let object  = {refreshtoken_id, user} 
+            // console.log(user_id);
+            // console.log(refreshtoken_id);
+        
+            await this.blacklistService.addToBlacklist(object)
+            // console.log("Save to refresh_token to blacklist successfully!"); 
+        } catch (error) {
+            throw error
+        }
+    }
    
 }
-
 

@@ -51,6 +51,7 @@ export class PostService {
 
   async getPostAfterNSFWFiltered(){
     let post = await this.postRepo.find({
+      where: {status : PostStatus.PENDING},
       relations: ["user", "taged_bys"]
     })
     if(!post){
@@ -107,12 +108,13 @@ export class PostService {
 
       try {
         let response = filter.map((post) => {
-          let resElement = new SearchSortPostDto()
+          let resElement = new PostNSFWDto()
             resElement.user_id = post.user.user_id
             resElement.user_name = post.user.user_name
             resElement.date_updated = post.date_updated
             resElement.ava_img_path = post.user.ava_img_path
             resElement.is_image = Boolean(post.img_url)
+            resElement.post_id = post.post_id
             resElement.post_title = post.post_title
             resElement.tags = post.taged_bys.map((tags) =>{ return tags.tag.tag_name})
             resElement.status = post.status

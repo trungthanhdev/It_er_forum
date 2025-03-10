@@ -15,7 +15,7 @@ import { NotificationModule } from './modules/notification/notification.module';
 import { TagModule } from './modules/tag/tag.module';
 import { TagByModule } from './modules/tag_by/tag_by.module';
 import { APP_FILTER } from '@nestjs/core';
-import { HttpExceptionFilter } from 'interceptor/httpException.interceptor';
+import { HttpExceptionFilter } from 'filter/httpException.interceptor';
 
 
 @Module({

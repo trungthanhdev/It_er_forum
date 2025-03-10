@@ -4,9 +4,9 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn,
 @Entity({name : "invalidated_tokens"})
 export class InvalidTokenEntity{
     @PrimaryColumn()
-    token_id: string
+    refreshtoken_id: string
 
-
+    
     @CreateDateColumn()
     time_stamp: Date
 

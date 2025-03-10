@@ -192,30 +192,5 @@ export class UserService {
     }
   }
 
-  // async changeUserStatus(id: string, status: UpdateUserStatusDto){
-  //   switch (status.status) {
-  //     case UserStatus.ACTIVE:
-  //       let user = await this.userRepo.findOne({where : {user_id: id}})
-
-  //       if(!user){
-  //         throw new NotFoundException("User not found")
-  //       }
-
-  //       user.status = UserStatus.RESTRICTED
-  //       return await this.userRepo.save(user)
-    
-  //     case UserStatus.RESTRICTED:
-  //         let restrictedUser = await this.userRepo.findOne({where : {user_id: id}})
-
-  //       if(!restrictedUser){
-  //         throw new NotFoundException("User not found")
-  //       }
-
-  //       restrictedUser.status = UserStatus.BANNED
-  //       return await this.userRepo.save(restrictedUser)
-  //     default:
-  //       throw new BadRequestException("Invalid status")
-  //   }
-  // }
 }
 

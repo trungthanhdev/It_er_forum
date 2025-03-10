@@ -10,6 +10,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
+    const message = exception.getResponse()
+
+    const resMessage = typeof exception.getResponse() === "string"
+                            ? message
+                              : (message as any).message || null
 
     response
       .status(status)
@@ -18,6 +23,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         is_success: false,
         timestamp: new Date().toISOString(),
         path: request.url,
+        message: resMessage
       });
   }
 }
