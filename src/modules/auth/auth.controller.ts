@@ -29,8 +29,9 @@ export class AuthController {
       @Post("/log-out")
       @UseGuards(AuthGuard)
       logout(@Body() refresh_token: string,@Req() req ){
-        // console.log(req);    
-        return this.authService.logout(refresh_token)
+        // console.log(req);
+        let access_token = req.tokens.access_token    
+        return this.authService.logout(refresh_token, access_token)
       }
     
       @Post("/refresh-token")

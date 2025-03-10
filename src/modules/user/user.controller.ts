@@ -15,24 +15,11 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
   
   @Get()
-  @UseGuards(new RoleGuard(['ADMIN']))
-  @UseGuards(AuthGuard)
+  // @UseGuards(new RoleGuard(['ADMIN']))
+  // @UseGuards(AuthGuard)
   async findAllUser() {
     console.log(`Fetch successfully!`);
-    
-    try {
-      return new ResponseData<User[]>(
-        await this.userService.findAllUser(),
-        HttpCode.SUCCESS,
-        HttpMessage.SUCCESS
-      )
-    } catch (error) {
-      return new ResponseData<User>(
-        [],
-        HttpCode.ERROR,
-        HttpMessage.ERROR
-      )
-    }
+    return this.userService.findAllUser()
   }
   // @Get("/current-user")
   // @UseGuards(AuthGuard)

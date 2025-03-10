@@ -121,29 +121,30 @@ export class AuthService {
         }
     }
 
-    async logout(refresh_token: any){
+    async logout(refresh_token: any, access_token: any){
         try {
-            // console.log(refresh_token);
-            // console.log("vao service logout");
             if(typeof refresh_token === 'object'){
                 refresh_token = refresh_token.refresh_token
-                // console.log(refresh_token);    
             }
 
-            const payload = await this.jwtService.verifyAsync(
-                refresh_token,{secret: process.env.JWT_REFRESH_TOKEN})
-            // console.log("giai ma xong");
-                
-            let refreshtoken_id = payload.id
-            let user_id = payload.sub
+            // save refresh_token id
+            const refreshPayload = await this.jwtService.verifyAsync(
+                refresh_token,{secret: process.env.JWT_REFRESH_TOKEN})   
+            let token_id = refreshPayload.id
+            let user_id = refreshPayload.sub
             let user = await this.userService.getUserById(user_id)
-            // let res = user.user_id
-            let object  = {refreshtoken_id, user} 
-            // console.log(user_id);
-            // console.log(refreshtoken_id);
-        
+            let object  = {token_id, user} 
             await this.blacklistService.addToBlacklist(object)
-            // console.log("Save to refresh_token to blacklist successfully!"); 
+
+            //save access_token id
+            const accessPayload = await this.jwtService.verifyAsync(
+                access_token,{secret: process.env.JWT_TOKEN}) 
+            const accessTokenUser = await this.userService.getUserById(accessPayload.sub)
+            user = accessTokenUser
+            token_id = accessPayload.id
+            let accessObject = {token_id, user}
+            await this.blacklistService.addToBlacklist(accessObject)
+
         } catch (error) {
             throw error
         }
