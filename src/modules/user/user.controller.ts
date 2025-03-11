@@ -57,9 +57,9 @@ export class UserController {
   @UsePipes(new ValidationPipe)
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)
-  async changeUserStatus(@Param("id") id: string, @Body() updateUserStatusdto : string){
+  async changeUserStatus(@Param("id") id: string, @Body() status : string){
     // console.log(updateUserStatusdto);
-    return await this.userService.changeUserStatus(id,updateUserStatusdto)
+    return await this.userService.changeUserStatus(id,status)
   }
 
 }

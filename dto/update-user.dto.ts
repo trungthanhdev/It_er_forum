@@ -17,5 +17,5 @@ export class UpdateUserDto {
         country: string
     
         @IsDate()
-        dob: Date
+        age: number
 }

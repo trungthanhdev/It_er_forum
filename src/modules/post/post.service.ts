@@ -31,13 +31,9 @@ export class PostService {
     if(!post){
       throw new BadRequestException("Post not found")
     }
-    if(postStatus === PostStatus.APPROVED){
-        post.status = postStatus
-    }else if(postStatus === PostStatus.REJECTED){
-        post.status = postStatus
-    }else{
-        post.status = postStatus
-    }
+
+    post.status = postStatus
+    
     await this.postRepo.save(post)
     return {
       user_id: post.user.user_id,

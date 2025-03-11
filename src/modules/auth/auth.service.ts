@@ -63,6 +63,7 @@ export class AuthService {
         
     }
 
+    //register
     async createUser(registerDto: RegisterDto){
         try {
             const findByEmail = await this.userService.findByEmail(registerDto.email)
@@ -74,16 +75,22 @@ export class AuthService {
 
             const saveUser = await this.userService.createNewAdmin(registerDto)
             
-            // const payload = {
-            //     id: saveUser.user_id,
-            //     role: saveUser.role,
-            //     email: saveUser.email
-            // }
-
-            // const access_token =  await this.jwtService.signAsync(payload,{secret: process.env.JWT_TOKEN})
-            // const refresh_token = await this.jwtService.signAsync(payload,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: '1d'})
-            return {msg: "Register successfully!",
+            const access_payload = {
+                id: uuidv4(),
+                sub: saveUser.user_id,
+                role: saveUser.role,
+                email: saveUser.email
             }
+            const refresh_payload = {
+                id: uuidv4(),
+                sub: saveUser.user_id,
+                role: saveUser.role,
+                email: saveUser.email
+            }
+
+            const access_token =  await this.jwtService.signAsync(access_payload,{secret: process.env.JWT_TOKEN})
+            const refresh_token = await this.jwtService.signAsync(refresh_payload,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: '1d'})
+            return {access_token,refresh_token}
 
         } catch (error) {
             if(error instanceof BadRequestException){

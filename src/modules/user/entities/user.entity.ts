@@ -43,8 +43,8 @@ export class User {
     @MaxLength(20)
     country: string
 
-    @Column()
-    dob: Date
+    @Column({ type: 'int', nullable: true })
+    age: number
 
     @Column({nullable: true})
     ava_img_path: string

@@ -11,6 +11,7 @@ import { UpdateUserStatusDto } from 'dto/userstatus.dto';
 import { UserStatus } from 'global/enum.global';
 import { UserDto } from 'dto/resSearchUserByUserName.dto';
 import { stat } from 'fs';
+import { ResUserDto } from 'dto/resUser.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -29,7 +30,21 @@ export class UserService {
   }
   
   async findAllUser() {
-    return await this.userRepo.find();
+    let user =  await this.userRepo.find()
+    let resUser = user.map((user) => {
+      let resUser = new ResUserDto()
+      resUser.user_id = user.user_id,
+      resUser.user_name = user.user_name,
+      resUser.age = user.age,
+      resUser.ava_img_path = user.ava_img_path,
+      resUser.phone_num = user.phone_num,
+      resUser.email = user.email,
+      resUser.first_name = user.first_name,
+      resUser.last_name = user.last_name,
+      resUser.status = user.status
+      return resUser
+    })
+    return resUser
   }
 
   async findByEmail(email: string ){
@@ -69,7 +84,6 @@ export class UserService {
 
   // api return user information but password
   async getUserById(id: string) {
-
     if (!isUUID(id)) {
         throw new NotFoundException(`ID "${id}" invalid`);
     }
@@ -79,18 +93,18 @@ export class UserService {
     if (!user) {
         throw new NotFoundException(`Id "${id}" not found !`);
     }
-
-    return {
-      user_id: user.user_id,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      user_name: user.user_name,
-      email: user.email,
-      phone_num: user.phone_num,
-      age: user.dob, 
-      status: user.status,
-      ava_img_path: user.ava_img_path 
-    };
+    
+    let resUser = new ResUserDto()
+    resUser.user_id = user.user_id,
+    resUser.user_name = user.user_name,
+    resUser.age = user.age,
+    resUser.ava_img_path = user.ava_img_path,
+    resUser.phone_num = user.phone_num,
+    resUser.email = user.email,
+    resUser.first_name = user.first_name,
+    resUser.last_name = user.last_name,
+    resUser.status = user.status
+    return resUser
   }
 
   // output include password for handling event in another api
@@ -149,32 +163,25 @@ export class UserService {
       throw new BadRequestException("Invalid user status!")
     }
 
-    let user = await this.getUserById(id)
+    let user = await this.findUserById(id)
     if(!user){
       throw new NotFoundException("User not found!")
     }
     
-    if(userStatus === UserStatus.BANNED){
-      user.status = userStatus
-    }else if(userStatus  === UserStatus.ACTIVE){
-      user.status = userStatus
-    }else{
-      user.status = UserStatus.RESTRICTED
-    }
+    user.status = userStatus
  
     await this.userRepo.save(user)
-    
-    return {
-        user_id: user.user_id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        user_name: user.user_name,
-        email: user.email,
-        phone_num: user.phone_num,
-        dob: user.age,
-        status: user.status,
-        ava_img_path: user.ava_img_path  
-    }
+    let resUser = new ResUserDto()
+    resUser.user_id = user.user_id,
+    resUser.user_name = user.user_name,
+    resUser.age = user.age,
+    resUser.ava_img_path = user.ava_img_path,
+    resUser.phone_num = user.phone_num,
+    resUser.email = user.email,
+    resUser.first_name = user.first_name,
+    resUser.last_name = user.last_name,
+    resUser.status = user.status
+    return resUser
   }
 
 }
