@@ -3,14 +3,12 @@ import { UserService } from './user.service';
 import { UpdateUserDto } from '../../../dto/update-user.dto';
 import { ResponseData } from 'reponsedata/responsedata';
 import { User } from './entities/user.entity';
-import { HttpMessage, HttpCode, UserStatus } from 'global/enum.global';
 import { AuthGuard } from 'guard/auth.guard';
 import { RoleGuard } from 'guard/role.guard';
 import { UpdatePasswordDto } from 'dto/updatePassword.dto';
 import { UpdateUserStatusDto } from 'dto/userstatus.dto';
 
 @Controller('/api/v1/users')
-@UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) {}
   
@@ -27,32 +25,7 @@ export class UserController {
   //   return req.currentUser
   // }
 
-  @Get('/email')
-  @UseGuards(new RoleGuard(['ADMIN']))
-  @UseGuards(AuthGuard) 
-   async findByEmail(@Query("email") email: string) {
-      try {
-        const userEmail = await this.userService.findByEmail(email)
-        if(!userEmail){
-          return new ResponseData<User>(
-            [],
-            HttpCode.ERROR,
-            HttpMessage.INVALID_EMAIL 
-          )
-        }
-        return new ResponseData<User>(
-          userEmail,
-          HttpCode.SUCCESS,
-          HttpMessage.SUCCESS
-        )
-      } catch (error) {
-        return new ResponseData<User>(
-          [],
-          HttpCode.ERROR,
-          HttpMessage.INVALID_EMAIL
-        )
-      }
-  }
+ 
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
@@ -60,7 +33,6 @@ export class UserController {
   }
 
   @Get("/:user_name")
-  @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)
   searchUserByUserName(
     @Param("user_name") user_name : string){
@@ -68,7 +40,6 @@ export class UserController {
   }
 
   @Get("/user-detail/:id")
-  @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)
   async findUserById(@Param('id') id : string){
     return await this.userService.getUserById(id)
@@ -86,20 +57,9 @@ export class UserController {
   @UsePipes(new ValidationPipe)
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)
-  async changeUserStatus(@Param("id") id: string, @Body() updateUserStatusdto : UpdateUserStatusDto){
-    console.log(updateUserStatusdto.status);
-    
-      switch (updateUserStatusdto.status) {
-        case UserStatus.ACTIVE:
-          return await this.userService.changeUserStatustoRestricted(id, updateUserStatusdto)
-        case UserStatus.RESTRICTED:
-          return await this.userService.changeUserStatustoBanned(id, updateUserStatusdto)
-        case UserStatus.BANNED:
-          return { message: "User is already banned" }
-        default:
-          throw new BadRequestException("Invalid status")
-      }
-      // return await this.userService.changeUserStatus(id, updateUserStatusdto)
+  async changeUserStatus(@Param("id") id: string, @Body() updateUserStatusdto : string){
+    // console.log(updateUserStatusdto);
+    return await this.userService.changeUserStatus(id,updateUserStatusdto)
   }
 
 }

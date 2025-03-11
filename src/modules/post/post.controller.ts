@@ -1,6 +1,6 @@
 import { Controller, Get, Body, Patch, Param, UsePipes, ValidationPipe, UseGuards, Query, UseInterceptors } from '@nestjs/common';
 import { PostService } from './post.service';
-import { PostStatus, PostStatusAction } from 'global/enum.global';
+import { PostStatus } from 'global/enum.global';
 import { UpdatePostStatusDto } from 'dto/poststatus.dto';
 import { RoleGuard } from 'guard/role.guard';
 import { AuthGuard } from 'guard/auth.guard';
@@ -16,10 +16,8 @@ export class PostController {
   @UseGuards(AuthGuard)
   changePostStatus(
     @Param("id") id : string,
-    @Body() status: UpdatePostStatusDto,
-    @Query("action") action: string){
-      const normalizedAction = action.toUpperCase() as PostStatusAction; 
-      return this.postService.changePostStatus(id, status,normalizedAction)
+    @Body() status: string){ 
+      return this.postService.changePostStatus(id, status)
   }
 
   @Get("/admin/dashboard/filter")
@@ -44,6 +42,8 @@ export class PostController {
   }
 
   @Get("/admin/dashboard/:id")
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(AuthGuard)
   getPostDetailAfterNSFWFiltered(@Param("id") id: string){
     return this.postService.getPostDetailAfterNSFWFiltered(id)
   }

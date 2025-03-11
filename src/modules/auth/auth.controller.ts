@@ -16,8 +16,8 @@ export class AuthController {
 
       @Post("/register")
       @UsePipes(ValidationPipe)
-      async register(@Body() registerDto: RegisterDto){
-        return await this.authService.register(registerDto)
+      async createUser(@Body() registerDto: RegisterDto){
+        return await this.authService.createUser(registerDto)
       }
     
       @Post("/login")

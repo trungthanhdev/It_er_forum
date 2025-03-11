@@ -4,7 +4,7 @@ import { LoginDto } from 'dto/login.dto';
 import { UserService } from '../user/user.service';
 import { RegisterDto } from 'dto/register.dto';
 import * as bcrypt from 'bcrypt';
-import { HttpCode, HttpMessage } from 'global/enum.global';
+
 import { v4 as uuidv4 } from 'uuid';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -63,7 +63,7 @@ export class AuthService {
         
     }
 
-    async register(registerDto: RegisterDto){
+    async createUser(registerDto: RegisterDto){
         try {
             const findByEmail = await this.userService.findByEmail(registerDto.email)
 
@@ -83,10 +83,6 @@ export class AuthService {
             // const access_token =  await this.jwtService.signAsync(payload,{secret: process.env.JWT_TOKEN})
             // const refresh_token = await this.jwtService.signAsync(payload,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: '1d'})
             return {msg: "Register successfully!",
-                    HttpCode: HttpCode.SUCCESS,
-                    HttpMessage: HttpMessage.SUCCESS,
-                    // access_token,
-                    // refresh_token}
             }
 
         } catch (error) {
@@ -128,8 +124,11 @@ export class AuthService {
             if(typeof refresh_token === 'object'){
                 refresh_token = refresh_token.refresh_token
             }
-            await this.objectToken(refresh_token, false)
-            await this.objectToken(access_token,true)
+            let accessObject = await this.objectToken(refresh_token, false)
+            await this.blacklistService.addToBlacklist(accessObject)
+
+            let refreshObject = await this.objectToken(access_token,true)
+            await this.blacklistService.addToBlacklist(refreshObject)
 
         } catch (error) {
             throw error
@@ -148,7 +147,7 @@ export class AuthService {
         let token_id = tokenVerify.id
         let user = await this.userService.getUserById(tokenVerify.sub)
         let object = ({token_id, user})
-        return await this.blacklistService.addToBlacklist(object)
+        return object
     }
    
 }

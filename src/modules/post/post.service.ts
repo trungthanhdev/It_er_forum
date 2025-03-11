@@ -2,11 +2,12 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { Repository } from 'typeorm';
-import { PostStatus, PostStatusAction } from 'global/enum.global';
+import { PostStatus } from 'global/enum.global';
 import { UpdatePostStatusDto } from 'dto/poststatus.dto';
 import { SearchSortPostDto } from 'dto/resSearchSortPost.dto';
 import { map } from 'rxjs';
 import { PostNSFWDto } from 'dto/resPostAfterFilterNSFW';
+import { resPostNSFWDetailDto } from 'dto/resPostNSFWDetailDto .dto';
 
 @Injectable()
 export class PostService {
@@ -15,7 +16,13 @@ export class PostService {
     private readonly postRepo : Repository<Post>
   ){}
 
-  async changePostStatus(id : string, status: UpdatePostStatusDto, action : PostStatusAction){
+  async changePostStatus(id : string, status: string){
+    let postStatus = (status as any).status
+    
+    if(!Object.values(PostStatus).includes(postStatus)){
+      throw new BadRequestException("Invalid post status!")
+    }
+
     let post = await this.postRepo.findOne({
       where : {post_id : id},
       relations: ["user", "taged_bys", "taged_bys.tag"],
@@ -24,15 +31,12 @@ export class PostService {
     if(!post){
       throw new BadRequestException("Post not found")
     }
-    switch (action) {
-      case PostStatusAction.APPROVED:
-        post.status = PostStatus.APPROVED
-        break
-      case PostStatusAction.REJECTED:
-        post.status = PostStatus.REJECTED
-        break
-      default:
-        throw new BadRequestException("Unsupported action");
+    if(postStatus === PostStatus.APPROVED){
+        post.status = postStatus
+    }else if(postStatus === PostStatus.REJECTED){
+        post.status = postStatus
+    }else{
+        post.status = postStatus
     }
     await this.postRepo.save(post)
     return {
@@ -82,18 +86,19 @@ export class PostService {
       where : {post_id : id},
       relations: ["user", "taged_bys"]
     })
-    return {
-      user_id: post?.user.user_id,
-      user_name: post?.user.user_name,
-      ava_img_path: post?.user.ava_img_path,
-      post_id: post?.post_id,
-      post_title: post?.post_title,
-      post_content: post?.post_content,
-      img_url: post?.img_url,
-      date_updated: post?.date_updated,
-      tags: post?.taged_bys.map(tags => {return tags.tag.tag_name}),
-      status: post?.status
-    }
+
+    let responsePostDetail = new resPostNSFWDetailDto()
+    responsePostDetail.user_name = post?.user.user_name,
+    responsePostDetail.user_id = post?.user.user_id,
+    responsePostDetail.ava_img_path = post?.user.ava_img_path,
+    responsePostDetail.post_id = post?.post_id,
+    responsePostDetail.post_title = post?.post_title,
+    responsePostDetail.post_content = post?.post_content,
+    responsePostDetail.img_url = post?.img_url,
+    responsePostDetail.date_updated = post?.date_updated,
+    responsePostDetail.tags = post?.taged_bys.map(tags => {return tags.tag.tag_name})
+    responsePostDetail.status = post?.status
+    return responsePostDetail
   }
 
   async searchSortPostByStatus(status : PostStatus, sort_by: Date | null, is_ascending: Boolean){
