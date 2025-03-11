@@ -1,12 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards, UsePipes, ValidationPipe, Res, Req, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from '../../../dto/update-user.dto';
-import { ResponseData } from 'reponsedata/responsedata';
-import { User } from './entities/user.entity';
 import { AuthGuard } from 'guard/auth.guard';
 import { RoleGuard } from 'guard/role.guard';
 import { UpdatePasswordDto } from 'dto/updatePassword.dto';
-import { UpdateUserStatusDto } from 'dto/userstatus.dto';
 
 @Controller('/api/v1/users')
 export class UserController {

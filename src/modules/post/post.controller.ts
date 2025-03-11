@@ -1,7 +1,6 @@
 import { Controller, Get, Body, Patch, Param, UsePipes, ValidationPipe, UseGuards, Query, UseInterceptors } from '@nestjs/common';
 import { PostService } from './post.service';
 import { PostStatus } from 'global/enum.global';
-import { UpdatePostStatusDto } from 'dto/poststatus.dto';
 import { RoleGuard } from 'guard/role.guard';
 import { AuthGuard } from 'guard/auth.guard';
 import { NSFWFilteredInterceptor } from 'interceptor/filterNSFW.interceptor';

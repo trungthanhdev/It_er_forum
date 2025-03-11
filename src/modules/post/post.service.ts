@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { Repository } from 'typeorm';
 import { PostStatus } from 'global/enum.global';
-import { UpdatePostStatusDto } from 'dto/poststatus.dto';
 import { SearchSortPostDto } from 'dto/resSearchSortPost.dto';
 import { map } from 'rxjs';
 import { PostNSFWDto } from 'dto/resPostAfterFilterNSFW';
@@ -33,7 +32,7 @@ export class PostService {
     }
 
     post.status = postStatus
-    
+
     await this.postRepo.save(post)
     return {
       user_id: post.user.user_id,

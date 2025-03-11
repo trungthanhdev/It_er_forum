@@ -7,7 +7,6 @@ import { RegisterDto } from 'dto/register.dto';
 import { isUUID } from 'class-validator';
 import { UpdatePasswordDto } from 'dto/updatePassword.dto';
 import * as bcrypt from 'bcrypt';
-import { UpdateUserStatusDto } from 'dto/userstatus.dto';
 import { UserStatus } from 'global/enum.global';
 import { UserDto } from 'dto/resSearchUserByUserName.dto';
 import { stat } from 'fs';
@@ -47,6 +46,7 @@ export class UserService {
     return resUser
   }
 
+  //used for handling event in another api
   async findByEmail(email: string ){
     return await this.userRepo.findOneBy({email})
   }
@@ -107,7 +107,7 @@ export class UserService {
     return resUser
   }
 
-  // output include password for handling event in another api
+  // output include password (User) for handling event in another api
   async findUserById(id: string) {
 
     if (!isUUID(id)) {
