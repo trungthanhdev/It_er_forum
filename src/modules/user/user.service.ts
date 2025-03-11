@@ -9,7 +9,6 @@ import { UpdatePasswordDto } from 'dto/updatePassword.dto';
 import * as bcrypt from 'bcrypt';
 import { UserStatus } from 'global/enum.global';
 import { UserDto } from 'dto/resSearchUserByUserName.dto';
-import { stat } from 'fs';
 import { ResUserDto } from 'dto/resUser.dto';
 @Injectable()
 export class UserService {

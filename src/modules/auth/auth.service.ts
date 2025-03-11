@@ -143,18 +143,18 @@ export class AuthService {
     }
 
     async objectToken(token: string, isAccess: boolean){
-        let tokenVerify 
-        if(isAccess){
-            tokenVerify = await this.jwtService.verifyAsync(
-                token,{secret: process.env.JWT_TOKEN})
-        }else{
-            tokenVerify = await this.jwtService.verifyAsync(
-                token,{secret: process.env.JWT_REFRESH_TOKEN})
-        }
+     try {
+        const tokenVerify = await this.jwtService.verifyAsync(token, {
+            secret: isAccess ? process.env.JWT_TOKEN : process.env.JWT_REFRESH_TOKEN
+        })
+        
         let token_id = tokenVerify.id
         let user = await this.userService.getUserById(tokenVerify.sub)
         let object = ({token_id, user})
         return object
+     } catch (error) {
+        throw new BadRequestException("Invalid token!")
+     }
     }
    
 }

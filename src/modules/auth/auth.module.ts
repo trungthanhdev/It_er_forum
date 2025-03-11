@@ -13,7 +13,7 @@ import { BlacklistModule } from '../blacklist/blacklist.module';
       signOptions: { expiresIn: '1h' },
     }),
     forwardRef(() => UserModule),
-    BlacklistModule
+    BlacklistModule,
     ],
     providers:[AuthService],
     controllers: [AuthController],

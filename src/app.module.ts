@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './modules/user/user.module';
@@ -20,7 +20,8 @@ import { HttpExceptionFilter } from 'filter/httpException.interceptor';
 
 @Module({
   imports: [UserModule, PostModule, AuthModule,
-    TypeOrmModule.forRoot(pgConfig), BlacklistModule, ReportModule, CommentModule, NotificationModule, TagModule, TagByModule
+    TypeOrmModule.forRoot(pgConfig), BlacklistModule, ReportModule, CommentModule, NotificationModule, TagModule, TagByModule,
+    
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService,

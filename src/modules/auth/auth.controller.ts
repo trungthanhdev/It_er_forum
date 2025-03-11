@@ -1,10 +1,8 @@
-import { Body, Controller, Post, Req, Res, UnauthorizedException, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from 'dto/login.dto';
 import { RegisterDto } from 'dto/register.dto';
 import { AuthGuard } from 'guard/auth.guard';
-import { RoleGuard } from 'guard/role.guard';
-import {Response, Request} from 'express'
 import { JwtService } from '@nestjs/jwt';
 import { BlacklistService } from '../blacklist/blacklist.service';
 @Controller('api/v1/auth')
@@ -38,4 +36,6 @@ export class AuthController {
       refreshToken(@Body() {refresh_token}){
         return this.authService.refreshToken(refresh_token)
       }
+
+      
 }

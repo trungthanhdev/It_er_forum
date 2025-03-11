@@ -1,8 +1,7 @@
 
-import { date } from '@hapi/joi';
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { sensitive_words } from 'src/bad_words';
 
 @Injectable()

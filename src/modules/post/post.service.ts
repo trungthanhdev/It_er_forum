@@ -7,6 +7,7 @@ import { SearchSortPostDto } from 'dto/resSearchSortPost.dto';
 import { map } from 'rxjs';
 import { PostNSFWDto } from 'dto/resPostAfterFilterNSFW';
 import { resPostNSFWDetailDto } from 'dto/resPostNSFWDetailDto .dto';
+import { ResChangePostDto } from 'dto/resChangePostStatus.dto';
 
 @Injectable()
 export class PostService {
@@ -34,18 +35,19 @@ export class PostService {
     post.status = postStatus
 
     await this.postRepo.save(post)
-    return {
-      user_id: post.user.user_id,
-      user_name: post.user.user_name,
-      ava_img_path: post.user.ava_img_path,
-      tags: post.taged_bys.map((tags) => {return tags.tag.tag_name}),
-      post_title: post.post_title,
-      post_content: post.post_content,
-      img_url: post.img_url,
-      date_created: post.date_created,
-      date_updated: post.date_updated,
-      status: post.status
-    }
+
+    let responsePostDetail = new ResChangePostDto()
+    responsePostDetail.user_name = post?.user.user_name,
+    responsePostDetail.user_id = post?.user.user_id,
+    responsePostDetail.ava_img_path = post?.user.ava_img_path,
+    responsePostDetail.post_title = post?.post_title,
+    responsePostDetail.post_content = post?.post_content,
+    responsePostDetail.img_url = post?.img_url,
+    responsePostDetail.date_updated = post?.date_updated,
+    responsePostDetail.date_created = post.date_created,
+    responsePostDetail.tags = post?.taged_bys.map(tags => {return tags.tag.tag_name})
+    responsePostDetail.status = post?.status
+    return responsePostDetail
   }
 
   async getPostAfterNSFWFiltered(){
