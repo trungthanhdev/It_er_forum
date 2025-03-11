@@ -11,6 +11,8 @@ import { Repository } from 'typeorm';
 import { InvalidTokenEntity } from '../blacklist/entities/invalidatedToken.entity';
 import { BlacklistService } from '../blacklist/blacklist.service';
 import { BlacklistDto } from 'dto/blacklist.dto';
+import { User } from '../user/entities/user.entity';
+import { object } from '@hapi/joi';
 @Injectable()
 export class AuthService {
     constructor(private readonly jwtService: JwtService,
@@ -126,27 +128,27 @@ export class AuthService {
             if(typeof refresh_token === 'object'){
                 refresh_token = refresh_token.refresh_token
             }
-            // save refresh_token id
-            const refreshPayload = await this.jwtService.verifyAsync(
-                refresh_token,{secret: process.env.JWT_REFRESH_TOKEN})   
-            let token_id = refreshPayload.id
-            let user_id = refreshPayload.sub
-            let user = await this.userService.getUserById(user_id)
-            let object  = {token_id, user} 
-            await this.blacklistService.addToBlacklist(object)
-
-            //save access_token id
-            const accessPayload = await this.jwtService.verifyAsync(
-                access_token,{secret: process.env.JWT_TOKEN}) 
-            const accessTokenUser = await this.userService.getUserById(accessPayload.sub)
-            user = accessTokenUser
-            token_id = accessPayload.id
-            let accessObject = {token_id, user}
-            await this.blacklistService.addToBlacklist(accessObject)
+            await this.objectToken(refresh_token, false)
+            await this.objectToken(access_token,true)
 
         } catch (error) {
             throw error
         }
+    }
+
+    async objectToken(token: string, isAccess: boolean){
+        let tokenVerify 
+        if(isAccess){
+            tokenVerify = await this.jwtService.verifyAsync(
+                token,{secret: process.env.JWT_TOKEN})
+        }else{
+            tokenVerify = await this.jwtService.verifyAsync(
+                token,{secret: process.env.JWT_REFRESH_TOKEN})
+        }
+        let token_id = tokenVerify.id
+        let user = await this.userService.getUserById(tokenVerify.sub)
+        let object = ({token_id, user})
+        return await this.blacklistService.addToBlacklist(object)
     }
    
 }
