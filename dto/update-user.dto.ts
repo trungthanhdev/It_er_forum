@@ -1,5 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { IsEmail, MaxLength, IsNotEmpty, IsNumber, IsDate } from 'class-validator';
+import { MaxLength, IsNumber, IsDate } from 'class-validator';
 
 export class UpdateUserDto {    
         @MaxLength(50)  
@@ -18,5 +17,5 @@ export class UpdateUserDto {
         country: string
     
         @IsDate()
-        dob: Date
+        age: number
 }

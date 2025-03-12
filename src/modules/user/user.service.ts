@@ -1,15 +1,15 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto } from '../../../dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { RegisterDto } from 'dto/register.dto';
 import { isUUID } from 'class-validator';
 import { UpdatePasswordDto } from 'dto/updatePassword.dto';
 import * as bcrypt from 'bcrypt';
-import { UpdateUserStatusDto } from 'dto/userstatus.dto';
 import { UserStatus } from 'global/enum.global';
 import { UserDto } from 'dto/resSearchUserByUserName.dto';
+import { ResUserDto } from 'dto/resUser.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -28,16 +28,31 @@ export class UserService {
   }
   
   async findAllUser() {
-    return await this.userRepo.find();
+    let user =  await this.userRepo.find()
+    let resUser = user.map((user) => {
+      let resUser = new ResUserDto()
+      resUser.user_id = user.user_id,
+      resUser.user_name = user.user_name,
+      resUser.age = user.age,
+      resUser.ava_img_path = user.ava_img_path,
+      resUser.phone_num = user.phone_num,
+      resUser.email = user.email,
+      resUser.first_name = user.first_name,
+      resUser.last_name = user.last_name,
+      resUser.status = user.status
+      return resUser
+    })
+    return resUser
   }
 
+  //used for handling event in another api
   async findByEmail(email: string ){
     return await this.userRepo.findOneBy({email})
   }
 
   async searchUserByUserName(user_name: string){
       let users =  await this.userRepo.find({where: {
-        user_name : user_name.trim().replace(/\s+/g, ' ')
+        user_name : ILike(user_name.trim().replace(/\s+/g, ' '))
       }})
       if(users.length === 0 ){ throw new NotFoundException(`User name "${user_name} invalid"`)}
 
@@ -66,8 +81,8 @@ export class UserService {
     return  newUser  
   }
 
+  // api return user information but password
   async getUserById(id: string) {
-
     if (!isUUID(id)) {
         throw new NotFoundException(`ID "${id}" invalid`);
     }
@@ -77,20 +92,21 @@ export class UserService {
     if (!user) {
         throw new NotFoundException(`Id "${id}" not found !`);
     }
-
-    return {
-      user_id: user.user_id,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      user_name: user.user_name,
-      email: user.email,
-      phone_num: user.phone_num,
-      age: user.dob, 
-      status: user.status,
-      ava_img_path: user.ava_img_path 
-    };
+    
+    let resUser = new ResUserDto()
+    resUser.user_id = user.user_id,
+    resUser.user_name = user.user_name,
+    resUser.age = user.age,
+    resUser.ava_img_path = user.ava_img_path,
+    resUser.phone_num = user.phone_num,
+    resUser.email = user.email,
+    resUser.first_name = user.first_name,
+    resUser.last_name = user.last_name,
+    resUser.status = user.status
+    return resUser
   }
 
+  // output include password (User) for handling event in another api
   async findUserById(id: string) {
 
     if (!isUUID(id)) {
@@ -105,7 +121,6 @@ export class UserService {
 
     return user
   }
-
 
   async updatePassword(id: string, updatPasswordDto : UpdatePasswordDto){
    try {
@@ -141,81 +156,32 @@ export class UserService {
 
   }
 
-  async changeUserStatustoRestricted(id: string, status: UpdateUserStatusDto){
-      if (!isUUID(id)) {
-        throw new BadRequestException("Invalid UUID format or wrong UUID");
-      }
-      
-      let user = await this.userRepo.findOne({where : {user_id: id}})
-      if(!user){
-        throw new BadRequestException("User not found")
-      }
-      
-      user.status = UserStatus.RESTRICTED
-      await this.userRepo.save(user)
-      return {
-        user_id: user.user_id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        user_name: user.user_name,
-        email: user.email,
-        phone_num: user.phone_num,
-        age: user.dob,
-        status: user.status,
-        ava_img_path: user.ava_img_path
-      }
-  }
-
-  async changeUserStatustoBanned(id: string, status: UpdateUserStatusDto){
-    if (!isUUID(id)) {
-      throw new BadRequestException("Invalid UUID format or wrong UUID");
+  async changeUserStatus(id: string ,status : string){
+    let userStatus = (status as any).status 
+    if(!Object.values(UserStatus).includes(userStatus)){
+      throw new BadRequestException("Invalid user status!")
     }
 
-    let user = await this.userRepo.findOne({where : {user_id: id}})
-
+    let user = await this.findUserById(id)
     if(!user){
-      throw new BadRequestException("User not found")
+      throw new NotFoundException("User not found!")
     }
-
-    user.status = UserStatus.BANNED
+    
+    user.status = userStatus
+ 
     await this.userRepo.save(user)
-    return {
-      user_id: user.user_id,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      user_name: user.user_name,
-      email: user.email,
-      phone_num: user.phone_num,
-      age: user.dob,
-      status: user.status,
-      ava_img_path: user.ava_img_path
-    }
+    let resUser = new ResUserDto()
+    resUser.user_id = user.user_id,
+    resUser.user_name = user.user_name,
+    resUser.age = user.age,
+    resUser.ava_img_path = user.ava_img_path,
+    resUser.phone_num = user.phone_num,
+    resUser.email = user.email,
+    resUser.first_name = user.first_name,
+    resUser.last_name = user.last_name,
+    resUser.status = user.status
+    return resUser
   }
 
-  // async changeUserStatus(id: string, status: UpdateUserStatusDto){
-  //   switch (status.status) {
-  //     case UserStatus.ACTIVE:
-  //       let user = await this.userRepo.findOne({where : {user_id: id}})
-
-  //       if(!user){
-  //         throw new NotFoundException("User not found")
-  //       }
-
-  //       user.status = UserStatus.RESTRICTED
-  //       return await this.userRepo.save(user)
-    
-  //     case UserStatus.RESTRICTED:
-  //         let restrictedUser = await this.userRepo.findOne({where : {user_id: id}})
-
-  //       if(!restrictedUser){
-  //         throw new NotFoundException("User not found")
-  //       }
-
-  //       restrictedUser.status = UserStatus.BANNED
-  //       return await this.userRepo.save(restrictedUser)
-  //     default:
-  //       throw new BadRequestException("Invalid status")
-  //   }
-  // }
 }
 

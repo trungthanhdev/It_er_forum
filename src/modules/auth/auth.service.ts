@@ -4,13 +4,20 @@ import { LoginDto } from 'dto/login.dto';
 import { UserService } from '../user/user.service';
 import { RegisterDto } from 'dto/register.dto';
 import * as bcrypt from 'bcrypt';
-import { HttpCode, HttpMessage } from 'global/enum.global';
+
 import { v4 as uuidv4 } from 'uuid';
-import { UpdatePasswordDto } from 'dto/updatePassword.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { InvalidTokenEntity } from '../blacklist/entities/invalidatedToken.entity';
+import { BlacklistService } from '../blacklist/blacklist.service';
+import { BlacklistDto } from 'dto/blacklist.dto';
+import { User } from '../user/entities/user.entity';
+import { object } from '@hapi/joi';
 @Injectable()
 export class AuthService {
     constructor(private readonly jwtService: JwtService,
-                private readonly userService: UserService
+                private readonly userService: UserService,
+                private readonly blacklistService: BlacklistService
     ){}
 
     async login(loginDto : LoginDto){
@@ -44,7 +51,7 @@ export class AuthService {
         const refresh_token = await this.jwtService.signAsync(payload_refreshtoken,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: '1d'})
         
     
-        return {msg: "Login successfully!",
+        return {
             access_token,
             refresh_token}
         } catch (error) {
@@ -56,7 +63,8 @@ export class AuthService {
         
     }
 
-    async register(registerDto: RegisterDto){
+    //register
+    async createUser(registerDto: RegisterDto){
         try {
             const findByEmail = await this.userService.findByEmail(registerDto.email)
 
@@ -67,20 +75,22 @@ export class AuthService {
 
             const saveUser = await this.userService.createNewAdmin(registerDto)
             
-            // const payload = {
-            //     id: saveUser.user_id,
-            //     role: saveUser.role,
-            //     email: saveUser.email
-            // }
-
-            // const access_token =  await this.jwtService.signAsync(payload,{secret: process.env.JWT_TOKEN})
-            // const refresh_token = await this.jwtService.signAsync(payload,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: '1d'})
-            return {msg: "Register successfully!",
-                    HttpCode: HttpCode.SUCCESS,
-                    HttpMessage: HttpMessage.SUCCESS,
-                    // access_token,
-                    // refresh_token}
+            const access_payload = {
+                id: uuidv4(),
+                sub: saveUser.user_id,
+                role: saveUser.role,
+                email: saveUser.email
             }
+            const refresh_payload = {
+                id: uuidv4(),
+                sub: saveUser.user_id,
+                role: saveUser.role,
+                email: saveUser.email
+            }
+
+            const access_token =  await this.jwtService.signAsync(access_payload,{secret: process.env.JWT_TOKEN})
+            const refresh_token = await this.jwtService.signAsync(refresh_payload,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: '1d'})
+            return {access_token,refresh_token}
 
         } catch (error) {
             if(error instanceof BadRequestException){
@@ -116,7 +126,36 @@ export class AuthService {
         }
     }
 
+    async logout(refresh_token: any, access_token: any){
+        try {
+            if(typeof refresh_token === 'object'){
+                refresh_token = refresh_token.refresh_token
+            }
+            let accessObject = await this.objectToken(refresh_token, false)
+            await this.blacklistService.addToBlacklist(accessObject)
+
+            let refreshObject = await this.objectToken(access_token,true)
+            await this.blacklistService.addToBlacklist(refreshObject)
+
+        } catch (error) {
+            throw error
+        }
+    }
+
+    async objectToken(token: string, isAccess: boolean){
+     try {
+        const tokenVerify = await this.jwtService.verifyAsync(token, {
+            secret: isAccess ? process.env.JWT_TOKEN : process.env.JWT_REFRESH_TOKEN
+        })
+        
+        let token_id = tokenVerify.id
+        let user = await this.userService.getUserById(tokenVerify.sub)
+        let object = ({token_id, user})
+        return object
+     } catch (error) {
+        throw new BadRequestException("Invalid token!")
+     }
+    }
    
 }
-
 

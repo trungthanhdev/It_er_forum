@@ -6,7 +6,7 @@ export class InvalidTokenEntity{
     @PrimaryColumn()
     token_id: string
 
-
+    
     @CreateDateColumn()
     time_stamp: Date
 

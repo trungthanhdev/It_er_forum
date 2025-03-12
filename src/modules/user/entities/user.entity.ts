@@ -6,7 +6,7 @@ import { Post } from "src/modules/post/entities/post.entity";
 import { Report } from "src/modules/report/entities/report.entity";
 import { Comment } from "src/modules/comment/entities/comment.entity";
 import { NotificationEntity } from "src/modules/notification/entities/notification.entity";
-import { InvalidTokenEntity } from "src/modules/blacklist/entities/refreshtoken.entity";
+import { InvalidTokenEntity } from "src/modules/blacklist/entities/invalidatedToken.entity";
 @Entity({name: "users"})
 @Unique(["email"])
 export class User {
@@ -43,8 +43,8 @@ export class User {
     @MaxLength(20)
     country: string
 
-    @Column()
-    dob: Date
+    @Column({ type: 'int', nullable: true })
+    age: number
 
     @Column({nullable: true})
     ava_img_path: string
@@ -52,8 +52,8 @@ export class User {
     @Column({default: UserStatus.ACTIVE})
     status: UserStatus
 
-    @Column({default: Roles.ADMIN})
-    @Exclude()
+    @Column({default: Roles.USER})
+    // @Exclude()
     @MaxLength(10)
     role: Roles
 

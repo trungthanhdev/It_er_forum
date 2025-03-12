@@ -26,7 +26,7 @@ export class RegisterDto {
     @MaxLength(20)
     country: string
     
-    dob: Date
+    age: number
 }
 
 
