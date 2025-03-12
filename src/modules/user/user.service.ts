@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UpdateUserDto } from '../../../dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { UserStatus } from 'global/enum.global';
 import { UserDto } from 'dto/resSearchUserByUserName.dto';
 import { ResUserDto } from 'dto/resUser.dto';
+import { ResCurrentUserDto } from 'dto/resCurrentUser.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -71,14 +72,27 @@ export class UserService {
      }
   }
 
-  async updateProfile(id: string, updateUserDto: Partial<UpdateUserDto>) {
+  async updateProfile(id: string, updateUserDto: Partial<UpdateUserDto>, reqCurrentUser: User) {
     let user = await this.userRepo.findOne({where: {user_id : id}})
     if(!user){
       throw new BadRequestException("User not found")
     }
+    if(reqCurrentUser.user_id !== id){
+      throw new UnauthorizedException("Can't change another profile!")
+    }
+
     let newUser = this.userRepo.merge(user, updateUserDto)
     this.userRepo.save(newUser)
-    return  newUser  
+    let resUser = new ResCurrentUserDto()
+    resUser.user_id = newUser.user_id
+    resUser.user_name = newUser.user_name
+    resUser.last_name = newUser.last_name
+    resUser.first_name = newUser.first_name
+    resUser.age = newUser.age
+    resUser.ava_img_path = newUser.ava_img_path
+    resUser.email = newUser.email
+    resUser.phone_num = newUser.phone_num
+    return  resUser
   }
 
   // api return user information but password
@@ -183,5 +197,18 @@ export class UserService {
     return resUser
   }
 
+  getProfile(user : User){
+    let resUser = new ResCurrentUserDto()
+    resUser.user_id = user.user_id
+    resUser.user_name = user.user_name
+    resUser.last_name = user.last_name
+    resUser.first_name = user.first_name
+    resUser.age = user.age
+    resUser.ava_img_path = user.ava_img_path
+    resUser.email = user.email
+    resUser.phone_num = user.phone_num
+
+    return resUser
+  }
 }
 

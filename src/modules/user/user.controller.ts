@@ -16,17 +16,21 @@ export class UserController {
     console.log(`Fetch successfully!`);
     return this.userService.findAllUser()
   }
-  // @Get("/current-user")
-  // @UseGuards(AuthGuard)
-  // getCurrentUser(@Req() req : Request){
-  //   return req.currentUser
-  // }
+
+  @Get("/profile")
+  @UseGuards(AuthGuard)
+  getProfile(@Req() req ){
+    let user = req.currentUser
+    return this.userService.getProfile(user)
+  }
 
  
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.updateProfile(id, updateUserDto);
+  @Patch('/profile/:id')
+  @UseGuards(AuthGuard)
+  updateProfile(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Req() req) {
+    let user = req.currentUser
+    return this.userService.updateProfile(id, updateUserDto, user);
   }
 
   @Get("/:user_name")

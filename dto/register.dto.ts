@@ -1,4 +1,4 @@
-import { IsEmail, MaxLength, IsNotEmpty } from "class-validator"
+import { IsEmail, MaxLength, IsNotEmpty, IsNumber } from "class-validator"
 
 export class RegisterDto {
     @IsEmail()
@@ -26,6 +26,7 @@ export class RegisterDto {
     @MaxLength(20)
     country: string
     
+    @IsNumber()
     age: number
 }
 
