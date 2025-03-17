@@ -1,9 +1,10 @@
-import { Controller, Get, Body, Patch, Param, UsePipes, ValidationPipe, UseGuards, Query, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, UsePipes, ValidationPipe, UseGuards, Query, UseInterceptors, Post, BadRequestException, Req } from '@nestjs/common';
 import { PostService } from './post.service';
-import { PostStatus } from 'global/enum.global';
+import { PostStatus, TagName } from 'global/enum.global';
 import { RoleGuard } from 'guard/role.guard';
 import { AuthGuard } from 'guard/auth.guard';
 import { NSFWFilteredInterceptor } from 'interceptor/filterNSFW.interceptor';
+import { CreatePost } from 'dto/createPost.dto';
 
 @Controller('/api/v1/posts')
 export class PostController {
@@ -45,5 +46,20 @@ export class PostController {
   @UseGuards(AuthGuard)
   getPostDetailAfterNSFWFiltered(@Param("id") id: string){
     return this.postService.getPostDetailAfterNSFWFiltered(id)
+  }
+
+  @Post("/")
+  @UseGuards(AuthGuard)
+  createPost(@Body() post: CreatePost, @Req() req){
+    if (!Array.isArray(post.tags)) {
+      throw new BadRequestException("Tags must be an array!");
+    }
+    
+    const tags = post.tags.filter(tags => Object.values(TagName).includes(tags))
+    if(tags.length === 0){
+      throw new BadRequestException("Invalid TagName!")
+    }
+    const user_id = req.currentUser.user_id
+    return this.postService.createPost(post,user_id)
   }
 }

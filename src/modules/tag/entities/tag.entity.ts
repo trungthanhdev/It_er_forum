@@ -8,16 +8,16 @@ export class TagEntity{
     @PrimaryGeneratedColumn("uuid")
     tag_id: string
 
-    @Column()
+    @Column({type: 'enum', enum: TagName})
     @MaxLength(20)
     tag_name: TagName
 
-    @Column()
-    tag_category: TagCategory
+    @Column({type: 'enum', enum: TagCategory,nullable: true, default: "Entertainment"})
+    tag_category?: TagCategory
 
-    @Column()
+    @Column({ nullable: true, default: "" })
     tag_description:string
 
     @OneToMany(() => TagedByEntity, (taged_by) => {taged_by.tag})
-    taged_bys : TagEntity[]
+    taged_bys: TagEntity[]
 }

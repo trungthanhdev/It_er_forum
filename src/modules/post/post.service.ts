@@ -2,18 +2,25 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { Repository } from 'typeorm';
-import { PostStatus } from 'global/enum.global';
+import { PostStatus, TagName } from 'global/enum.global';
 import { SearchSortPostDto } from 'dto/resSearchSortPost.dto';
 import { map } from 'rxjs';
 import { PostNSFWDto } from 'dto/resPostAfterFilterNSFW';
 import { resPostNSFWDetailDto } from 'dto/resPostNSFWDetailDto .dto';
 import { ResChangePostDto } from 'dto/resChangePostStatus.dto';
+import { CreatePost } from 'dto/createPost.dto';
+import { UserService } from '../user/user.service';
+import { TagByService } from '../tag_by/tag_by.service';
+import { TagService } from '../tag/tag.service';
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(Post)
-    private readonly postRepo : Repository<Post>
+    private readonly postRepo : Repository<Post>,
+    private readonly userService: UserService,
+    private readonly tagedByService: TagByService,
+    private readonly tagsService: TagService
   ){}
 
   async changePostStatus(id : string, status: string){
@@ -136,6 +143,29 @@ export class PostService {
     } catch (error) {
         throw error
     }
+  }
+
+  async createPost(post: CreatePost, user_id: string){
+    const user = await this.userService.findUserById(user_id)
+    if(!user){
+      throw new NotFoundException("User not found!")
+    }
+    const newPost = this.postRepo.create({...post,user: user})
+    await this.postRepo.save(newPost)
+
+    for(const tagName of post.tags){
+      let tag = await this.tagsService.findOneTag(tagName)
+
+      if(!tag){
+         let tag = await this.tagsService.addTag(tagName)
+         await this.tagedByService.addTagedBy(newPost,tag)
+      }else{
+        await this.tagedByService.addTagedBy(newPost,tag)
+      }  
+    }
+    
+
+    return `successfully`
   }
 }
 
