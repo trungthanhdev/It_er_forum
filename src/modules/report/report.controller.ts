@@ -1,9 +1,10 @@
-import { Controller, Get, HttpStatus, Param, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpStatus, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ReportService } from './report.service';
-import { ReportSubject } from 'global/enum.global';
+import { ReportSubject, ReportTitle } from 'global/enum.global';
 import { AuthGuard } from 'guard/auth.guard';
 import { RoleGuard } from 'guard/role.guard';
 import { Subject } from 'rxjs';
+import { SendReportDto } from 'dto/sendReport.dto';
 @Controller('/api/v1/report')
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
@@ -43,6 +44,20 @@ export class ReportController {
       console.log("Controller received request:", subject, id); 
       const modifySubjectDetail = subject as ReportSubject
       return this.reportService.getReportDetail(modifySubjectDetail, id)              
+  }
+
+  @Post("/:subject")
+  sendReport(@Param("subject") subject: string,
+             @Body() sendReportDto: SendReportDto)
+  {
+    let modifySubject = subject as ReportSubject
+    if(!Object.values(ReportSubject).includes(modifySubject)){
+      throw new BadRequestException("Invalid subject!")
+    }
+    if(!Object.values(ReportTitle).includes(sendReportDto.report_title)){
+      throw new BadRequestException("Invalid report title!")
+    }
+    return this.reportService.sendReport(modifySubject, sendReportDto)
   }
   
 }

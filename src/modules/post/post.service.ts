@@ -16,6 +16,7 @@ import { ResCreatePost } from 'dto/resCreatePost.dto';
 import { UpdatePostDto } from 'dto/updatePost.dto';
 import { ResUpdatePost } from 'dto/resUpdatePost.dto';
 import { ResPostDetail } from 'dto/resPostDetail.dto';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class PostService {
@@ -26,6 +27,12 @@ export class PostService {
     private readonly tagedByService: TagByService,
     private readonly tagsService: TagService
   ){}
+  async findPost(post_id?: string){
+    if (!isUUID(post_id)) {
+      throw new BadRequestException("Invalid post_id format!");
+    }
+    return await this.postRepo.findOne({where: {post_id: post_id}})
+  }
 
   async changePostStatus(id : string, status: string){
     let postStatus = (status as any).status
