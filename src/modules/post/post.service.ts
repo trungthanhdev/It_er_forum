@@ -15,6 +15,7 @@ import { TagService } from '../tag/tag.service';
 import { ResCreatePost } from 'dto/resCreatePost.dto';
 import { UpdatePostDto } from 'dto/updatePost.dto';
 import { ResUpdatePost } from 'dto/resUpdatePost.dto';
+import { ResPostDetail } from 'dto/resPostDetail.dto';
 
 @Injectable()
 export class PostService {
@@ -211,6 +212,40 @@ export class PostService {
     resUpdatePost.user_name = postAfterUpdate.user.user_name
     resUpdatePost.ava_img_path = postAfterUpdate.user.ava_img_path
     return resUpdatePost
+  }
+
+  async getPostDetail(post_id: string){
+    const post = await this.postRepo.findOne({
+      where: {post_id: post_id},
+      relations: ["user", "comments", "taged_bys", "taged_bys.tag", "comments.user" ]
+    })
+    if(!post){
+      throw new NotFoundException("Post not found!")
+    }
+
+    let resPostDetail = new ResPostDetail()
+    resPostDetail.user_id = post.user.user_id
+    resPostDetail.user_name = post.user.user_name
+    resPostDetail.ava_img_path = post.user.ava_img_path
+    resPostDetail.post_title = post.post_title
+    resPostDetail.post_content = post.post_content
+    resPostDetail.img_url = post.img_url
+    resPostDetail.date_updated = post.date_updated
+    resPostDetail.upvote = post.upvote
+    resPostDetail.downvote = post.downvote
+    resPostDetail.tags = post.taged_bys.map(tags => tags.tag.tag_name)
+    resPostDetail.comments = post.comments?.map(comment => ({
+      user_id: comment.user.user_id || null,
+      user_name: comment.user.user_name || null,
+      ava_img_path: comment.user.ava_img_path || null,
+      comment_id: comment.comment_id || null,
+      date_comment: comment.date_comment || null,
+      comment_content: comment.comment_content || null,
+      upvote: comment.upvote || null,
+      downvote: comment.downvote|| null
+    })) 
+
+    return resPostDetail
   }
 }
 

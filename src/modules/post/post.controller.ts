@@ -65,9 +65,16 @@ export class PostController {
   }
 
   @Patch("/:id")
+  @UseGuards(AuthGuard)
   updatePost(@Param("id") post_id: string,
              @Body() updatePost: UpdatePostDto
   ){
     return this.postService.updatePost(post_id, updatePost)
   }
+
+  @Get("/:id")
+  getPostDetail(@Param("id") post_id: string){
+    return this.postService.getPostDetail(post_id)
+  }
+
 }
