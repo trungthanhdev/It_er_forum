@@ -4,6 +4,7 @@ import { TagedByEntity } from './entities/Taged_by.entity';
 import { Repository } from 'typeorm';
 import { Post } from '../post/entities/post.entity';
 import { TagEntity } from '../tag/entities/tag.entity';
+import { TagName } from 'global/enum.global';
 
 @Injectable()
 export class TagByService {
@@ -15,5 +16,12 @@ export class TagByService {
     addTagedBy(post: Post, tag: TagEntity){
         let tagedByElement = this.taged_byRepo.create({post, tag})
         return this.taged_byRepo.save(tagedByElement)
+    }
+
+    findAllTag(post : Post){
+        return this.taged_byRepo.find({
+            where: {post : {post_id : post.post_id}}, 
+            relations: ["tag"]
+        })
     }
 }

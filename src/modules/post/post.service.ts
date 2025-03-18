@@ -12,6 +12,9 @@ import { CreatePost } from 'dto/createPost.dto';
 import { UserService } from '../user/user.service';
 import { TagByService } from '../tag_by/tag_by.service';
 import { TagService } from '../tag/tag.service';
+import { ResCreatePost } from 'dto/resCreatePost.dto';
+import { UpdatePostDto } from 'dto/updatePost.dto';
+import { ResUpdatePost } from 'dto/resUpdatePost.dto';
 
 @Injectable()
 export class PostService {
@@ -164,8 +167,50 @@ export class PostService {
       }  
     }
     
+    let resTag = await this.tagedByService.findAllTag(newPost)
 
-    return `successfully`
+    let resPost = new ResCreatePost()
+    resPost.user_id = user.user_id
+    resPost.user_name = user.user_name
+    resPost.ava_img_path = user.ava_img_path
+    resPost.post_title = newPost.post_title
+    resPost.post_content = newPost.post_content
+    resPost.img_url = newPost.img_url
+    resPost.date_created = newPost.date_created
+    resPost.tags = resTag.map(tag => { return tag.tag.tag_name})
+    resPost.status = newPost.status
+    return resPost
+  }
+
+  async updatePost(post_id: string, post: UpdatePostDto){
+    const existedPost = await this.postRepo.findOne({
+      where : {post_id: post_id},
+      relations: ["taged_bys", "taged_bys.tag"]
+    })
+    if(!existedPost){
+      throw new NotFoundException("Post not found")
+    }
+    await this.postRepo.update({post_id},post)
+    const postAfterUpdate = await this.postRepo.findOne({
+      where : {post_id},
+      relations: ["taged_bys", "taged_bys.tag", "user"]
+    }) 
+
+    if(!postAfterUpdate){
+      throw new NotFoundException("Post not found!")
+    }
+
+    const resUpdatePost = new ResUpdatePost()
+    resUpdatePost.post_title = postAfterUpdate?.post_title
+    resUpdatePost.post_content = postAfterUpdate?.post_content
+    resUpdatePost.img_url = postAfterUpdate.img_url
+    resUpdatePost.date_updated = postAfterUpdate.date_updated,
+    resUpdatePost.status = postAfterUpdate.status,
+    resUpdatePost.tags = postAfterUpdate.taged_bys.map(tags => tags.tag.tag_name)
+    resUpdatePost.user_id = postAfterUpdate.user.user_id
+    resUpdatePost.user_name = postAfterUpdate.user.user_name
+    resUpdatePost.ava_img_path = postAfterUpdate.user.ava_img_path
+    return resUpdatePost
   }
 }
 

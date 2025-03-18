@@ -5,6 +5,7 @@ import { RoleGuard } from 'guard/role.guard';
 import { AuthGuard } from 'guard/auth.guard';
 import { NSFWFilteredInterceptor } from 'interceptor/filterNSFW.interceptor';
 import { CreatePost } from 'dto/createPost.dto';
+import { UpdatePostDto } from 'dto/updatePost.dto';
 
 @Controller('/api/v1/posts')
 export class PostController {
@@ -61,5 +62,12 @@ export class PostController {
     }
     const user_id = req.currentUser.user_id
     return this.postService.createPost(post,user_id)
+  }
+
+  @Patch("/:id")
+  updatePost(@Param("id") post_id: string,
+             @Body() updatePost: UpdatePostDto
+  ){
+    return this.postService.updatePost(post_id, updatePost)
   }
 }
