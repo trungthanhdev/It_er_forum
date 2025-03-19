@@ -73,6 +73,7 @@ export class PostController {
   }
 
   @Get("/:id")
+  @UseGuards(AuthGuard)
   getPostDetail(@Param("id") post_id: string){
     return this.postService.getPostDetail(post_id)
   }

@@ -47,6 +47,7 @@ export class ReportController {
   }
 
   @Post("/:subject")
+  @UseGuards(AuthGuard)
   sendReport(@Param("subject") subject: string,
              @Body() sendReportDto: SendReportDto)
   {

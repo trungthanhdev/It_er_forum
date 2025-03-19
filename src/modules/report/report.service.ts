@@ -151,31 +151,25 @@ export class ReportService {
    }
 
    async sendReport(subject: ReportSubject, sendReportDto: SendReportDto){
+    const reported_user_object = await this.userService.findUserById(sendReportDto.reported_user_id)
+        if(!reported_user_object){
+            throw new NotFoundException("User not found!") 
+        }
         switch (subject) {
             case ReportSubject.USER:
-                {
-                const reportedUser = await this.userService.findUserById(sendReportDto.reported_user_id)
-                if(!reportedUser){
-                    throw new NotFoundException("User not found!") 
-                }
-
+            {
                 const reported_user = this.reportRepo.create({
                     report_title: sendReportDto.report_title,
                     report_body: sendReportDto.report_body,
                     subject: subject,
                     date_reported: new Date(),
-                    user: reportedUser
+                    user: reported_user_object
                 })
                 await this.reportRepo.save(reported_user)
                 return 
             }
             case ReportSubject.POST:
-               { 
-                const reportedUserPost = await this.userService.findUserById(sendReportDto.reported_user_id)
-                if(!reportedUserPost){
-                    throw new NotFoundException("User not found!") 
-                }
-            
+            { 
                 const postReported = await this.postService.findPost(sendReportDto.post_id)
                 if(!postReported){
                     throw new NotFoundException("Post not found!")
@@ -186,17 +180,13 @@ export class ReportService {
                     subject: subject,
                     post: postReported,
                     date_reported: new Date(),
-                    user: reportedUserPost
+                    user: reported_user_object
                 })
                 await this.reportRepo.save(reportedPost)
                 return
             }
             case ReportSubject.COMMENT:
-                {
-                const reportedUserComment = await this.userService.findUserById(sendReportDto.reported_user_id)
-                if(!reportedUserComment){
-                    throw new NotFoundException("User not found!") 
-                }
+            {
                 const commentReported = await this.commentService.findComment(sendReportDto.comment_id)
                 if(!commentReported){
                     throw new NotFoundException("Post not found!")
@@ -207,7 +197,7 @@ export class ReportService {
                     subject: subject,
                     comment: commentReported,
                     date_reported: new Date(),
-                    user: reportedUserComment
+                    user: reported_user_object
                 })
                 await this.reportRepo.save(reportedComment)
                 return 

@@ -3,8 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { Repository } from 'typeorm';
 import { PostStatus, TagName } from 'global/enum.global';
-import { SearchSortPostDto } from 'dto/resSearchSortPost.dto';
-import { map } from 'rxjs';
 import { PostNSFWDto } from 'dto/resPostAfterFilterNSFW';
 import { resPostNSFWDetailDto } from 'dto/resPostNSFWDetailDto .dto';
 import { ResChangePostDto } from 'dto/resChangePostStatus.dto';
