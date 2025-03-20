@@ -1,4 +1,5 @@
 import { IsArray, IsDate, IsString } from "class-validator"
+import { TagName } from "global/enum.global"
 
 export class resPostNSFWDetailDto {
     @IsString()

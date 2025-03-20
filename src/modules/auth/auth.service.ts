@@ -153,7 +153,7 @@ export class AuthService {
         throw new BadRequestException("Invalid token!")
      }
     }
-    @Cron('*/5 * * * *')
+    // @Cron('*/5 * * * *')
     async sendEmailReport(){
         console.log("gui gmail...");
         await this.mailerService

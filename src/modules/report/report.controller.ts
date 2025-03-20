@@ -9,8 +9,6 @@ import { SendReportDto } from 'dto/sendReport.dto';
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 
-
-
   @Get('/admin/:subject')
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(AuthGuard)

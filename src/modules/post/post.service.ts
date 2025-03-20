@@ -15,6 +15,7 @@ import { UpdatePostDto } from 'dto/updatePost.dto';
 import { ResUpdatePost } from 'dto/resUpdatePost.dto';
 import { ResPostDetail } from 'dto/resPostDetail.dto';
 import { isUUID } from 'class-validator';
+import { sensitive_words } from 'src/bad_words';
 
 @Injectable()
 export class PostService {
@@ -23,8 +24,14 @@ export class PostService {
     private readonly postRepo : Repository<Post>,
     private readonly userService: UserService,
     private readonly tagedByService: TagByService,
-    private readonly tagsService: TagService
+    private readonly tagsService: TagService,
   ){}
+  private badWordsArr = sensitive_words 
+  private async containNSFW(content: string, sensitiveWordArr: string[]){
+      const contentFiltered = content
+      return sensitiveWordArr.some(word => new RegExp(`\\b${word}\\b`, "i").test(contentFiltered))
+  }
+
   async findPost(post_id?: string){
     if (!isUUID(post_id)) {
       throw new BadRequestException("Invalid post_id format!");
@@ -69,36 +76,44 @@ export class PostService {
   async getPostAfterNSFWFiltered(){
     let post = await this.postRepo.find({
       where: {status : PostStatus.PENDING},
-      relations: ["user", "taged_bys"]
+      relations: ["user", "taged_bys","taged_bys.tag"]
     })
+    
     if(!post){
       throw new NotFoundException("Not found post!")
     }
-    let response = post.map((post) => {
-      let postElement = new PostNSFWDto()
-      postElement.user_id = post.user.user_id,
-      postElement.user_name = post.user.user_name,
-      postElement.is_image = Boolean(post.img_url),
-      postElement.ava_img_path = post.user.ava_img_path,
-      postElement.post_title = post.post_title,
-      postElement.tags = post.taged_bys.map(tags => {return tags.tag.tag_name}),
-      postElement.date_updated = post.date_updated,
-      postElement.status = post.status,
-      postElement.post_id = post.post_id
-      return postElement
-    })
-    response.sort((a,b) => {
-      return a.date_updated.getTime() - b.date_updated.getTime()
-    })
 
-    return response
+    let resPostArr : PostNSFWDto[] = [] 
+    for(const postFiltered of post){
+      const isNSFWPost = await this.containNSFW(postFiltered.post_content, this.badWordsArr)
+      if(!isNSFWPost){
+        let postElement = new PostNSFWDto()
+        postElement.user_id = postFiltered.user.user_id,
+        postElement.user_name = postFiltered.user.user_name,
+        postElement.is_image = Array.isArray(postFiltered.img_url) && postFiltered.img_url.length > 0,
+        postElement.ava_img_path = postFiltered.user.ava_img_path,
+        postElement.post_title = postFiltered.post_title,
+        postElement.tags = postFiltered.taged_bys.map(tags => {return tags.tag.tag_name}),
+        postElement.date_updated = postFiltered.date_updated,
+        postElement.status = postFiltered.status,
+        postElement.post_id = postFiltered.post_id
+        resPostArr.push(postElement)
+      }
+    }
+
+    resPostArr.sort((a,b) => a.date_updated.getTime() - b.date_updated.getTime())
+
+    return resPostArr
   }
 
   async getPostDetailAfterNSFWFiltered(id: string){
     let post = await this.postRepo.findOne({
       where : {post_id : id},
-      relations: ["user", "taged_bys"]
+      relations: ["user", "taged_bys","taged_bys.tag"]
     })
+    if(!post){
+      throw new NotFoundException("Post not found!")
+    }
 
     let responsePostDetail = new resPostNSFWDetailDto()
     responsePostDetail.user_name = post?.user.user_name,
@@ -109,7 +124,7 @@ export class PostService {
     responsePostDetail.post_content = post?.post_content,
     responsePostDetail.img_url = post?.img_url,
     responsePostDetail.date_updated = post?.date_updated,
-    responsePostDetail.tags = post?.taged_bys.map(tags => {return tags.tag.tag_name})
+    responsePostDetail.tags = post?.taged_bys.map(tags => tags.tag.tag_name)
     responsePostDetail.status = post?.status
     return responsePostDetail
   }
@@ -121,7 +136,7 @@ export class PostService {
     try {
       let filter = await this.postRepo.find({
         where: {status: status},
-        relations: ["user", "taged_bys"],
+        relations: ["user", "taged_bys", "taged_bys.tag"],
       })
 
       try {

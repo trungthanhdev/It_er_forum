@@ -20,6 +20,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SubscribedTagsModule } from './modules/subscribed_tags/subscribed_tags.module';
 
 
 @Module({
@@ -50,6 +51,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       },
     }),
     ScheduleModule.forRoot(),
+    SubscribedTagsModule,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService,

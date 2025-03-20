@@ -1,4 +1,5 @@
-import { IsArray, IsBoolean, IsDate, IsString } from "class-validator"
+import { IsArray, IsBoolean, IsDate, IsOptional, IsString } from "class-validator"
+import { TagName } from "global/enum.global"
 
 export class PostNSFWDto{
     @IsString()
@@ -20,7 +21,8 @@ export class PostNSFWDto{
     is_image: boolean
 
     @IsArray()
-    tags: string[]
+    // @IsOptional()
+    tags: TagName[] 
 
     @IsDate()
     date_updated: Date

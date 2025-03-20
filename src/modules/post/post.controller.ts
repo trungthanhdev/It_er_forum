@@ -3,7 +3,6 @@ import { PostService } from './post.service';
 import { PostStatus, TagName } from 'global/enum.global';
 import { RoleGuard } from 'guard/role.guard';
 import { AuthGuard } from 'guard/auth.guard';
-import { NSFWFilteredInterceptor } from 'interceptor/filterNSFW.interceptor';
 import { CreatePost } from 'dto/createPost.dto';
 import { UpdatePostDto } from 'dto/updatePost.dto';
 
@@ -37,7 +36,6 @@ export class PostController {
   }
 
   @Get("/admin/dashboard")
-  @UseInterceptors(NSFWFilteredInterceptor)
   getPostAfterNSFWFiltered(){
     return this.postService.getPostAfterNSFWFiltered()
   }

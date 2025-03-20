@@ -1,5 +1,6 @@
 import { MaxLength } from "class-validator";
 import { TagCategory, TagName } from "global/enum.global";
+import { SubscribedTag } from "src/modules/subscribed_tags/entities/subscribed_tag.entity";
 import { TagedByEntity } from "src/modules/tag_by/entities/Taged_by.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -20,4 +21,7 @@ export class TagEntity{
 
     @OneToMany(() => TagedByEntity, (taged_by) => {taged_by.tag})
     taged_bys: TagEntity[]
+
+    @OneToMany(() => SubscribedTag, (subscribed_tags) => subscribed_tags.tag)
+    subscribed_tags: SubscribedTag[]
 }
