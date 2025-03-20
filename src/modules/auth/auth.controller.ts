@@ -8,9 +8,7 @@ import { BlacklistService } from '../blacklist/blacklist.service';
 @Controller('api/v1/auth')
 export class AuthController {
     constructor(
-        private readonly authService: AuthService,
-        private readonly jwtService: JwtService,
-        private readonly blacklistService: BlacklistService){}
+        private readonly authService: AuthService){}
 
       @Post("/register")
       @UsePipes(ValidationPipe)
@@ -37,5 +35,9 @@ export class AuthController {
         return this.authService.refreshToken(refresh_token)
       }
 
+      @Get("/send-mail-report")
+      sendMailReport(){
+        return this.authService.sendEmailReport()
+      }
       
 }

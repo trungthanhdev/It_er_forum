@@ -16,12 +16,40 @@ import { TagModule } from './modules/tag/tag.module';
 import { TagByModule } from './modules/tag_by/tag_by.module';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from 'filter/httpException.interceptor';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { join } from 'path';
+import { ScheduleModule } from '@nestjs/schedule';
 
 
 @Module({
   imports: [UserModule, PostModule, AuthModule,
     TypeOrmModule.forRoot(pgConfig), BlacklistModule, ReportModule, CommentModule, NotificationModule, TagModule, TagByModule,
-    
+    //node-mailer config
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 465,
+        ignoreTLS: true,
+        secure: true,
+        auth: {
+          user: process.env.MAIL_COMPANY,
+          pass: process.env.PASS_COMPANY,
+        },
+      },
+      defaults: {
+        from: '"nest-modules" <modules@nestjs.com>',
+      },
+      template: {
+        dir: process.cwd()+ '/src/mail', 
+        // dir: join(__dirname, 'mail'),
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
+      },
+    }),
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService,

@@ -6,18 +6,15 @@ import { RegisterDto } from 'dto/register.dto';
 import * as bcrypt from 'bcrypt';
 
 import { v4 as uuidv4 } from 'uuid';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { InvalidTokenEntity } from '../blacklist/entities/invalidatedToken.entity';
 import { BlacklistService } from '../blacklist/blacklist.service';
-import { BlacklistDto } from 'dto/blacklist.dto';
-import { User } from '../user/entities/user.entity';
-import { object } from '@hapi/joi';
+import { MailerService } from '@nestjs-modules/mailer';
+import { Cron } from '@nestjs/schedule';
 @Injectable()
 export class AuthService {
     constructor(private readonly jwtService: JwtService,
                 private readonly userService: UserService,
-                private readonly blacklistService: BlacklistService
+                private readonly blacklistService: BlacklistService,
+                private readonly mailerService: MailerService
     ){}
 
     async login(loginDto : LoginDto){
@@ -155,6 +152,20 @@ export class AuthService {
      } catch (error) {
         throw new BadRequestException("Invalid token!")
      }
+    }
+    @Cron('*/5 * * * *')
+    async sendEmailReport(){
+        console.log("gui gmail...");
+        await this.mailerService
+      .sendMail({
+        to: 'buikhoa2015@gmail.com', 
+        subject: 'Testing Nest MailerModule ✔', 
+        template: "mailReport",
+        context: {
+            username: "thanh dep trai",
+            activationCode: "123"
+        }
+      })
     }
    
 }
