@@ -21,6 +21,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { join } from 'path';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SubscribedTagsModule } from './modules/subscribed_tags/subscribed_tags.module';
+import { JwtService } from '@nestjs/jwt';
 
 
 @Module({
@@ -54,7 +55,7 @@ import { SubscribedTagsModule } from './modules/subscribed_tags/subscribed_tags.
     SubscribedTagsModule,
   ],
   controllers: [AppController, AuthController],
-  providers: [AppService, AuthService,
+  providers: [AppService, AuthService,JwtService,
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,

@@ -1,9 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards, UsePipes, ValidationPipe, Res, Req, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from '../../../dto/update-user.dto';
-import { AuthGuard } from 'guard/auth.guard';
+// import { AuthGuard } from 'guard/auth.guard';
 import { RoleGuard } from 'guard/role.guard';
 import { UpdatePasswordDto } from 'dto/updatePassword.dto';
+import { JwtAuthGuard } from 'guard/jwt.guard';
 
 @Controller('/api/v1/users')
 export class UserController {
@@ -18,7 +19,7 @@ export class UserController {
   }
 
   @Get("/profile")
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   getProfile(@Req() req ){
     let user = req.currentUser
     return this.userService.getProfile(user)
@@ -27,27 +28,27 @@ export class UserController {
  
 
   @Patch('/profile/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   updateProfile(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Req() req) {
     let user = req.currentUser
     return this.userService.updateProfile(id, updateUserDto, user);
   }
 
   @Get("/:user_name")
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   searchUserByUserName(
     @Param("user_name") user_name : string){
       return this.userService.searchUserByUserName(user_name)
   }
 
   @Get("/user-detail/:id")
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   async findUserById(@Param('id') id : string){
     return await this.userService.getUserById(id)
   }
   
   @Post("/:id/update-password")
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   updatePassword(
     @Param("id") id : string,
     @Body() updatPasswordDto: UpdatePasswordDto){
@@ -57,7 +58,7 @@ export class UserController {
   @Patch("/admin/:id")
   @UsePipes(new ValidationPipe)
   @UseGuards(new RoleGuard(['ADMIN']))
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   async changeUserStatus(@Param("id") id: string, @Body() status : string){
     // console.log(updateUserStatusdto);
     return await this.userService.changeUserStatus(id,status)

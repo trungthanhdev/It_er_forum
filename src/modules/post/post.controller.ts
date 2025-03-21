@@ -2,9 +2,10 @@ import { Controller, Get, Body, Patch, Param, UsePipes, ValidationPipe, UseGuard
 import { PostService } from './post.service';
 import { PostStatus, TagName } from 'global/enum.global';
 import { RoleGuard } from 'guard/role.guard';
-import { AuthGuard } from 'guard/auth.guard';
+// import { JwtAuthGuard } from 'guard/auth.guard';
 import { CreatePost } from 'dto/createPost.dto';
 import { UpdatePostDto } from 'dto/updatePost.dto';
+import { JwtAuthGuard } from 'guard/jwt.guard';
 
 @Controller('/api/v1/posts')
 export class PostController {
@@ -13,7 +14,7 @@ export class PostController {
   @Patch("/admin/dashboard/:id")
   @UsePipes(new ValidationPipe)
   @UseGuards(new RoleGuard(['ADMIN']))
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   changePostStatus(
     @Param("id") id : string,
     @Body() status: string){ 
@@ -22,7 +23,7 @@ export class PostController {
 
   @Get("/admin/dashboard/filter")
   @UseGuards(new RoleGuard(['ADMIN']))
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   filterPostByStatus(
     @Query("status") status : string,
     @Query("sort_by") sort_by: string,
@@ -42,13 +43,13 @@ export class PostController {
 
   @Get("/admin/dashboard/:id")
   @UseGuards(new RoleGuard(['ADMIN']))
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   getPostDetailAfterNSFWFiltered(@Param("id") id: string){
     return this.postService.getPostDetailAfterNSFWFiltered(id)
   }
 
   @Post("/")
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   createPost(@Body() post: CreatePost, @Req() req){
     if (!Array.isArray(post.tags)) {
       throw new BadRequestException("Tags must be an array!");
@@ -63,7 +64,7 @@ export class PostController {
   }
 
   @Patch("/:id")
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   updatePost(@Param("id") post_id: string,
              @Body() updatePost: UpdatePostDto
   ){
@@ -71,7 +72,7 @@ export class PostController {
   }
 
   @Get("/:id")
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   getPostDetail(@Param("id") post_id: string){
     return this.postService.getPostDetail(post_id)
   }

@@ -2,9 +2,12 @@ import { Body, Controller, Get, Post, Req, UseGuards, UsePipes, ValidationPipe }
 import { AuthService } from './auth.service';
 import { LoginDto } from 'dto/login.dto';
 import { RegisterDto } from 'dto/register.dto';
-import { AuthGuard } from 'guard/auth.guard';
+// import { AuthGuard } from 'guard/auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { BlacklistService } from '../blacklist/blacklist.service';
+import { JwtAuthGuard } from 'guard/jwt.guard';
+import { JwtRefreshAuthGuard } from 'guard/refresh.guard';
+import { User } from '../user/entities/user.entity';
 @Controller('api/v1/auth')
 export class AuthController {
     constructor(
@@ -23,16 +26,17 @@ export class AuthController {
       }
     
       @Post("/log-out")
-      @UseGuards(AuthGuard)
+      @UseGuards(JwtAuthGuard)
       logout(@Body() refresh_token: string,@Req() req ){
-  
         let access_token = req.tokens.access_token    
         return this.authService.logout(refresh_token, access_token)
       }
     
-      @Post("/refresh-token")
-      refreshToken(@Body() {refresh_token}){
-        return this.authService.refreshToken(refresh_token)
+      @Get("/refresh-token")
+      @UseGuards(JwtRefreshAuthGuard)
+      refreshToken(@Req() req){
+        console.log(req.user);
+        return this.authService.refreshToken(req.user["role"],req.user["email"])
       }
 
       @Get("/send-mail-report")

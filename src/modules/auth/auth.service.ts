@@ -44,8 +44,8 @@ export class AuthService {
             email: user.email
         }
 
-        const access_token =  await this.jwtService.signAsync(payload_accesstoken,{secret: process.env.JWT_TOKEN})
-        const refresh_token = await this.jwtService.signAsync(payload_refreshtoken,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: '1d'})
+        const access_token =  await this.jwtService.signAsync(payload_accesstoken,{secret: process.env.JWT_TOKEN, expiresIn: process.env.JWT_TOKEN_EXPIRY})
+        const refresh_token = await this.jwtService.signAsync(payload_refreshtoken,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRY})
         
     
         return {
@@ -85,8 +85,8 @@ export class AuthService {
                 email: saveUser.email
             }
 
-            const access_token =  await this.jwtService.signAsync(access_payload,{secret: process.env.JWT_TOKEN})
-            const refresh_token = await this.jwtService.signAsync(refresh_payload,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: '1d'})
+            const access_token =  await this.jwtService.signAsync(access_payload,{secret: process.env.JWT_TOKEN, expiresIn: process.env.JWT_TOKEN_EXPIRY})
+            const refresh_token = await this.jwtService.signAsync(refresh_payload,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRY})
             return {access_token,refresh_token}
 
         } catch (error) {
@@ -98,21 +98,21 @@ export class AuthService {
 
     }
 
-    async refreshToken(refreshToken : string){
+    async refreshToken(role : string, email : string){
         try {
-            const token = await this.jwtService.verifyAsync(refreshToken, {secret: process.env.JWT_REFRESH_TOKEN})
-            // console.log(token)
-            if(!token){
-                throw new UnauthorizedException("Refresh_token not found")
-            }
+            // const token = await this.jwtService.verifyAsync(refreshToken, {secret: process.env.JWT_REFRESH_TOKEN})
+            // // console.log(token)
+            // if(!token){
+            //     throw new UnauthorizedException("Refresh_token not found")
+            // }
         
             const payload = {
-                id: token.id,
-                role: token.role,
-                email: token.email
+                id: uuidv4(),
+                role: role,
+                email: email
             }
 
-            const access_token = await this.jwtService.signAsync(payload,{secret: process.env.JWT_TOKEN})
+            const access_token = await this.jwtService.signAsync(payload,{secret: process.env.JWT_TOKEN, expiresIn: process.env.JWT_TOKEN_EXPIRY})
 
             return {access_token}
         } catch (error) {
@@ -153,19 +153,23 @@ export class AuthService {
         throw new BadRequestException("Invalid token!")
      }
     }
-    // @Cron('*/5 * * * *')
+    // @Cron('*/5 * * * * *')
     async sendEmailReport(){
-        console.log("gui gmail...");
-        await this.mailerService
-      .sendMail({
-        to: 'buikhoa2015@gmail.com', 
-        subject: 'Testing Nest MailerModule ✔', 
-        template: "mailReport",
-        context: {
-            username: "thanh dep trai",
-            activationCode: "123"
-        }
-      })
+        console.log("gui gmail...")
+        const admins = await this.userService.findAdmin()
+        const sendAdmin = admins.map(admin => {
+            return this.mailerService.sendMail({
+                to: admin.email, 
+                subject: 'Testing Nest MailerModule ✔', 
+                template: "mailReport",
+                context: {
+                    username: admin.email,
+                    date: new Date(),
+                    reportCount: "123"
+                }
+            }).then().catch(err => {console.error(`Lỗi khi gửi email đến ${admin.email}:`, err);})
+            })
+        await Promise.all(sendAdmin)
     }
    
 }

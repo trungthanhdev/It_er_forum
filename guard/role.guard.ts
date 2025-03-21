@@ -14,6 +14,6 @@ export class RoleGuard implements CanActivate {
     // console.log(request.currentUser.role);
     // console.log(this.roles.includes(request.currentUser.role));
 
-    return this.roles.includes(request.currentUser.role)
+    return this.roles.includes(request.user["role"])
   }
 }

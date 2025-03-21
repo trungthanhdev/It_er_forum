@@ -9,7 +9,7 @@ import { BlacklistModule } from '../blacklist/blacklist.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]),
-  forwardRef(() => AuthModule),
+  // forwardRef(() => AuthModule),
   BlacklistModule],
   controllers: [UserController],
   providers: [UserService],

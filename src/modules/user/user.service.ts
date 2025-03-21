@@ -7,7 +7,7 @@ import { RegisterDto } from 'dto/register.dto';
 import { isUUID } from 'class-validator';
 import { UpdatePasswordDto } from 'dto/updatePassword.dto';
 import * as bcrypt from 'bcrypt';
-import { UserStatus } from 'global/enum.global';
+import { Roles, UserStatus } from 'global/enum.global';
 import { UserDto } from 'dto/resSearchUserByUserName.dto';
 import { ResUserDto } from 'dto/resUser.dto';
 import { ResCurrentUserDto } from 'dto/resCurrentUser.dto';
@@ -136,6 +136,10 @@ export class UserService {
     return user
   }
 
+  async findAdmin(){
+    let admin = Roles.ADMIN
+    return await this.userRepo.find({where: {role: admin}})
+  }
   async updatePassword(id: string, updatPasswordDto : UpdatePasswordDto){
    try {
     let user = await this.findUserById(id)
