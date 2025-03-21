@@ -20,8 +20,8 @@ export class UserController {
 
   @Get("/profile")
   @UseGuards(JwtAuthGuard)
-  getProfile(@Req() req ){
-    let user = req.currentUser
+  getProfile(@Req() req){
+    let user = req.user
     return this.userService.getProfile(user)
   }
 

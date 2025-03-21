@@ -59,7 +59,7 @@ export class PostController {
     if(tags.length === 0){
       throw new BadRequestException("Invalid TagName!")
     }
-    const user_id = req.currentUser.user_id
+    const user_id = req.user["user_id"]
     return this.postService.createPost(post,user_id)
   }
 

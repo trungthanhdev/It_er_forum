@@ -4,9 +4,6 @@ import { TokenExpiredError } from "jsonwebtoken";
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard("jwt"){
-
-
-
     handleRequest<TUser = any>(err: any, user: any, info: any, context: ExecutionContext, status?: any): TUser {
         console.log("Handle Request called with:", { err, user, info, status });
         // console.log(info.name);
