@@ -3,12 +3,14 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import refreshConfig from 'src/config/refresh.config';
 import { ConfigType } from '@nestjs/config';
+import { BlacklistService } from 'src/modules/blacklist/blacklist.service';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor(
     @Inject(refreshConfig.KEY)
-    refresConfiguration: ConfigType<typeof refreshConfig>
+    refresConfiguration: ConfigType<typeof refreshConfig>,
+    private readonly blacklistService: BlacklistService
   ) {
     console.log('Refresh Config:', refresConfiguration);
     super({
@@ -21,6 +23,10 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
 
   async validate(payload: any) {
     // Ở đây bạn có thể kiểm tra thêm điều kiện nếu cần
+    const isInBlacklist = await this.blacklistService.findTokenInBlacklist(payload.id);
+        if(isInBlacklist){
+          throw new UnauthorizedException();
+        }
     return {id: payload.id, user_id: payload.sub, email: payload.email, role: payload.role};
   }
 
