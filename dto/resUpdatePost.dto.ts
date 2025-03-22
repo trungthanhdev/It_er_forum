@@ -2,6 +2,9 @@ import { IsArray, IsDate, IsNumber, IsString } from "class-validator"
 
 export class ResUpdatePost{
     @IsString()
+    post_id: string
+
+    @IsString()
     post_title: string
 
     @IsString()

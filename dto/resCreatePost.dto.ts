@@ -14,6 +14,9 @@ export class ResCreatePost{
         tags: string[]
 
         @IsString()
+        post_id: string
+
+        @IsString()
         post_title: string
 
         @IsString()

@@ -9,12 +9,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { BlacklistService } from '../blacklist/blacklist.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Cron } from '@nestjs/schedule';
+import { PostService } from '../post/post.service';
 @Injectable()
 export class AuthService {
     constructor(private readonly jwtService: JwtService,
                 private readonly userService: UserService,
                 private readonly blacklistService: BlacklistService,
-                private readonly mailerService: MailerService
+                private readonly mailerService: MailerService,
+                private readonly postService: PostService
     ){}
 
     async login(loginDto : LoginDto){
@@ -123,16 +125,14 @@ export class AuthService {
         }
     }
 
-    async logout(refresh_token: any, access_token: any){
+    async logout(refresh_token: string, access_token_id: string, user_id: string){
         try {
-            if(typeof refresh_token === 'object'){
-                refresh_token = refresh_token.refresh_token
-            }
-            let accessObject = await this.objectToken(refresh_token, false)
-            await this.blacklistService.addToBlacklist(accessObject)
-
-            let refreshObject = await this.objectToken(access_token,true)
-            await this.blacklistService.addToBlacklist(refreshObject)
+            
+            let user = await this.userService.findUserById(user_id);
+            let refresh_id = await this.objectToken(refresh_token, false)
+            await this.blacklistService.addToBlacklist({token_id: refresh_id, user})
+            
+            await this.blacklistService.addToBlacklist({token_id: access_token_id, user})
 
         } catch (error) {
             throw error
@@ -141,21 +141,24 @@ export class AuthService {
 
     async objectToken(token: string, isAccess: boolean){
      try {
-        const tokenVerify = await this.jwtService.verifyAsync(token, {
-            secret: isAccess ? process.env.JWT_TOKEN : process.env.JWT_REFRESH_TOKEN
+        let refresh = token["refresh_token"];
+        
+        const tokenVerify = await this.jwtService.verifyAsync(refresh, {
+            secret: process.env.JWT_REFRESH_TOKEN
         })
+        console.log(tokenVerify);
+        
         
         let token_id = tokenVerify.id
-        let user = await this.userService.getUserById(tokenVerify.sub)
-        let object = ({token_id, user})
-        return object
+        return token_id
      } catch (error) {
         throw new BadRequestException("Invalid token!")
      }
     }
-    @Cron('*/5 * * * * *')
+    // @Cron('*/5 * * * * *')
     async sendEmailReport(){
         console.log("gui gmail...")
+        const postRemaining = await this.postService.counPostRemaining()
         const admins = await this.userService.findAdmin()
         const sendAdmin = admins.map(admin => {
             return this.mailerService.sendMail({
@@ -165,7 +168,7 @@ export class AuthService {
                 context: {
                     username: admin.email,
                     date: new Date(),
-                    reportCount: "123"
+                    reportCount: postRemaining
                 }
             }).then().catch(err => {console.error(`Lỗi khi gửi email đến ${admin.email}:`, err);})
             })

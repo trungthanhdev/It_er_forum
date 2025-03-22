@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UpdateUserDto } from '../../../dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
@@ -11,6 +11,7 @@ import { Roles, UserStatus } from 'global/enum.global';
 import { UserDto } from 'dto/resSearchUserByUserName.dto';
 import { ResUserDto } from 'dto/resUser.dto';
 import { ResCurrentUserDto } from 'dto/resCurrentUser.dto';
+import { PostService } from '../post/post.service';
 @Injectable()
 export class UserService {
   constructor(
@@ -201,17 +202,17 @@ export class UserService {
     return resUser
   }
 
-  getProfile(user : User){
+  async getProfile(user : User){
+    let currentUser = await this.findUserById(user.user_id)
     let resUser = new ResCurrentUserDto()
-    resUser.user_id = user.user_id
-    resUser.user_name = user.user_name
-    resUser.last_name = user.last_name
-    resUser.first_name = user.first_name
-    resUser.age = user.age
-    resUser.ava_img_path = user.ava_img_path
-    resUser.email = user.email
-    resUser.phone_num = user.phone_num
-
+    resUser.user_id = currentUser.user_id
+    resUser.user_name = currentUser.user_name
+    resUser.last_name = currentUser.last_name
+    resUser.first_name = currentUser.first_name
+    resUser.age = currentUser.age
+    resUser.ava_img_path = currentUser.ava_img_path
+    resUser.email = currentUser.email
+    resUser.phone_num = currentUser.phone_num
     return resUser
   }
 }

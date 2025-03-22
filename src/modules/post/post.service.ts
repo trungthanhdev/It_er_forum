@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { Repository } from 'typeorm';
@@ -16,6 +16,7 @@ import { ResUpdatePost } from 'dto/resUpdatePost.dto';
 import { ResPostDetail } from 'dto/resPostDetail.dto';
 import { isUUID } from 'class-validator';
 import { sensitive_words } from 'src/bad_words';
+import { ResPostShort } from 'dto/resPostShort.dto';
 
 @Injectable()
 export class PostService {
@@ -76,7 +77,7 @@ export class PostService {
   async getPostAfterNSFWFiltered(){
     let post = await this.postRepo.find({
       where: {status : PostStatus.PENDING},
-      relations: ["user", "taged_bys","taged_bys.tag"]
+      relations: ["user"]
     })
     
     if(!post){
@@ -91,9 +92,9 @@ export class PostService {
         postElement.user_id = postFiltered.user.user_id,
         postElement.user_name = postFiltered.user.user_name,
         postElement.is_image = Array.isArray(postFiltered.img_url) && postFiltered.img_url.length > 0,
-        postElement.ava_img_path = postFiltered.user.ava_img_path,
+        postElement.ava_img_path = postFiltered.user.ava_img_path, 
         postElement.post_title = postFiltered.post_title,
-        postElement.tags = postFiltered.taged_bys.map(tags => {return tags.tag.tag_name}),
+        // postElement.tags = postFiltered.taged_bys.map(tags => {return tags.tag.tag_name}),
         postElement.date_updated = postFiltered.date_updated,
         postElement.status = postFiltered.status,
         postElement.post_id = postFiltered.post_id
@@ -136,7 +137,7 @@ export class PostService {
     try {
       let filter = await this.postRepo.find({
         where: {status: status},
-        relations: ["user", "taged_bys", "taged_bys.tag"],
+        relations: ["user"],
       })
 
       try {
@@ -149,7 +150,7 @@ export class PostService {
             resElement.is_image = Boolean(post.img_url)
             resElement.post_id = post.post_id
             resElement.post_title = post.post_title
-            resElement.tags = post.taged_bys.map((tags) =>{ return tags.tag.tag_name})
+            // resElement.tags = post.taged_bys.map((tags) =>{ return tags.tag.tag_name})
             resElement.status = post.status
             return resElement
         })
@@ -194,6 +195,7 @@ export class PostService {
     resPost.user_id = user.user_id
     resPost.user_name = user.user_name
     resPost.ava_img_path = user.ava_img_path
+    resPost.post_id = newPost.post_id
     resPost.post_title = newPost.post_title
     resPost.post_content = newPost.post_content
     resPost.img_url = newPost.img_url
@@ -222,6 +224,7 @@ export class PostService {
     }
 
     const resUpdatePost = new ResUpdatePost()
+    resUpdatePost.post_id = postAfterUpdate?.post_id
     resUpdatePost.post_title = postAfterUpdate?.post_title
     resUpdatePost.post_content = postAfterUpdate?.post_content
     resUpdatePost.img_url = postAfterUpdate.img_url
@@ -247,6 +250,7 @@ export class PostService {
     resPostDetail.user_id = post.user.user_id
     resPostDetail.user_name = post.user.user_name
     resPostDetail.ava_img_path = post.user.ava_img_path
+    resPostDetail.post_id = post.post_id
     resPostDetail.post_title = post.post_title
     resPostDetail.post_content = post.post_content
     resPostDetail.img_url = post.img_url
@@ -266,6 +270,34 @@ export class PostService {
     })) 
 
     return resPostDetail
+  }
+
+  async counPostRemaining(){
+    return this.postRepo.count({where : {
+      status: PostStatus.PENDING
+    }})
+  }
+
+  async getPostByUserId(user_id: string){
+    const user_post = await this.postRepo.find({where : {
+      user : {user_id: user_id}},
+      relations: ["comments", "user"] 
+    })
+    let resPostUser = user_post.map(up => {
+      const userPost =  new ResPostShort()
+      userPost.user_id = up.user.user_id
+      userPost.user_name = up.user.user_name
+      userPost.ava_img_path = up.user.ava_img_path
+      userPost.post_id = up.post_id
+      userPost.post_title = up.post_title
+      userPost.post_content = up.post_content
+      userPost.img_url = up.img_url
+      userPost.upvote = up.upvote
+      userPost.downvote = up.downvote
+      userPost.comments_num = up.comments.length
+      return userPost
+    })
+    return resPostUser 
   }
 }
 

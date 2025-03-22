@@ -20,9 +20,9 @@ export class PostNSFWDto{
     @IsBoolean()
     is_image: boolean
 
-    @IsArray()
-    // @IsOptional()
-    tags: TagName[] 
+    // @IsArray()
+    // // @IsOptional()
+    // tags: TagName[] 
 
     @IsDate()
     date_updated: Date

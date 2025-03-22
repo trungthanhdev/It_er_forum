@@ -3,6 +3,8 @@ import { User } from "src/modules/user/entities/user.entity";
 
 export class BlacklistDto{
     @IsString()
-    token_id?: string
+    token_id?: string;
+
+    user: User;
 
 }

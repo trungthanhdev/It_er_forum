@@ -27,9 +27,12 @@ export class AuthController {
     
       @Post("/log-out")
       @UseGuards(JwtAuthGuard)
-      logout(@Body() refresh_token: string,@Req() req ){
-        let access_token = req.tokens.access_token    
-        return this.authService.logout(refresh_token, access_token)
+      logout(@Body() refresh_token: string,@Req() req){
+        // let access_token = req.tokens.access_token    
+        // console.log(req);
+        console.log("token id:",req.user["id"]);
+        console.log("user_id: ",req.user["user_id"]);
+        return this.authService.logout(refresh_token, req.user["id"], req.user["user_id"])
       }
     
       @Get("/refresh-token")

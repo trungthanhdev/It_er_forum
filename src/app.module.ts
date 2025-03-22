@@ -24,6 +24,7 @@ import { SubscribedTagsModule } from './modules/subscribed_tags/subscribed_tags.
 import { JwtService } from '@nestjs/jwt';
 
 
+
 @Module({
   imports: [UserModule, PostModule, AuthModule,
     TypeOrmModule.forRoot(pgConfig), BlacklistModule, ReportModule, CommentModule, NotificationModule, TagModule, TagByModule,

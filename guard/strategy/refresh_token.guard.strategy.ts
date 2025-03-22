@@ -24,9 +24,9 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
   async validate(payload: any) {
     // Ở đây bạn có thể kiểm tra thêm điều kiện nếu cần
     const isInBlacklist = await this.blacklistService.findTokenInBlacklist(payload.id);
-    if(isInBlacklist){
-      throw new UnauthorizedException();
-    }
+        if(isInBlacklist){
+          throw new UnauthorizedException();
+        }
     return {id: payload.id, user_id: payload.sub, email: payload.email, role: payload.role};
   }
 
