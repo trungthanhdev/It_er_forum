@@ -3,6 +3,7 @@ export class ResPostDetail{
         user_name: string
         ava_img_path: string
         tags: string[]
+        post_id: string
         post_title: string
         post_content: string
         img_url: string[]

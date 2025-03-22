@@ -2,10 +2,13 @@ import { IsString } from "class-validator"
 
 export class GetReportBySubjectDto{
     @IsString()
-    user_id: string
+    report_id: string
+    
+    @IsString()
+    reported_user_id: string
 
     @IsString()
-    user_name: string
+    reported_user_name: string
 
     @IsString()
     ava_img_path: string

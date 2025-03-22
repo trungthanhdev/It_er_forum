@@ -22,6 +22,8 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   getProfile(@Req() req){
     let user = req.user
+    console.log(req.user);
+    
     return this.userService.getProfile(user)
   }
 

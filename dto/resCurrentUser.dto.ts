@@ -25,4 +25,5 @@ export class ResCurrentUserDto{
     @IsString()
     ava_img_path: string
 
+    user_posts: any[]
 }

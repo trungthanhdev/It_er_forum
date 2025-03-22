@@ -33,8 +33,9 @@ export class ReportService {
        }
        let response = report.map((report) => {
             let resElement = new GetReportBySubjectDto()
-            resElement.user_id = report.user.user_id,
-            resElement.user_name = report.user.user_name,
+            resElement.report_id = report.report_id,
+            resElement.reported_user_id = report.user.user_id,
+            resElement.reported_user_name = report.user.user_name,
             resElement.report_title = report.report_title,
             resElement.ava_img_path = report.user.ava_img_path
             return resElement
@@ -97,6 +98,7 @@ export class ReportService {
             case ReportSubject.USER:
                 return {
                     reported_user_id : report.user.user_id,
+                    reported_user_name: report.user.user_name,
                     reported_id: report.report_id,
                     report_title: report.report_title,
                     report_body: report.report_body,
@@ -114,6 +116,7 @@ export class ReportService {
             case ReportSubject.COMMENT:
                 return {
                     reported_user_id : report.user.user_id,
+                    reported_user_name: report.user.user_name,
                     reported_id: report.report_id,
                     report_title: report.report_title,
                     report_body: report.report_body,
@@ -132,6 +135,7 @@ export class ReportService {
             case ReportSubject.POST:
                 return{
                     reported_user_id : report.user.user_id,
+                    reported_user_name: report.user.user_name,
                     reported_id: report.report_id,
                     report_title: report.report_title,
                     report_body: report.report_body,
@@ -206,8 +210,6 @@ export class ReportService {
                 throw new BadRequestException("Invalid report subject!");
         }
    }
-
-
 }
 
 

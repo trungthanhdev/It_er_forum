@@ -9,12 +9,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { BlacklistService } from '../blacklist/blacklist.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Cron } from '@nestjs/schedule';
+import { PostService } from '../post/post.service';
 @Injectable()
 export class AuthService {
     constructor(private readonly jwtService: JwtService,
                 private readonly userService: UserService,
                 private readonly blacklistService: BlacklistService,
-                private readonly mailerService: MailerService
+                private readonly mailerService: MailerService,
+                private readonly postService: PostService
     ){}
 
     async login(loginDto : LoginDto){
@@ -156,6 +158,7 @@ export class AuthService {
     // @Cron('*/5 * * * * *')
     async sendEmailReport(){
         console.log("gui gmail...")
+        const postRemaining = await this.postService.counPostRemaining()
         const admins = await this.userService.findAdmin()
         const sendAdmin = admins.map(admin => {
             return this.mailerService.sendMail({
@@ -165,7 +168,7 @@ export class AuthService {
                 context: {
                     username: admin.email,
                     date: new Date(),
-                    reportCount: "123"
+                    reportCount: postRemaining
                 }
             }).then().catch(err => {console.error(`Lỗi khi gửi email đến ${admin.email}:`, err);})
             })

@@ -10,6 +10,7 @@ import { JwtRefreshStrategy } from 'guard/strategy/refresh_token.guard.strategy'
 import { ConfigModule } from '@nestjs/config';
 import jwtConfig from 'src/config/jwt.config';
 import refreshConfig from 'src/config/refresh.config';
+import { PostModule } from '../post/post.module';
 
 
 @Module({
@@ -25,6 +26,7 @@ import refreshConfig from 'src/config/refresh.config';
     // forwardRef(() => UserModule),
     UserModule,
     BlacklistModule,
+    PostModule
     ],
     providers:[AuthService, JwtStrategy, JwtRefreshStrategy],
     controllers: [AuthController],

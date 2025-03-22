@@ -29,7 +29,7 @@ export class PostController {
     @Query("sort_by") sort_by: string,
     @Query("is_ascending") is_ascending: string
   ){
-    const modifyStatus = status.toUpperCase() as PostStatus
+    const modifyStatus = status as PostStatus
     const modifySortBy = sort_by ? new Date(sort_by) : null
     const modifyIsAscending = is_ascending === 'true'
     return this.postService.searchSortPostByStatus(modifyStatus,modifySortBy,modifyIsAscending)
@@ -77,4 +77,14 @@ export class PostController {
     return this.postService.getPostDetail(post_id)
   }
 
+  // @Get("/admin/count-post-remaining")
+  // getPostRemaining(){
+  //   return this.postService.counPostRemaining()
+  // }
+
+  @Get("/user_posts/:user_id")
+  @UseGuards(JwtAuthGuard)
+  getUserPost(@Param("user_id") user_id : string){
+    return this.postService.getPostByUserId(user_id)
+  }
 }
