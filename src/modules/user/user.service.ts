@@ -73,12 +73,12 @@ export class UserService {
      }
   }
 
-  async updateProfile(id: string, updateUserDto: Partial<UpdateUserDto>, reqCurrentUser: User) {
+  async updateProfile(id: string, updateUserDto: Partial<UpdateUserDto>, reqCurrentUser_id: string) {
     let user = await this.userRepo.findOne({where: {user_id : id}})
     if(!user){
       throw new BadRequestException("User not found")
     }
-    if(reqCurrentUser.user_id !== id){
+    if(reqCurrentUser_id !== id){
       throw new UnauthorizedException("Can't change another profile!")
     }
 

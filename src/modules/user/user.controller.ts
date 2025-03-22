@@ -22,8 +22,6 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   getProfile(@Req() req){
     let user = req.user
-    console.log(req.user);
-    
     return this.userService.getProfile(user)
   }
 
@@ -32,8 +30,8 @@ export class UserController {
   @Patch('/profile/:id')
   @UseGuards(JwtAuthGuard)
   updateProfile(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Req() req) {
-    let user = req.currentUser
-    return this.userService.updateProfile(id, updateUserDto, user);
+    let currentUser_id = req.user["user_id"]
+    return this.userService.updateProfile(id, updateUserDto, currentUser_id);
   }
 
   @Get("/:user_name")
@@ -62,7 +60,6 @@ export class UserController {
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(JwtAuthGuard)
   async changeUserStatus(@Param("id") id: string, @Body() status : string){
-    // console.log(updateUserStatusdto);
     return await this.userService.changeUserStatus(id,status)
   }
 

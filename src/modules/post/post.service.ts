@@ -273,9 +273,8 @@ export class PostService {
   }
 
   async counPostRemaining(){
-    return this.postRepo.count({where : {
-      status: PostStatus.PENDING
-    }})
+    const posts = await this.getPostAfterNSFWFiltered()
+    return posts.length
   }
 
   async getPostByUserId(user_id: string){
