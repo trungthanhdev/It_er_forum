@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, UsePipes, ValidationPipe, UseGuards, Query, UseInterceptors, Post, BadRequestException, Req, UploadedFile, UploadedFiles } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, UsePipes, ValidationPipe, UseGuards, Query, UseInterceptors, Post, BadRequestException, Req, UploadedFile, UploadedFiles, Put } from '@nestjs/common';
 import { PostService } from './post.service';
 import { PostStatus, TagName } from 'global/enum.global';
 import { RoleGuard } from 'guard/role.guard';
@@ -52,16 +52,14 @@ export class PostController {
 
   @Post("/")
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('img_file'))
-  createPost(@Body() post: CreatePost,@Req() req,@UploadedFile() img_file?: Express.Multer.File){
-    // console.log(post.tags);
+  @UseInterceptors(FilesInterceptor('img_file'))
+  createPost(@Body() post: CreatePost,@Req() req,@UploadedFiles() img_file?: Express.Multer.File){
     
     if (!Array.isArray(post.tags)) {
       throw new BadRequestException("Tags must be an array!");
     }
     
     const tags = post.tags.filter(tags => Object.values(TagName).includes(tags))
-    // console.log(tags);
     
     if(tags.length === 0){
       throw new BadRequestException("Invalid TagName!")
@@ -70,12 +68,12 @@ export class PostController {
     return this.postService.createPost({ ...post, img_file },user_id)
   }
 
-  @Patch("/:id")
+  @Put("/:id")
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FilesInterceptor('img_file'))
   updatePost(@Param("id") post_id: string,
              @Body() updatePost: UpdatePostDto,
-             @UploadedFiles() img_file: Express.Multer.File
+             @UploadedFiles() img_file?: Express.Multer.File
   ){
     return this.postService.updatePost(post_id, {...updatePost,img_file})
   }

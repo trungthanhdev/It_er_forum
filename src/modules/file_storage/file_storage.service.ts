@@ -22,7 +22,7 @@ export class FileStorageService {
             // Lấy URL của file
             const [url] = await fileRef.getSignedUrl({
                 action: 'read',
-                expires: '03-01-2030', 
+                expires: new Date().setFullYear(new Date().getFullYear() + 100), // 100 nam sau thi het han
             });
 
             return url;

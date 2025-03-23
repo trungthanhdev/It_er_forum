@@ -185,12 +185,22 @@ export class PostService {
       throw new NotFoundException("User not found!")
     }
 
-    let imgUrl: string | null = null;
+    let imgUrl: string[] = [];
     if (post.img_file) { 
-        imgUrl = await this.fileStorageService.upload(post.img_file, user_id);
+      let uploadedImages: string[] = [];
+      if (Array.isArray(post.img_file) && post.img_file.length > 0) {
+          // Nếu là mảng ảnh, tải tất cả ảnh lên
+          uploadedImages = await Promise.all(
+              post.img_file.map(file => this.fileStorageService.upload(file, user_id))
+          );
+      } else {
+          // Nếu chỉ có một ảnh, tải ảnh đó lên
+          uploadedImages = [await this.fileStorageService.upload(post.img_file, user_id)];
+      }
+      imgUrl = [...imgUrl,...uploadedImages]
     }
 
-    const newPost = this.postRepo.create({...post,user: user,img_url: imgUrl ? [imgUrl] : []})
+    const newPost = this.postRepo.create({...post,user: user,img_url: imgUrl})
     await this.postRepo.save(newPost)
 
     for(const tagName of post.tags){
@@ -271,7 +281,6 @@ export class PostService {
                   }));
               }
 
-              // Cập nhật danh sách ảnh mới
               newImg = [...new Set(uploadedImages)]; // Loại bỏ ảnh trùng lặp
           }
       } catch (error) {
