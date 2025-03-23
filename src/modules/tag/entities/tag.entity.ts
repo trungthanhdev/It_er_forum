@@ -20,7 +20,7 @@ export class TagEntity{
     tag_description:string
 
     @OneToMany(() => TagedByEntity, (taged_by) => {taged_by.tag})
-    taged_bys: TagEntity[]
+    taged_bys: TagedByEntity[]
 
     @OneToMany(() => SubscribedTag, (subscribed_tags) => subscribed_tags.tag)
     subscribed_tags: SubscribedTag[]

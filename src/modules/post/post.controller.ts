@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, UsePipes, ValidationPipe, UseGuards, Query, UseInterceptors, Post, BadRequestException, Req } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, UsePipes, ValidationPipe, UseGuards, Query, UseInterceptors, Post, BadRequestException, Req, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { PostService } from './post.service';
 import { PostStatus, TagName } from 'global/enum.global';
 import { RoleGuard } from 'guard/role.guard';
@@ -6,6 +6,8 @@ import { RoleGuard } from 'guard/role.guard';
 import { CreatePost } from 'dto/createPost.dto';
 import { UpdatePostDto } from 'dto/updatePost.dto';
 import { JwtAuthGuard } from 'guard/jwt.guard';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { isUUID, validate } from 'class-validator';
 
 @Controller('/api/v1/posts')
 export class PostController {
@@ -50,30 +52,40 @@ export class PostController {
 
   @Post("/")
   @UseGuards(JwtAuthGuard)
-  createPost(@Body() post: CreatePost, @Req() req){
+  @UseInterceptors(FileInterceptor('img_file'))
+  createPost(@Body() post: CreatePost,@Req() req,@UploadedFile() img_file?: Express.Multer.File){
+    // console.log(post.tags);
+    
     if (!Array.isArray(post.tags)) {
       throw new BadRequestException("Tags must be an array!");
     }
     
     const tags = post.tags.filter(tags => Object.values(TagName).includes(tags))
+    // console.log(tags);
+    
     if(tags.length === 0){
       throw new BadRequestException("Invalid TagName!")
     }
     const user_id = req.user["user_id"]
-    return this.postService.createPost(post,user_id)
+    return this.postService.createPost({ ...post, img_file },user_id)
   }
 
   @Patch("/:id")
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FilesInterceptor('img_file'))
   updatePost(@Param("id") post_id: string,
-             @Body() updatePost: UpdatePostDto
+             @Body() updatePost: UpdatePostDto,
+             @UploadedFiles() img_file: Express.Multer.File
   ){
-    return this.postService.updatePost(post_id, updatePost)
+    return this.postService.updatePost(post_id, {...updatePost,img_file})
   }
 
   @Get("/:id")
   @UseGuards(JwtAuthGuard)
   getPostDetail(@Param("id") post_id: string){
+    if(!isUUID(post_id)){
+      throw new BadRequestException("Invalid post ID");
+    }
     return this.postService.getPostDetail(post_id)
   }
 

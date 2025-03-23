@@ -41,7 +41,7 @@ export class User {
     @MaxLength(11)
     phone_num: string
 
-    @Column()
+    @Column({nullable: true})
     @MaxLength(20)
     country: string
 

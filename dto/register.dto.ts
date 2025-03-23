@@ -13,18 +13,18 @@ export class RegisterDto {
     @MaxLength(50)  
     user_name: string
 
-    @MaxLength(20)
-    first_name: string
+    // @MaxLength(20)
+    // first_name?: string
 
-    @MaxLength(20)
-    last_name: string
+    // @MaxLength(20)
+    // last_name?: string
     
     
-    @MaxLength(11)
-    phone_num: string
+    // @MaxLength(11)
+    // phone_num?: string
     
-    @MaxLength(20)
-    country: string
+    // @MaxLength(20)
+    // country?: string
     
     @IsNumber()
     age: number

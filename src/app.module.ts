@@ -22,6 +22,8 @@ import { join } from 'path';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SubscribedTagsModule } from './modules/subscribed_tags/subscribed_tags.module';
 import { JwtService } from '@nestjs/jwt';
+import { FirebaseModule } from './modules/firebase/firebase.module';
+import { FileStorageModule } from './modules/file_storage/file_storage.module';
 
 
 
@@ -54,6 +56,8 @@ import { JwtService } from '@nestjs/jwt';
     }),
     ScheduleModule.forRoot(),
     SubscribedTagsModule,
+    FirebaseModule,
+    FileStorageModule,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService,JwtService,

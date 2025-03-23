@@ -12,11 +12,13 @@ import { UserDto } from 'dto/resSearchUserByUserName.dto';
 import { ResUserDto } from 'dto/resUser.dto';
 import { ResCurrentUserDto } from 'dto/resCurrentUser.dto';
 import { PostService } from '../post/post.service';
+import { UserGateWay } from 'src/socket/user.gateway';
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepo : Repository<User>
+    private readonly userRepo : Repository<User>,
+    private readonly userGateway: UserGateWay
   ){}
 
   async createNewAdmin(registerDto : RegisterDto){
@@ -199,6 +201,11 @@ export class UserService {
     resUser.first_name = user.first_name,
     resUser.last_name = user.last_name,
     resUser.status = user.status
+
+    if(resUser.status === UserStatus.BANNED){
+      this.userGateway.sendBannedUserNotification(id, resUser)
+    }
+
     return resUser
   }
 
