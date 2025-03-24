@@ -55,3 +55,4 @@ pids
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 /Applications/IT_er_project/it_er_forum/to-do-list-6c37a-firebase-adminsdk-rf827-e1bed752fb.json
+*.json
