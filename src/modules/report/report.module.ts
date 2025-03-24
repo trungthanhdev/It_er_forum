@@ -7,6 +7,7 @@ import { PostModule } from '../post/post.module';
 import { UserModule } from '../user/user.module';
 import { BlacklistModule } from '../blacklist/blacklist.module';
 import { CommentModule } from '../comment/comment.module';
+import { ReportGateway } from 'src/socket/report.gateway';
 
 @Module({
   imports : [TypeOrmModule.forFeature([Report]),
@@ -16,6 +17,7 @@ import { CommentModule } from '../comment/comment.module';
             CommentModule
             ],
   controllers: [ReportController],
-  providers: [ReportService],
+  providers: [ReportService, ReportGateway], 
+  exports:[ReportService]
 })
 export class ReportModule {}

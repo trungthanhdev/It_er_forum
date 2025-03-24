@@ -11,6 +11,8 @@ import { ConfigModule } from '@nestjs/config';
 import jwtConfig from 'src/config/jwt.config';
 import refreshConfig from 'src/config/refresh.config';
 import { PostModule } from '../post/post.module';
+import { SubscribedTagsModule } from '../subscribed_tags/subscribed_tags.module';
+import { ReportModule } from '../report/report.module';
 
 
 @Module({
@@ -26,7 +28,9 @@ import { PostModule } from '../post/post.module';
     // forwardRef(() => UserModule),
     UserModule,
     BlacklistModule,
-    PostModule
+    PostModule,
+    SubscribedTagsModule,
+    ReportModule
     ],
     providers:[AuthService, JwtStrategy, JwtRefreshStrategy],
     controllers: [AuthController],

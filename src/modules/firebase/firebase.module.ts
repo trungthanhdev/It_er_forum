@@ -8,7 +8,7 @@ import { FirebaseService } from './firebase.service';
           provide: 'FIREBASE_ADMIN',
           useFactory: () => {
             const app = admin.initializeApp({
-              credential: admin.credential.cert(require('/Applications/IT_er_project/it_er_forum/to-do-list-6c37a-firebase-adminsdk-rf827-e1bed752fb.json')),
+              credential: admin.credential.cert(require('/Applications/It_er_forum_v3/It_er_forum/to-do-list-6c37a-firebase-adminsdk-rf827-570379d3d6.json')),
               storageBucket: "to-do-list-6c37a.firebasestorage.app",
             });
             console.log(' Firebase đã kết nối thành công!');

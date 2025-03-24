@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from 'dto/login.dto';
 import { RegisterDto } from 'dto/register.dto';
@@ -8,6 +8,8 @@ import { BlacklistService } from '../blacklist/blacklist.service';
 import { JwtAuthGuard } from 'guard/jwt.guard';
 import { JwtRefreshAuthGuard } from 'guard/refresh.guard';
 import { User } from '../user/entities/user.entity';
+import { report } from 'process';
+import { ReportSubject } from 'global/enum.global';
 @Controller('api/v1/auth')
 export class AuthController {
     constructor(
@@ -42,9 +44,20 @@ export class AuthController {
         return this.authService.refreshToken(req.user["role"],req.user["email"])
       }
 
-      @Get("/send-mail-report")
+      @Post("/send-mail-report")
       sendMailReport(){
         return this.authService.sendEmailReport()
       }
+
+      @Post("/send-mail-ban")
+      sendEmailtoUserBanned(
+        @Query("user_id") user_id: string,
+        @Query("report_id") report_id: string,
+        @Query("subject") subject: string   
+      ){
+        let modifySubject = subject as ReportSubject
+        return this.authService.sendEmailtoUserBanned(user_id,report_id,modifySubject)
+      }
+      
       
 }

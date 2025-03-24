@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards, UsePipes, ValidationPipe, Res, Req, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards, UsePipes, ValidationPipe, Res, Req, UnauthorizedException, BadRequestException, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from '../../../dto/update-user.dto';
 // import { AuthGuard } from 'guard/auth.guard';
@@ -27,7 +27,7 @@ export class UserController {
 
  
 
-  @Patch('/profile/:id')
+  @Put('/profile/:id')
   @UseGuards(JwtAuthGuard)
   updateProfile(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Req() req) {
     let currentUser_id = req.user["user_id"]
