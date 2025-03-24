@@ -11,7 +11,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { PostService } from '../post/post.service';
 import { SubscribedTagsService } from '../subscribed_tags/subscribed_tags.service';
 import { ReportService } from '../report/report.service';
-import { ReportSubject } from 'global/enum.global';
+import { ReportSubject, UserStatus } from 'global/enum.global';
 @Injectable()
 export class AuthService {
     constructor(private readonly jwtService: JwtService,
@@ -37,23 +37,28 @@ export class AuthService {
             throw new UnauthorizedException("Wrong password")
         }
         
+        if(user.status === UserStatus.BANNED){
+            throw new UnauthorizedException("Account has been banned!")
+        }
+
         const payload_accesstoken = {
             sub: user.user_id,
             id: uuidv4(),
             role: user.role,
+            status:user.status,
             email: user.email
         }
         const payload_refreshtoken = {
             sub: user.user_id,
             id: uuidv4(),
             role: user.role,
+            status:user.status,
             email: user.email
         }
 
         const access_token =  await this.jwtService.signAsync(payload_accesstoken,{secret: process.env.JWT_TOKEN, expiresIn: process.env.JWT_TOKEN_EXPIRY})
         const refresh_token = await this.jwtService.signAsync(payload_refreshtoken,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRY})
         
-    
         return {
             access_token,
             refresh_token}
@@ -82,12 +87,14 @@ export class AuthService {
                 id: uuidv4(),
                 sub: saveUser.user_id,
                 role: saveUser.role,
+                status:saveUser.status,
                 email: saveUser.email
             }
             const refresh_payload = {
                 id: uuidv4(),
                 sub: saveUser.user_id,
                 role: saveUser.role,
+                status:saveUser.status,
                 email: saveUser.email
             }
 
@@ -107,17 +114,20 @@ export class AuthService {
 
     }
 
-    async refreshToken(role : string, email : string){
+    async refreshToken(role : string, email : string, user_id: string,status: string){
         try {
             // const token = await this.jwtService.verifyAsync(refreshToken, {secret: process.env.JWT_REFRESH_TOKEN})
             // // console.log(token)
             // if(!token){
             //     throw new UnauthorizedException("Refresh_token not found")
             // }
+
         
             const payload = {
                 id: uuidv4(),
+                sub: user_id,
                 role: role,
+                status: status,
                 email: email
             }
 

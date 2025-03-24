@@ -216,6 +216,10 @@ export class ReportService {
         }
    }
 
+   deleteReport(report_id: string){
+        return this.reportRepo.delete(report_id)
+   }
+
 }
 
 

@@ -7,7 +7,7 @@ export class TagedByEntity{
     @PrimaryGeneratedColumn("uuid")
     taged_by_id : string
 
-    @ManyToOne(() => Post, (post) => {post.taged_bys})
+    @ManyToOne(() => Post, (post) => {post.taged_bys}, { onDelete: "CASCADE" })
     @JoinColumn({name : "post_id"})
     post: Post
 

@@ -4,6 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import refreshConfig from 'src/config/refresh.config';
 import { ConfigType } from '@nestjs/config';
 import { BlacklistService } from 'src/modules/blacklist/blacklist.service';
+import { UserStatus } from 'global/enum.global';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
@@ -27,7 +28,10 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
         if(isInBlacklist){
           throw new UnauthorizedException();
         }
-    return {id: payload.id, user_id: payload.sub, email: payload.email, role: payload.role};
+        if(payload.status === UserStatus.BANNED){
+          throw new UnauthorizedException("Account has been banned!")
+        }
+    return {id: payload.id, user_id: payload.sub, email: payload.email, role: payload.role,status: payload.status};
   }
 
 }

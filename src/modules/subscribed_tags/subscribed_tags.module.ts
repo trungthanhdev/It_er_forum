@@ -4,10 +4,11 @@ import { SubscribedTagsController } from './subscribed_tags.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubscribedTag } from './entities/subscribed_tag.entity';
 import { TagModule } from '../tag/tag.module';
+import { TagByModule } from '../tag_by/tag_by.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([SubscribedTag]),
-            TagModule
+            TagModule,TagByModule
   ],
   controllers: [SubscribedTagsController],
   providers: [SubscribedTagsService],

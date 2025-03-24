@@ -24,7 +24,7 @@ import { SubscribedTagsModule } from './modules/subscribed_tags/subscribed_tags.
 import { JwtService } from '@nestjs/jwt';
 import { FirebaseModule } from './modules/firebase/firebase.module';
 import { FileStorageModule } from './modules/file_storage/file_storage.module';
-
+import { RecommendModule } from './modules/recommend/recommend.module';
 
 
 
@@ -57,6 +57,7 @@ import { FileStorageModule } from './modules/file_storage/file_storage.module';
     }),
     ScheduleModule.forRoot(),
     SubscribedTagsModule,
+    RecommendModule,
     FirebaseModule,
     FileStorageModule,
   ],

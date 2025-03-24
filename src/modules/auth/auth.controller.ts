@@ -41,7 +41,7 @@ export class AuthController {
       @UseGuards(JwtRefreshAuthGuard)
       refreshToken(@Req() req){
         console.log(req.user);
-        return this.authService.refreshToken(req.user["role"],req.user["email"])
+        return this.authService.refreshToken(req.user["role"], req.user["email"], req.user["user_id"],req.user["status"]);
       }
 
       @Post("/send-mail-report")

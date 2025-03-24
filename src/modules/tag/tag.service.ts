@@ -19,10 +19,20 @@ export class TagService {
         const modifyTagName = tagName as TagName
         return this.tagRepo.findOne({where: {tag_name: modifyTagName}})
     }
+    findOneTagById(tag_id: string){
+        return this.tagRepo.findOne({where: {tag_id: tag_id}})
+    }
 
     addTag(tag_name: string){
         const modifyTagName = tag_name as TagName
         const tag = this.tagRepo.create({tag_name: modifyTagName})
         return this.tagRepo.save(tag)
+    }
+
+    async findTagById(tag_id:string) : Promise<TagEntity | null>{
+        return this.tagRepo.findOne(
+            {where: {tag_id:tag_id},
+            relations: ["taged_bys", "taged_bys.post"]
+        });
     }
 }

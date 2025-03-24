@@ -397,6 +397,36 @@ export class PostService {
   
     return resPostUser 
   }
+
+  async generateShortPost(post_id: string) : Promise<ResPostShort>{
+    const post = await this.postRepo.findOne({
+      where: {post_id: post_id},
+      relations: ["user", "comments", "taged_bys", "taged_bys.tag"]
+    });
+    
+    if(!post){
+      throw new NotFoundException("Post not found!")
+    }
+
+    return {
+      user_id: post.user.user_id,
+      user_name: post.user.user_name,
+      ava_img_path: post.user.ava_img_path,
+      post_id: post.post_id, 
+      post_title: post.post_title,
+      post_content: post.post_content,
+      img_url: post.img_url,
+      date_updated: post.date_updated,
+      upvote: post.upvote,
+      downvote: post.downvote,
+      comments_num: post.comments.length,
+      tags: post.taged_bys.map(tags => tags.tag.tag_name)
+    }
+  }
+
+  deletePost(){
+    return this.postRepo.delete( {status: PostStatus.PENDING})
+  }
 }
 
 

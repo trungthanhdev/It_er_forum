@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpStatus, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ReportService } from './report.service';
 import { ReportSubject, ReportTitle } from 'global/enum.global';
 // import { JwtAuthGuard } from 'guard/auth.guard';
@@ -60,4 +60,9 @@ export class ReportController {
     return this.reportService.sendReport(modifySubject, sendReportDto)
   }
   
+
+  @Delete("/skip-report/:report_id")
+  deleteReport(@Param("report_id") report_id: string){
+    return this.reportService.deleteReport(report_id)
+  }
 }

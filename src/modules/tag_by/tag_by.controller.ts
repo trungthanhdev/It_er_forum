@@ -1,7 +1,7 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Param, Post } from '@nestjs/common';
 import { TagByService } from './tag_by.service';
 
-@Controller('tag-by')
+@Controller('/api/v1/tag-by')
 export class TagByController {
   constructor(private readonly tagByService: TagByService) {}
 }

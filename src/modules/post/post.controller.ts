@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, UsePipes, ValidationPipe, UseGuards, Query, UseInterceptors, Post, BadRequestException, Req, UploadedFile, UploadedFiles, Put } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, UsePipes, ValidationPipe, UseGuards, Query, UseInterceptors, Post, BadRequestException, Req, UploadedFile, UploadedFiles, Put, Delete } from '@nestjs/common';
 import { PostService } from './post.service';
 import { PostStatus, TagName } from 'global/enum.global';
 import { RoleGuard } from 'guard/role.guard';
@@ -96,5 +96,10 @@ export class PostController {
   @UseGuards(JwtAuthGuard)
   getUserPost(@Param("user_id") user_id : string){
     return this.postService.getPostByUserId(user_id)
+  }
+
+  @Delete("delete-post")
+  deletePost(){
+    return this.postService.deletePost()
   }
 }
