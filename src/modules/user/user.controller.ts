@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards, UsePipes, ValidationPipe, Res, Req, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards, UsePipes, ValidationPipe, Res, Req, UnauthorizedException, BadRequestException, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from '../../../dto/update-user.dto';
 // import { AuthGuard } from 'guard/auth.guard';
@@ -29,11 +29,11 @@ export class UserController {
 
  
 
-  @Patch('/profile/:id')
+  @Put('/profile/:id')
   @UseGuards(JwtAuthGuard)
   updateProfile(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Req() req) {
-    let user = req.currentUser
-    return this.userService.updateProfile(id, updateUserDto, user);
+    let currentUser_id = req.user["user_id"]
+    return this.userService.updateProfile(id, updateUserDto, currentUser_id);
   }
 
   @Get("/:user_name")
@@ -62,7 +62,6 @@ export class UserController {
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(JwtAuthGuard)
   async changeUserStatus(@Param("id") id: string, @Body() status : string){
-    // console.log(updateUserStatusdto);
     return await this.userService.changeUserStatus(id,status)
   }
 

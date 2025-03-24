@@ -9,6 +9,7 @@ import { error } from 'console';
 import { GetReportBySubjectDto } from 'dto/getReportBySubject.dto';
 import { SendReportDto } from 'dto/sendReport.dto';
 import { CommentService } from '../comment/comment.service';
+import { ReportGateway } from 'src/socket/report.gateway';
 
 @Injectable()
 export class ReportService {
@@ -17,7 +18,8 @@ export class ReportService {
         private readonly reportRepo: Repository<Report>,
         private readonly postService: PostService,
         private readonly userService: UserService,
-        private readonly commentService: CommentService
+        private readonly commentService: CommentService,
+        private readonly reportGateway: ReportGateway
     ){}
 
    async getReportbySubject(subject: ReportSubject){
@@ -170,6 +172,7 @@ export class ReportService {
                     user: reported_user_object
                 })
                 await this.reportRepo.save(reported_user)
+                this.reportGateway.sendNewReprt(reported_user)
                 return 
             }
             case ReportSubject.POST:
@@ -187,6 +190,7 @@ export class ReportService {
                     user: reported_user_object
                 })
                 await this.reportRepo.save(reportedPost)
+                this.reportGateway.sendNewReprt(reportedPost)
                 return
             }
             case ReportSubject.COMMENT:
@@ -204,12 +208,14 @@ export class ReportService {
                     user: reported_user_object
                 })
                 await this.reportRepo.save(reportedComment)
+                this.reportGateway.sendNewReprt(reportedComment)
                 return 
             }
             default:
                 throw new BadRequestException("Invalid report subject!");
         }
    }
+
 }
 
 

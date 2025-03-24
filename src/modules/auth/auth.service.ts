@@ -8,15 +8,19 @@ import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { BlacklistService } from '../blacklist/blacklist.service';
 import { MailerService } from '@nestjs-modules/mailer';
-import { Cron } from '@nestjs/schedule';
 import { PostService } from '../post/post.service';
+import { SubscribedTagsService } from '../subscribed_tags/subscribed_tags.service';
+import { ReportService } from '../report/report.service';
+import { ReportSubject } from 'global/enum.global';
 @Injectable()
 export class AuthService {
     constructor(private readonly jwtService: JwtService,
                 private readonly userService: UserService,
                 private readonly blacklistService: BlacklistService,
                 private readonly mailerService: MailerService,
-                private readonly postService: PostService
+                private readonly postService: PostService,
+                private readonly subscribedTagsService: SubscribedTagsService,
+                private readonly reportService: ReportService
     ){}
 
     async login(loginDto : LoginDto){
@@ -89,6 +93,9 @@ export class AuthService {
 
             const access_token =  await this.jwtService.signAsync(access_payload,{secret: process.env.JWT_TOKEN, expiresIn: process.env.JWT_TOKEN_EXPIRY})
             const refresh_token = await this.jwtService.signAsync(refresh_payload,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRY})
+            
+            await this.subscribedTagsService.subscribeTagDefault(saveUser)
+            
             return {access_token,refresh_token}
 
         } catch (error) {
@@ -174,6 +181,40 @@ export class AuthService {
             })
         await Promise.all(sendAdmin)
     }
+
+    async sendEmailtoUserBanned(user_id: string,report_id: string ,subject: ReportSubject){
+        if(!Object.values(ReportSubject).includes(subject)){
+            throw new BadRequestException("Invalid report subject!")
+        }
+        let user = await this.userService.findUserById(user_id)
+        if(!user){
+            throw new NotFoundException("User not found!")
+        }
+        let report = await this.reportService.getReportDetail(subject,report_id)
+        if(!report){
+            throw new NotFoundException("Report not found")
+        }
+
+        this.mailerService.sendMail({
+            to: user.email, 
+            subject: 'Tài khoản bị khóa', 
+            template: "userBanned",
+            context: {
+                first_name: Boolean(user.first_name) ? user.first_name: "Trống",
+                last_name: Boolean(user.last_name) ? user.last_name : "Trống",
+                email: Boolean(user.email) ? user.email : "Trống",
+                age: Boolean(user.age) ? user.age : "Trống",
+                country: Boolean(user.country) ? user.country : "Trống",
+                phone_num: Boolean(user.phone_num) ? user.phone_num : "Trống",
+                status: user.status,
+                title_report: report.report_title,
+                report_content: report.report_body,
+                date_reported: report.date_reported,
+                subject: report.subject
+            }
+        })
+    }
    
+    
 }
 

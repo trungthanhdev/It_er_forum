@@ -17,6 +17,10 @@ import { ResPostDetail } from 'dto/resPostDetail.dto';
 import { isUUID } from 'class-validator';
 import { sensitive_words } from 'src/bad_words';
 import { ResPostShort } from 'dto/resPostShort.dto';
+import { PostGateway } from 'src/socket/post.gateway';
+import { FileStorageService } from '../file_storage/file_storage.service';
+import { FirebaseService } from '../firebase/firebase.service';
+import * as admin from 'firebase-admin';
 
 @Injectable()
 export class PostService {
@@ -26,6 +30,9 @@ export class PostService {
     private readonly userService: UserService,
     private readonly tagedByService: TagByService,
     private readonly tagsService: TagService,
+    private readonly postGateway: PostGateway,
+    private readonly fileStorageService: FileStorageService,
+    private readonly firebaseService: FirebaseService
   ){}
   private badWordsArr = sensitive_words 
   private async containNSFW(content: string, sensitiveWordArr: string[]){
@@ -71,6 +78,8 @@ export class PostService {
     responsePostDetail.date_created = post.date_created,
     responsePostDetail.tags = post?.taged_bys.map(tags => {return tags.tag.tag_name})
     responsePostDetail.status = post?.status
+
+    this.postGateway.sendNewPostNotificationToAdmin(responsePostDetail)
     return responsePostDetail
   }
 
@@ -175,7 +184,23 @@ export class PostService {
     if(!user){
       throw new NotFoundException("User not found!")
     }
-    const newPost = this.postRepo.create({...post,user: user})
+
+    let imgUrl: string[] = [];
+    if (post.img_file) { 
+      let uploadedImages: string[] = [];
+      if (Array.isArray(post.img_file) && post.img_file.length > 0) {
+          // Nếu là mảng ảnh, tải tất cả ảnh lên
+          uploadedImages = await Promise.all(
+              post.img_file.map(file => this.fileStorageService.upload(file, user_id))
+          );
+      } else {
+          // Nếu chỉ có một ảnh, tải ảnh đó lên
+          uploadedImages = [await this.fileStorageService.upload(post.img_file, user_id)];
+      }
+      imgUrl = [...imgUrl,...uploadedImages]
+    }
+
+    const newPost = this.postRepo.create({...post,user: user,img_url: imgUrl})
     await this.postRepo.save(newPost)
 
     for(const tagName of post.tags){
@@ -202,18 +227,88 @@ export class PostService {
     resPost.date_created = newPost.date_created
     resPost.tags = resTag.map(tag => { return tag.tag.tag_name})
     resPost.status = newPost.status
+
+    this.postGateway.sendNewPostNotificationToAdmin(resPost)
     return resPost
   }
 
   async updatePost(post_id: string, post: UpdatePostDto){
+    console.log("📌 Received post data:", post);
+
     const existedPost = await this.postRepo.findOne({
       where : {post_id: post_id},
-      relations: ["taged_bys", "taged_bys.tag"]
+      relations: ["taged_bys", "taged_bys.tag","user"]
     })
     if(!existedPost){
       throw new NotFoundException("Post not found")
     }
-    await this.postRepo.update({post_id},post)
+
+    let newImg: string[] = existedPost.img_url || []
+    if (post.img_file) {
+      try {
+          let uploadedImages: string[] = [];
+
+          if (Array.isArray(post.img_file) && post.img_file.length > 0) {
+              uploadedImages = await Promise.all(
+                  post.img_file.map(file => this.fileStorageService.upload(file, existedPost.user.user_id))
+              );
+          } else if (typeof post.img_file === "object") {
+              uploadedImages = [await this.fileStorageService.upload(post.img_file, existedPost.user.user_id)];
+          }
+
+          if (uploadedImages.length > 0) {
+              console.log("✅ Uploaded images:", uploadedImages);
+
+              // Kiểm tra và xóa ảnh cũ nếu có ảnh mới được upload thành công
+              if (newImg.length > 0) {
+                  console.log("🗑️ Deleting old images:", newImg);
+
+                  await Promise.all(newImg.map(async (img) => {
+                      try {
+                          const bucket = admin.storage().bucket();
+                          const file = bucket.file(img);
+
+                          const [exists] = await file.exists();
+                          if (exists) {
+                              await file.delete();
+                              console.log(`✅ Deleted old image: ${img}`);
+                          } else {
+                              console.warn(`⚠️ Skipped deleting file (not found): ${img}`);
+                          }
+                      } catch (error) {
+                          console.error(`❌ Error deleting file ${img}:`, error.message);
+                      }
+                  }));
+              }
+
+              newImg = [...new Set(uploadedImages)]; // Loại bỏ ảnh trùng lặp
+          }
+      } catch (error) {
+          console.error("❌ Image upload failed:", error);
+          throw new Error("Failed to upload new images.");
+      }
+    }
+
+    // if(Array.isArray(post.tags)){
+    //   for(const tagName of post.tags){
+    //     let tag = await this.tagsService.findOneTag(tagName)
+
+    //     if(!tag){
+    //       let tag = await this.tagsService.addTag(tagName)
+    //       await this.tagedByService.addTagedBy(existedPost,tag)
+    //     }else{
+    //       await this.tagedByService.addTagedBy(existedPost,tag)
+    //   }   
+    //   }
+    // }
+    // let resTag = await this.tagedByService.findAllTag(existedPost)
+
+    await this.postRepo.update({post_id},{
+      post_title: post.post_title,
+      post_content: post.post_content,
+      // taged_bys: resTag.map(t => t.tag.taged_bys),
+      img_url: newImg
+    })
     const postAfterUpdate = await this.postRepo.findOne({
       where : {post_id},
       relations: ["taged_bys", "taged_bys.tag", "user"]
@@ -234,6 +329,8 @@ export class PostService {
     resUpdatePost.user_id = postAfterUpdate.user.user_id
     resUpdatePost.user_name = postAfterUpdate.user.user_name
     resUpdatePost.ava_img_path = postAfterUpdate.user.ava_img_path
+
+    this.postGateway.sendNewPostNotification(existedPost.user.user_id,resUpdatePost)
     return resUpdatePost
   }
 
@@ -273,9 +370,8 @@ export class PostService {
   }
 
   async counPostRemaining(){
-    return this.postRepo.count({where : {
-      status: PostStatus.PENDING
-    }})
+    const posts = await this.getPostAfterNSFWFiltered()
+    return posts.length
   }
 
   async getPostByUserId(user_id: string){
@@ -297,6 +393,8 @@ export class PostService {
       userPost.comments_num = up.comments.length
       return userPost
     })
+
+  
     return resPostUser 
   }
 }
