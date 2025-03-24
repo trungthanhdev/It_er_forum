@@ -127,7 +127,10 @@ export class UserService {
         throw new NotFoundException(`ID "${id}" invalid`);
     }
 
-    const user = await this.userRepo.findOne({ where: { user_id: id } });
+    const user = await this.userRepo.findOne({ 
+      where: { user_id: id },
+      relations: ['subscribed_tags', 'subscribed_tags.tag'] 
+    });
 
     if (!user) {
         throw new NotFoundException(`Id "${id}" not found !`);

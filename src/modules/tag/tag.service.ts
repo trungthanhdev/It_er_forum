@@ -12,7 +12,8 @@ export class TagService {
     ){}
 
     findAllTag(){
-        return this.tagRepo.find()
+        //Test thử xem có cần relation không
+        return this.tagRepo.find();
     }
 
     findOneTag(tagName: string){
@@ -24,5 +25,12 @@ export class TagService {
         const modifyTagName = tag_name as TagName
         const tag = this.tagRepo.create({tag_name: modifyTagName})
         return this.tagRepo.save(tag)
+    }
+
+    async findTagById(tag_id:string) : Promise<TagEntity | null>{
+        return this.tagRepo.findOne(
+            {where: {tag_id:tag_id},
+            relations: ["taged_bys", "taged_bys.post"]
+        });
     }
 }

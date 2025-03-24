@@ -1,27 +1,27 @@
-import { IsArray, IsBoolean, IsDate, IsString } from "class-validator";
+// import { IsArray, IsBoolean, IsDate, IsString } from "class-validator";
 
-export class SearchSortPostDto{
-    @IsString()
-    user_id: string
+// export class SearchSortPostDto{
+//     @IsString()
+//     user_id: string
 
-    @IsString()
-    user_name: string
+//     @IsString()
+//     user_name: string
 
-    @IsString()
-    ava_img_path: string
+//     @IsString()
+//     ava_img_path: string
 
-    @IsArray()
-    tags: string[]
+//     @IsArray()
+//     tags: string[]
 
-    @IsString()
-    post_title: string
+//     @IsString()
+//     post_title: string
 
-    @IsBoolean()
-    is_image: boolean
+//     @IsBoolean()
+//     is_image: boolean
 
-    @IsDate()
-    date_updated: Date
+//     @IsDate()
+//     date_updated: Date
 
-    @IsString()
-    status: string
-}
+//     @IsString()
+//     status: string
+// }

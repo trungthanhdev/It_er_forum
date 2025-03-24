@@ -98,7 +98,7 @@ export class AuthService {
 
     }
 
-    async refreshToken(role : string, email : string){
+    async refreshToken(role : string, email : string, user_id: string){
         try {
             // const token = await this.jwtService.verifyAsync(refreshToken, {secret: process.env.JWT_REFRESH_TOKEN})
             // // console.log(token)
@@ -108,6 +108,7 @@ export class AuthService {
         
             const payload = {
                 id: uuidv4(),
+                sub: user_id,
                 role: role,
                 email: email
             }

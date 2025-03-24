@@ -4,7 +4,7 @@ import { TagedByEntity } from './entities/Taged_by.entity';
 import { Repository } from 'typeorm';
 import { Post } from '../post/entities/post.entity';
 import { TagEntity } from '../tag/entities/tag.entity';
-import { TagName } from 'global/enum.global';
+import { PostStatus, TagName } from 'global/enum.global';
 
 @Injectable()
 export class TagByService {
@@ -24,4 +24,23 @@ export class TagByService {
             relations: ["tag"]
         })
     }
+
+    async getNumberOfPost(tag_id:string) : Promise<number>{
+        // console.log("Tagby id: " + tag_id);
+        let num_posts : number = await this.taged_byRepo.count({where:{tag: {tag_id:tag_id}}});
+        // console.log("Num post: " + num_posts);
+        return num_posts;
+    }
+
+    async findTagById(tag_id : string) : Promise<TagedByEntity[]>{
+        const tagged_by_posts : TagedByEntity[] = await this.taged_byRepo.find({
+            where: {tag: {tag_id: tag_id},
+            post: {status: PostStatus.APPROVED}
+            },
+            relations: ["tag", "post"]
+        });
+        return tagged_by_posts
+    }
+    
+
 }

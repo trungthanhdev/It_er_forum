@@ -22,10 +22,11 @@ import { join } from 'path';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SubscribedTagsModule } from './modules/subscribed_tags/subscribed_tags.module';
 import { JwtService } from '@nestjs/jwt';
+import { RecommendModule } from './modules/recommend/recommend.module';
 
 
 @Module({
-  imports: [UserModule, PostModule, AuthModule,
+  imports: [UserModule, PostModule, AuthModule, SubscribedTagsModule, RecommendModule,
     TypeOrmModule.forRoot(pgConfig), BlacklistModule, ReportModule, CommentModule, NotificationModule, TagModule, TagByModule,
     //node-mailer config
     MailerModule.forRoot({
