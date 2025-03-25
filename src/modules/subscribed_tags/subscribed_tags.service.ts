@@ -13,6 +13,19 @@ export class SubscribedTagsService {
         private readonly tagedByService: TagByService
     ){}
 
+    async isUserSubscribeTag(user_id: string, tag_id: string) : Promise<boolean>{
+        const subscribed_tag : SubscribedTag | null = await this.subscribedTagRepo.findOne({
+            where: {user: {user_id: user_id},
+            tag: {tag_id: tag_id}
+            }
+        });
+        if(!subscribed_tag){
+            return false;
+        }
+        return true;
+    }
+
+
     async getUserSubscribedTag(user_id:string) : Promise<any[]>{
         // console.log(user_id);
         const subscribed_tags : SubscribedTag[] = await this.subscribedTagRepo.find(

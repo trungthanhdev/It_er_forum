@@ -52,7 +52,7 @@ export class RecommendService{
         const subscribed_tags : SubscribedTag[] = user.subscribed_tags; //tag_id
         const taged_bys : TagedByEntity[] = [];
         
-        // console.log(subscribed_tags);
+        console.log(subscribed_tags.length);
 
         //Tìm các bài được gắn tag
         for (let index = 0; index < subscribed_tags.length; index++) {
@@ -61,7 +61,7 @@ export class RecommendService{
             taged_bys.push(...top_tag);
         }
 
-        // console.log(taged_bys);
+        console.log(taged_bys.length);
 
         //Quy về thành dạng short post và xoá các bài trùng
         const recommend_posts : ResPostShort[] = await this.listShortPostWithCondition(taged_bys);
@@ -135,23 +135,27 @@ export class RecommendService{
         return res_tags;
     }
 
-    async getTagDetail(tag_id : string){
+    async getTagDetail(tag_id : string, user_id: string){
         const chosen_tag : TagedByEntity[] = await this.tagedByService.findTagById(tag_id)
+        const is_subscribed : boolean = await this.subscribedTagService.isUserSubscribeTag(user_id,tag_id);
         if (!chosen_tag){
             throw new InternalServerErrorException("Null Pointer Exception");
         }
         else{
             let res_tag_detail = new ResDetailTag();
+            res_tag_detail.recommend_posts = [];
             //tag information
-            const tag_info : TagEntity = chosen_tag[0].tag;
-            res_tag_detail.tag_id = tag_info.tag_id;
-            res_tag_detail.tag_name = tag_info.tag_name;
-            res_tag_detail.tag_category = tag_info.tag_category || "";
-            res_tag_detail.tag_description = tag_info.tag_description;
-            res_tag_detail.num_posts = chosen_tag.length;
-
-            res_tag_detail.recommend_posts = await this.listShortPostWithCondition(chosen_tag);
-
+            if(chosen_tag.length > 0){
+                const tag_info : TagEntity = chosen_tag[0].tag;
+                res_tag_detail.tag_id = tag_info.tag_id;
+                res_tag_detail.tag_name = tag_info.tag_name;
+                res_tag_detail.tag_category = tag_info.tag_category || "";
+                res_tag_detail.tag_description = tag_info.tag_description;
+                res_tag_detail.num_posts = chosen_tag.length;
+                res_tag_detail.is_subscribed = is_subscribed;
+                res_tag_detail.recommend_posts = await this.listShortPostWithCondition(chosen_tag);
+            }
+            
             await console.log("Done");
             return res_tag_detail;
         }

@@ -32,7 +32,7 @@ export class RecommendController {
 
     @Get("/tags/:id")
     @UseGuards(JwtAuthGuard)
-    async getTagDetail(@Param('id') id){
-        return await this.recommendService.getTagDetail(id);
+    async getTagDetail(@Param('id') id, @Req() req){
+        return await this.recommendService.getTagDetail(id, req.user["user_id"]);
     }
 }

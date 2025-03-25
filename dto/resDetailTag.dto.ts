@@ -6,6 +6,7 @@ export class ResDetailTag{
     tag_category: string;
     tag_description: string;
     num_posts: number;
+    is_subscribed: boolean;
     recommend_posts : ResPostShort[];
 
 }
