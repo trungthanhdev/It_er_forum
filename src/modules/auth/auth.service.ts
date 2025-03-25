@@ -35,9 +35,9 @@ export class AuthService {
         
         if(!isMatch){
             throw new UnauthorizedException("Wrong password")
-        }
+        }        
         
-        if(user.status === UserStatus.BANNED){
+        if(user.status === "Banned"){
             throw new UnauthorizedException("Account has been banned!")
         }
 
@@ -197,6 +197,8 @@ export class AuthService {
             throw new BadRequestException("Invalid report subject!")
         }
         let user = await this.userService.findUserById(user_id)
+        console.log("user status truoc khi gui:",user.status);
+        
         if(!user){
             throw new NotFoundException("User not found!")
         }
@@ -223,6 +225,9 @@ export class AuthService {
                 subject: report.subject
             }
         })
+
+        console.log("user_status sau khi gui:", user.status);
+        
     }
    
     

@@ -14,6 +14,8 @@ import { PostModule } from '../post/post.module';
 import { SubscribedTagsModule } from '../subscribed_tags/subscribed_tags.module';
 import { ReportModule } from '../report/report.module';
 import { UserGateWay } from 'src/socket/user.gateway';
+import { NotificationModule } from '../notification/notification.module';
+import { PostGateway } from 'src/socket/post.gateway';
 
 
 @Module({
@@ -31,10 +33,11 @@ import { UserGateWay } from 'src/socket/user.gateway';
     BlacklistModule,
     PostModule,
     SubscribedTagsModule,
-    ReportModule
+    ReportModule,
+    NotificationModule
     ],
-    providers:[AuthService, JwtStrategy, JwtRefreshStrategy,UserGateWay],
+    providers:[AuthService, JwtStrategy, JwtRefreshStrategy,UserGateWay,PostGateway],
     controllers: [AuthController],
-    exports: [AuthService, JwtStrategy,JwtRefreshStrategy,UserGateWay]
+    exports: [AuthService, JwtStrategy,JwtRefreshStrategy,UserGateWay,PostGateway]
 })
 export class AuthModule {}

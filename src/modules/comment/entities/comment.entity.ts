@@ -10,10 +10,10 @@ export class Comment{
     @Column()
     comment_content: string
 
-    @Column()
+    @Column({default : 0})
     upvote: number
 
-    @Column()
+    @Column({default : 0})
     downvote: number
 
     @CreateDateColumn()

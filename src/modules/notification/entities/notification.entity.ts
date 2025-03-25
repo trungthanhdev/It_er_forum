@@ -7,9 +7,9 @@ export class NotificationEntity{
     @PrimaryGeneratedColumn("uuid")
     notification_id: string
 
-    @Column()
+    @Column({nullable: true})
     @MaxLength(20)
-    header: string
+    header?: string
 
     @Column()
     content: string

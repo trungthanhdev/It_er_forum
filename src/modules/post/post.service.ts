@@ -47,7 +47,7 @@ export class PostService {
     return await this.postRepo.findOne({where: {post_id: post_id}})
   }
 
-  async changePostStatus(id : string, status: string){
+  async changePostStatus(id : string, status: any){
     let postStatus = (status as any).status
     
     if(!Object.values(PostStatus).includes(postStatus)){
@@ -426,6 +426,10 @@ export class PostService {
 
   deletePost(){
     return this.postRepo.delete( {status: PostStatus.PENDING})
+  }
+
+  async getPostByPostId(post_id: string){
+    return await this.postRepo.findOne({where: {post_id}})
   }
 }
 

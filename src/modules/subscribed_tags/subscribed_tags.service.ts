@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SubscribedTag } from './entities/subscribed_tag.entity';
 import { Repository } from 'typeorm';
@@ -14,7 +14,6 @@ export class SubscribedTagsService {
     constructor( 
         @InjectRepository(SubscribedTag)
         private readonly subscribedTagRepo: Repository<SubscribedTag>,
-        // private readonly userService: UserService
         private readonly tagService: TagService,
         private readonly tagedByService: TagByService
     ){}
@@ -59,6 +58,11 @@ export class SubscribedTagsService {
     }
 
     async subscribeTag(tag_id: string, user: User){
+        let isSubsribed = await this.isUserSubscribeTag(user.user_id,tag_id)
+        if(isSubsribed){
+            throw new BadRequestException("User has subscribed this tag!")
+        }
+
         let tag = await this.tagService.findOneTagById(tag_id)
         if(!tag){
             throw new NotFoundException("Tag not found!")
