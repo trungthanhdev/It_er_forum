@@ -135,9 +135,10 @@ export class RecommendService{
         return res_tags;
     }
 
-    async getTagDetail(tag_id : string){
+    async getTagDetail(tag_id : string, user_id: string){
         try {
             const chosen_tag : TagedByEntity[] = await this.tagedByService.findTagById(tag_id)
+            const is_subscribed : boolean = await this.subscribedTagService.isUserSubscribeTag(user_id,tag_id);
         if (!chosen_tag){
             throw new InternalServerErrorException("Null Pointer Exception");
         }
@@ -152,7 +153,7 @@ export class RecommendService{
                 res_tag_detail.tag_category = tag_info.tag_category || "";
                 res_tag_detail.tag_description = tag_info.tag_description;
                 res_tag_detail.num_posts = chosen_tag.length;
-
+                res_tag_detail.is_subscribed = is_subscribed;
                 res_tag_detail.recommend_posts = await this.listShortPostWithCondition(chosen_tag);
             }
 

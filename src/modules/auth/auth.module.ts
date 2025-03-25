@@ -13,6 +13,7 @@ import refreshConfig from 'src/config/refresh.config';
 import { PostModule } from '../post/post.module';
 import { SubscribedTagsModule } from '../subscribed_tags/subscribed_tags.module';
 import { ReportModule } from '../report/report.module';
+import { UserGateWay } from 'src/socket/user.gateway';
 
 
 @Module({
@@ -32,8 +33,8 @@ import { ReportModule } from '../report/report.module';
     SubscribedTagsModule,
     ReportModule
     ],
-    providers:[AuthService, JwtStrategy, JwtRefreshStrategy],
+    providers:[AuthService, JwtStrategy, JwtRefreshStrategy,UserGateWay],
     controllers: [AuthController],
-    exports: [AuthService, JwtStrategy,JwtRefreshStrategy]
+    exports: [AuthService, JwtStrategy,JwtRefreshStrategy,UserGateWay]
 })
 export class AuthModule {}

@@ -68,6 +68,18 @@ export class SubscribedTagsService {
         return {}
     }
 
+    async isUserSubscribeTag(user_id: string, tag_id: string) : Promise<boolean>{
+        const subscribed_tag : SubscribedTag | null = await this.subscribedTagRepo.findOne({
+            where: {user: {user_id: user_id},
+            tag: {tag_id: tag_id}
+            }
+        });
+        if(!subscribed_tag){
+            return false;
+        }
+        return true;
+    }
+
     private async calculateTrendingTag(tag: TagEntity){
 
     }

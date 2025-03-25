@@ -12,13 +12,13 @@ import { UserDto } from 'dto/resSearchUserByUserName.dto';
 import { ResUserDto } from 'dto/resUser.dto';
 import { ResCurrentUserDto } from 'dto/resCurrentUser.dto';
 import { PostService } from '../post/post.service';
-import { UserGateWay } from 'src/socket/user.gateway';
+// import { UserGateWay } from 'src/socket/user.gateway';
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepo : Repository<User>,
-    private readonly userGateway: UserGateWay
+    // private readonly userGateway: UserGateWay
   ){}
 
   async createNewAdmin(registerDto : RegisterDto){
@@ -180,8 +180,12 @@ export class UserService {
 
   }
 
-  async changeUserStatus(id: string ,status : string){
+  async changeUserStatus(id: string ,status : any){
+    console.log(id,status);
+    
     let userStatus = (status as any).status 
+    console.log(userStatus);
+    
     if(!Object.values(UserStatus).includes(userStatus)){
       throw new BadRequestException("Invalid user status!")
     }
@@ -206,7 +210,7 @@ export class UserService {
     resUser.status = user.status
 
     if(resUser.status === UserStatus.BANNED){
-      this.userGateway.sendBannedUserNotification(id, resUser)
+      // this.userGateway.sendBannedUserNotification(id, resUser)
     }
 
     return resUser
