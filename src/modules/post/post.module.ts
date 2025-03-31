@@ -11,6 +11,7 @@ import { PostGateway } from 'src/socket/post.gateway';
 import { FileStorageModule } from '../file_storage/file_storage.module';
 import { FirebaseService } from '../firebase/firebase.service';
 import { FirebaseModule } from '../firebase/firebase.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Post]),
@@ -19,9 +20,13 @@ import { FirebaseModule } from '../firebase/firebase.module';
   TagByModule,
   TagModule, 
   FileStorageModule,
-  FirebaseModule],
+  FirebaseModule,
+  NotificationModule],
   controllers: [PostController],
-  providers: [PostService,PostGateway],
+  providers: [
+    PostService, 
+    // PostGateway
+  ],
   exports: [PostService]
 })
 export class PostModule {}

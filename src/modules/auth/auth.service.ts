@@ -172,7 +172,7 @@ export class AuthService {
         throw new BadRequestException("Invalid token!")
      }
     }
-    // @Cron('*/5 * * * * *')
+    // @Cron('0 1 0 * * *') (gửi mail vào lúc 00:01)
     async sendEmailReport(){
         console.log("gui gmail...")
         const postRemaining = await this.postService.counPostRemaining()

@@ -1,4 +1,4 @@
-import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { Repository } from 'typeorm';
@@ -30,7 +30,7 @@ export class PostService {
     private readonly userService: UserService,
     private readonly tagedByService: TagByService,
     private readonly tagsService: TagService,
-    private readonly postGateway: PostGateway,
+    // private readonly postGateway: PostGateway,
     private readonly fileStorageService: FileStorageService,
     private readonly firebaseService: FirebaseService
   ){}
@@ -79,7 +79,7 @@ export class PostService {
     responsePostDetail.tags = post?.taged_bys.map(tags => {return tags.tag.tag_name})
     responsePostDetail.status = post?.status
 
-    this.postGateway.sendNewPostNotificationToAdmin(responsePostDetail)
+    // this.postGateway.sendNewPostNotificationToAdmin(responsePostDetail)
     return responsePostDetail
   }
 
@@ -228,7 +228,7 @@ export class PostService {
     resPost.tags = resTag.map(tag => { return tag.tag.tag_name})
     resPost.status = newPost.status
 
-    this.postGateway.sendNewPostNotificationToAdmin(resPost)
+    // this.postGateway.sendNewPostNotificationToAdmin(resPost)
     return resPost
   }
 
@@ -330,7 +330,7 @@ export class PostService {
     resUpdatePost.user_name = postAfterUpdate.user.user_name
     resUpdatePost.ava_img_path = postAfterUpdate.user.ava_img_path
 
-    this.postGateway.sendNewPostNotification(existedPost.user.user_id,resUpdatePost)
+    // this.postGateway.sendNewPostNotification(existedPost.user.user_id,resUpdatePost)
     return resUpdatePost
   }
 
@@ -366,6 +366,8 @@ export class PostService {
       downvote: comment.downvote|| null
     })) 
 
+    resPostDetail.comments.sort((cmt_a, cmt_b) => (cmt_a.date_comment < cmt_b.date_comment) ? 1 : -1 );
+
     return resPostDetail
   }
 
@@ -376,7 +378,9 @@ export class PostService {
 
   async getPostByUserId(user_id: string){
     const user_post = await this.postRepo.find({where : {
-      user : {user_id: user_id}},
+      user : {user_id: user_id},
+      status: PostStatus.APPROVED
+    },
       relations: ["comments", "user"] 
     })
     let resPostUser = user_post.map(up => {
@@ -392,8 +396,9 @@ export class PostService {
       userPost.downvote = up.downvote
       userPost.comments_num = up.comments.length
       return userPost
-    })
+    });
 
+    resPostUser.sort((post_a, post_b) => (post_a.date_updated < post_b.date_updated) ? 1 : -1);
   
     return resPostUser 
   }
@@ -430,6 +435,17 @@ export class PostService {
 
   async getPostByPostId(post_id: string){
     return await this.postRepo.findOne({where: {post_id}})
+  }
+
+  async updateInteraction(post_id: string, updatePostDto:UpdatePostDto){
+    try{
+      await this.postRepo.update({post_id: post_id}, updatePostDto);
+      return this.getPostByPostId(post_id);
+    }catch(e){
+      throw new InternalServerErrorException();
+    }
+
+    
   }
 }
 

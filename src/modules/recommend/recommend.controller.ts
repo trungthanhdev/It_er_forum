@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Req, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "guard/jwt.guard";
 import { RecommendService } from "./recommend.service";
+import { ResHome } from "dto/resHome.dto";
 
 @Controller('api/v1/recommend')
 export class RecommendController {
@@ -15,7 +16,9 @@ export class RecommendController {
     @Get("/home")
     @UseGuards(JwtAuthGuard)
     async getHome(@Req() req){
-        return await this.recommendService.getHome(req.user["user_id"]);
+        const resHome: ResHome =  await this.recommendService.getHome(req.user["user_id"]);
+        await console.log(resHome);
+        return resHome;
     }
 
     @Get("/popular")

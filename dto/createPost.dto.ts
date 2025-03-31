@@ -8,6 +8,11 @@ export class CreatePost{
 
     post_content: string
 
+    @IsOptional()
+    upvote: number;
+
+    @IsOptional()
+    downvote: number
     // @IsString()
     // img_url: string[]
     @IsOptional()

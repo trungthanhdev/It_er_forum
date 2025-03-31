@@ -5,11 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Comment } from './entities/comment.entity';
 import { UserModule } from '../user/user.module';
 import { PostModule } from '../post/post.module';
+import { NotificationModule } from '../notification/notification.module';
+import { PostGateway } from 'src/socket/post.gateway';
 
 @Module({
-  imports : [TypeOrmModule.forFeature([Comment]),UserModule,PostModule],
+  imports : [TypeOrmModule.forFeature([Comment]),UserModule, PostModule, NotificationModule],
   controllers: [CommentController],
-  providers: [CommentService],
-  exports: [CommentService]
+  providers: [CommentService, PostGateway],
+  exports: [CommentService, PostGateway]
 })
 export class CommentModule {}

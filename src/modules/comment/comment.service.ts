@@ -20,7 +20,7 @@ export class CommentService {
         }
         return await this.commentRepo.findOne({where: {comment_id: comment_id}})
     }
-    async createComment(user_id: string, comment_content: string, post_id: string, comment_parent_id?: string){
+    async createComment(user_id: string, comment_content: string, post_id: string, comment_parent_id?: string) : Promise<Comment>{
         if(!isUUID(user_id || post_id)) {
             throw new BadRequestException("Invalid user_id or post_id format!");
         }
@@ -32,25 +32,30 @@ export class CommentService {
         if(!post || post.status !== PostStatus.APPROVED){
             throw new NotFoundException("Post not found!")
         }
-        let parent_comment = await this.findCommentById(comment_parent_id)
+        let parent_comment : Comment | null = await this.findCommentById(comment_parent_id)
         let comment = this.commentRepo.create({
             user,
             post,
             comment_content: comment_content,
-            comment_parent: parent_comment
+            comment_parent: parent_comment || undefined,
+            date_comment: new Date()
         })
         return await this.commentRepo.save(comment)
     }
 
     async findCommentById(comment_id?: string){
-       let comment =  await this.commentRepo.findOne({where: {comment_id: comment_id}})
-       if(!comment){
-        throw new NotFoundException("Comment not found!")
-       }
-       return comment
+        console.log(comment_id);
+        if (!comment_id){
+            return null
+        }
+        let comment =  await this.commentRepo.findOne({where: {comment_id: comment_id}})
+        if(!comment){
+          throw new NotFoundException("Comment not found!")
+        }
+        return comment
     }
 
-    getNumberCommentByPost(post_id: string){
+    getNumberCommentByPost(post_id: string) : Promise<number>{
         return this.commentRepo.count({where: {post: {post_id}}})
     }
 }

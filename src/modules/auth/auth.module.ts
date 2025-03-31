@@ -15,7 +15,7 @@ import { SubscribedTagsModule } from '../subscribed_tags/subscribed_tags.module'
 import { ReportModule } from '../report/report.module';
 import { UserGateWay } from 'src/socket/user.gateway';
 import { NotificationModule } from '../notification/notification.module';
-import { PostGateway } from 'src/socket/post.gateway';
+import { CommentModule } from '../comment/comment.module';
 
 
 @Module({
@@ -34,10 +34,10 @@ import { PostGateway } from 'src/socket/post.gateway';
     PostModule,
     SubscribedTagsModule,
     ReportModule,
-    NotificationModule
+    NotificationModule,
     ],
-    providers:[AuthService, JwtStrategy, JwtRefreshStrategy,UserGateWay,PostGateway],
+    providers:[AuthService, JwtStrategy, JwtRefreshStrategy,UserGateWay],
     controllers: [AuthController],
-    exports: [AuthService, JwtStrategy,JwtRefreshStrategy,UserGateWay,PostGateway]
+    exports: [AuthService, JwtStrategy,JwtRefreshStrategy,UserGateWay]
 })
 export class AuthModule {}

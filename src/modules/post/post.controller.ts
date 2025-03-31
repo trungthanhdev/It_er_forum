@@ -102,4 +102,12 @@ export class PostController {
   deletePost(){
     return this.postService.deletePost()
   }
+
+  // @Patch("/interact/:id")
+  // @UseGuards(JwtAuthGuard)
+  // updateInteract(@Param("id") post_id: string,
+  //            @Body() updatePost: UpdatePostDto,
+  // ){
+  //   return this.postService.updateInteraction(post_id, updatePost);
+  // }
 }

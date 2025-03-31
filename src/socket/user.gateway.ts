@@ -6,6 +6,7 @@ import { AuthService } from 'src/modules/auth/auth.service';
 import { NotificationService } from 'src/modules/notification/notification.service';
 import { PostService } from 'src/modules/post/post.service';
 import { UserService } from 'src/modules/user/user.service';
+import { NotificationGatewayService } from './notfication.gateway.service';
 
 @WebSocketGateway({
   cors: {
@@ -15,7 +16,7 @@ import { UserService } from 'src/modules/user/user.service';
 export class UserGateWay implements OnModuleInit {
   constructor(private readonly userService: UserService,
               private readonly authService: AuthService,
-              private readonly notiService: NotificationService,
+              private readonly notificationGatewayService: NotificationGatewayService,
               private readonly postService: PostService
   ) {}
   @WebSocketServer() server: Server;
@@ -60,7 +61,7 @@ onModuleInit() {
 		console.log('User connected');
 	
 		socket.on('joinRoom', async (user_id)=> { 
-			console.log("User joined room "); 
+			console.log("User joined room User"); 
                 	socket.join(user_id); 
             	});
 
@@ -75,30 +76,31 @@ onModuleInit() {
         
         //restricted
         socket.on('restrictUser', async (data) => {
-			this.userService.changeUserStatus(data.user_id, {status: "Restricted"});
+			await this.userService.changeUserStatus(data.user_id, {status: "Restricted"});
             let payload =  {
                 is_comment: false,
                 content: "Tài khoản của bạn đã bị hạn chế vì vi phạm tiêu chuẩn cộng đồng", 
                 post_id: (data.subject === "User") ? "" : data.post_id    
             }
-            await this.sendNotification(data.user_id, payload)  
+            await this.notificationGatewayService.sendNotification(data.user_id, payload);
 		});
 
         //review post
         socket.on('reviewPost', async (data) => {
-			this.postService.changePostStatus(data.post_id, {status: data.status});
+			await this.postService.changePostStatus(data.post_id, {status: data.status});
+			
 			let payload = {
 				is_comment: false,
 				content: (data.status === "Approved") ? "Bài post của bạn đã được admin duyệt" 
 				: "Bài post của bạn đã bị từ chối vì vi phạm tiêu chuẩn cộng đồng",
 				post_id: data.post_id
 			};
-			this.sendNotification(data.user_id, payload);
+			await this.notificationGatewayService.sendNotification(data.user_id, payload);
 
 		});
 
 		socket.on('leaveRoom', async (user_id)=> {
-			console.log("User left room ");  
+			console.log("User left room User");  
                 	socket.leave(user_id); 
             	});
 		socket.on('disconnect', () => {  
@@ -107,12 +109,4 @@ onModuleInit() {
 
     });
 }
-
-async sendNotification(user_id: string, payload: any){
-    console.log("vao sendNotification");
-    
-    let noti = await this.notiService.createNotification(user_id,payload)
-    this.server.to(user_id).emit("notify", noti)
-}
-
 }

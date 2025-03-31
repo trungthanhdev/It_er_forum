@@ -64,19 +64,35 @@ export class RecommendService{
         // console.log(taged_bys);
 
         //Quy về thành dạng short post và xoá các bài trùng
-        const recommend_posts : ResPostShort[] = await this.listShortPostWithCondition(taged_bys);
+        const posts : ResPostShort[] = await this.listShortPostWithCondition(taged_bys);
 
-        console.log(recommend_posts);
+        // console.log(recommend_posts);
 
         let res_home = new ResHome();
         //Sort theo tuong tac
-        recommend_posts.sort((post_a, post_b) => (post_a.upvote < post_b.upvote || post_a.comments_num < post_b.comments_num) ? 1 : -1);
+        const recommend_posts = [...posts].sort((post_a, post_b) => {
+            if(post_a.upvote !== post_b.upvote){
+                return post_b.upvote - post_a.upvote
+            }
+            return post_b.comments_num - post_a.comments_num;
+        });
+        console.log("Sort by interaction: \n");
+        // posts.forEach((e)=>{
+        //     console.log(e);
+        // });
         res_home.recommend_posts = recommend_posts;
         
+
         //get recent posts by algorithm
         //Sort theo ngay
-        recommend_posts.sort((post_a, post_b) => (post_a.date_updated < post_b.date_updated) ? 1 : -1);
-        res_home.recent_posts = recommend_posts;
+        const recent_posts = [...posts].sort((post_a, post_b) => (post_a.date_updated < post_b.date_updated) ? 1 : -1).slice(0,5);
+        // const recent_posts = recommend_posts.slice(0,5);
+        // console.log("Sort by date: \n");
+        // recent_posts.forEach((e)=>{
+        //     console.log(e.date_updated);
+        // });
+
+        res_home.recent_posts = recent_posts;
 
         return res_home;
     }
