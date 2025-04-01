@@ -45,9 +45,11 @@ export class StatisticsGateway{
   }
 
   private async calculateUserGrownth() {
-    const STANDARD = 5;
+    const STANDARD = 100;
     const totalUserByDay = await this.userService.countNewUsersPerDay();
-    const growth_percentage = this.roundTo(totalUserByDay / STANDARD, 3);
+    const growth_percentage = await this.roundTo(totalUserByDay / STANDARD, 3);
+    // console.log(growth_percentage);
+    
     return {
       data: {
         time_stamp: new Date(),

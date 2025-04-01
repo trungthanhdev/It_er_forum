@@ -22,6 +22,8 @@ export class UserService {
   ){}
 
   async createNewAdmin(registerDto : RegisterDto){
+    console.log("vao service");
+    
     const findEmail = await this.findByEmail(registerDto.email)
     if(findEmail) {
       throw new BadRequestException("Email is existed!")
@@ -240,6 +242,8 @@ export class UserService {
         time_stamp: Between(yesterday, today)
       }
     })
+    // console.log(totalNewUser);
+    
     return totalNewUser
   }
 }
