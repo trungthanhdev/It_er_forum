@@ -35,9 +35,11 @@ export class PostService {
     private readonly firebaseService: FirebaseService
   ){}
   private badWordsArr = sensitive_words 
-  private async containNSFW(content: string, sensitiveWordArr: string[]){
-      const contentFiltered = content
-      return sensitiveWordArr.some(word => new RegExp(`\\b${word}\\b`, "i").test(contentFiltered))
+  private async containNSFW(content: string, sensitiveWordArr: string[]) {
+    return sensitiveWordArr.some(word => {
+        const pattern = word.replace(/_/g, "\\s+");
+        return new RegExp(`\\b${pattern}\\b`, "i").test(content);
+    });
   }
 
   async findPost(post_id?: string){
@@ -337,7 +339,7 @@ export class PostService {
   async getPostDetail(post_id: string){
     const post = await this.postRepo.findOne({
       where: {post_id: post_id},
-      relations: ["user", "comments", "taged_bys", "taged_bys.tag", "comments.user" ]
+      relations: ["user", "comments", "taged_bys", "taged_bys.tag", "comments.user", "comments.comment_parent" ]
     })
     if(!post){
       throw new NotFoundException("Post not found!")
@@ -360,6 +362,7 @@ export class PostService {
       user_name: comment.user.user_name || null,
       ava_img_path: comment.user.ava_img_path || null,
       comment_id: comment.comment_id || null,
+      comment_parent_id: comment?.comment_parent?.comment_id || null,
       date_comment: comment.date_comment || null,
       comment_content: comment.comment_content || null,
       upvote: comment.upvote || null,

@@ -1,6 +1,6 @@
 import { MaxLength } from "class-validator";
 import { Roles, UserStatus } from "global/enum.global";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { Exclude } from 'class-transformer';
 import { Post } from "src/modules/post/entities/post.entity";
 import { Report } from "src/modules/report/entities/report.entity";
@@ -50,6 +50,9 @@ export class User {
 
     @Column({nullable: true})
     ava_img_path: string
+
+    @CreateDateColumn()
+    time_stamp: Date
 
     @Column({default: UserStatus.ACTIVE})
     status: UserStatus

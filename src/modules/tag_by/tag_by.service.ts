@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TagedByEntity } from './entities/Taged_by.entity';
-import { Repository } from 'typeorm';
+import { Between, MoreThanOrEqual, Repository } from 'typeorm';
 import { Post } from '../post/entities/post.entity';
 import { TagEntity } from '../tag/entities/tag.entity';
 import { PostStatus, TagName } from 'global/enum.global';
@@ -49,4 +49,15 @@ export class TagByService {
         return tagged_by_posts
     }
     
+    async getAllTagedBys(oneHourAgo : Date) {
+        return this.taged_byRepo.find({
+            where:{
+                post:{
+                    date_updated: MoreThanOrEqual(oneHourAgo),
+                    status: PostStatus.APPROVED
+                }
+            },
+            relations: ['post', 'tag'],
+        });
+      }
 }

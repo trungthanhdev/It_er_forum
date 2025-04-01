@@ -1,7 +1,7 @@
 import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UpdateUserDto } from '../../../dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
+import { Between, ILike, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { RegisterDto } from 'dto/register.dto';
 import { isUUID } from 'class-validator';
@@ -228,6 +228,19 @@ export class UserService {
     resUser.email = currentUser.email
     resUser.phone_num = currentUser.phone_num
     return resUser
+  }
+
+  async countNewUsersPerDay(){
+    const today = new Date() 
+    let yesterday = new Date(today)
+    yesterday.setDate(today.getDate() - 1)
+
+    const totalNewUser = await this.userRepo.count({
+      where: {
+        time_stamp: Between(yesterday, today)
+      }
+    })
+    return totalNewUser
   }
 }
 

@@ -5,13 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubscribedTag } from './entities/subscribed_tag.entity';
 import { TagModule } from '../tag/tag.module';
 import { TagByModule } from '../tag_by/tag_by.module';
+import { StatisticsGateway } from 'src/socket/statistics.gateway';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([SubscribedTag]),
-            TagModule,TagByModule
+            TagModule,TagByModule, UserModule
   ],
   controllers: [SubscribedTagsController],
-  providers: [SubscribedTagsService],
-  exports: [SubscribedTagsService]
+  providers: [SubscribedTagsService, StatisticsGateway],
+  exports: [SubscribedTagsService, StatisticsGateway]
 })
 export class SubscribedTagsModule {}

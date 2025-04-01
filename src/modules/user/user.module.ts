@@ -4,6 +4,7 @@ import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { BlacklistModule } from '../blacklist/blacklist.module';
+import { StatisticsGateway } from 'src/socket/statistics.gateway';
 // import { UserGateWay } from 'src/socket/user.gateway';
 
 

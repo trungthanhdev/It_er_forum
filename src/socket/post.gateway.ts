@@ -43,6 +43,7 @@ import { Comment } from 'src/modules/comment/entities/comment.entity';
         //user_post_id: string
         //upvote : num (likes after user interacting)
         //downvote : num (dislikes after user interacting)
+        //is_upvote: boolean
         //}
         socket.on('newInteractFromClient', async(data) => {
           const post_updated : Post | null = await this.postService.updateInteraction(data.post_id,{
@@ -60,7 +61,7 @@ import { Comment } from 'src/modules/comment/entities/comment.entity';
           this.server.to(data.post_id).emit("updateInteractFromServer", payload);
 
           //Notification
-          if(!isQueueToNotify){
+          if(!isQueueToNotify && data.is_upvote){
             setTimeout(async () => {
               let post_latest_state : Post | null = await this.postService.findPost(data.post_id);
               let payload_notify = {
@@ -126,6 +127,7 @@ import { Comment } from 'src/modules/comment/entities/comment.entity';
           }
           else{ //cmt là reply
             //Bắn noti cho chủ post
+
             let payload_hidden = {
               is_comment: true,
               post_id: data.post_id,
