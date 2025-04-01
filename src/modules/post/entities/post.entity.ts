@@ -1,7 +1,7 @@
 import { MaxLength } from "class-validator";
 import { PostStatus } from "global/enum.global";
 import { User } from "src/modules/user/entities/user.entity";
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Report } from "src/modules/report/entities/report.entity";
 import { Comment } from "src/modules/comment/entities/comment.entity";
 import { TagedByEntity } from "src/modules/tag_by/entities/Taged_by.entity";
@@ -51,7 +51,13 @@ export class Post {
 
     @BeforeInsert()
     setVietnamTime() {
-        this.date_created = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
+        const now = new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" });
+        this.date_created = new Date(now);
+        this.date_updated = new Date(now);
+    }
+
+    @BeforeUpdate()
+    updateVietnamTime() {
         this.date_updated = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
     }
 
