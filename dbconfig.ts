@@ -24,6 +24,9 @@ export const pgConfig: TypeOrmModuleOptions = {
   ssl: { rejectUnauthorized: false }, // Bắt buộc khi kết nối đến Neon.tech
   autoLoadEntities: true,
   synchronize: true,
+  extra: {
+    client_encoding: "UTF8",
+  },
 //   entities: [__dirname+'/**/*.entitiy{.ts,.js}']
 
 };

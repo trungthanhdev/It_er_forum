@@ -20,4 +20,9 @@ export class SubscribedTagsController {
     return this.statisticsGateWay.updateTagGrowth();
   }
 
+  @Get("/user-growth")
+  getUserGrowth(){
+    return this.statisticsGateWay.updateUserGrowth();
+  }
+
 }

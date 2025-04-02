@@ -1,6 +1,6 @@
 import { MaxLength } from "class-validator";
 import { Roles, UserStatus } from "global/enum.global";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { Exclude } from 'class-transformer';
 import { Post } from "src/modules/post/entities/post.entity";
 import { Report } from "src/modules/report/entities/report.entity";
@@ -79,6 +79,12 @@ export class User {
 
     @OneToMany(() => SubscribedTag, (subscribed_tag) => subscribed_tag.user)
     subscribed_tags: SubscribedTag[]
+
+    @BeforeInsert()
+    setVietnamTime() {
+        this.time_stamp = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
+        // this.date_updated = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
+    }
 }
 
 

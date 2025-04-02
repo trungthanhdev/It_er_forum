@@ -9,7 +9,7 @@ import { FirebaseService } from './firebase.service';
           useFactory: () => {
             const app = admin.initializeApp({
               credential: admin.credential.cert(require('D:/Program/NestJS/It_er_forum/to-do-list-6c37a-firebase-adminsdk-rf827-570379d3d6.json')),
-              storageBucket: "to-do-list-6c37a.firebasestorage.app",
+              storageBucket: "iterforum-cc16b.firebasestorage.app",
             });
             console.log(' Firebase đã kết nối thành công!');
             return app;

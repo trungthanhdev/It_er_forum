@@ -1,7 +1,7 @@
 import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UpdateUserDto } from '../../../dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, ILike, Repository } from 'typeorm';
+import { Between, ILike, MoreThanOrEqual, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { RegisterDto } from 'dto/register.dto';
 import { isUUID } from 'class-validator';
@@ -234,10 +234,11 @@ export class UserService {
     const today = new Date() 
     let yesterday = new Date(today)
     yesterday.setDate(today.getDate() - 1)
+    // console.log(yesterday);
 
     const totalNewUser = await this.userRepo.count({
       where: {
-        time_stamp: Between(yesterday, today)
+        time_stamp: MoreThanOrEqual(yesterday)
       }
     })
     return totalNewUser
