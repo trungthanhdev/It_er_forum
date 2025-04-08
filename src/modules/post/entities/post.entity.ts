@@ -46,7 +46,7 @@ export class Post {
     @OneToMany(() => Comment, (comment) => comment.post)
     comments: Comment[]
 
-    @OneToMany(() => TagedByEntity, (taged_by) => taged_by.post)
+    @OneToMany(() => TagedByEntity, (taged_by) => taged_by.post, { cascade: true })
     taged_bys: TagedByEntity[]
 
 }

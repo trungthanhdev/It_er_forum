@@ -1,0 +1,54 @@
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>📊 Báo cáo số lượng [Tên báo cáo] ngày [DD/MM/YYYY]</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .highlight {
+            color: blue;
+            font-weight: bold;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p>Kính gửi <strong>{{username}}</strong>,</p>
+        
+        <p>Dưới đây là báo cáo số lượng <strong>{{reportCount}}</strong> ngày <strong>{{date}}</strong>:</p>
+        
+        
+        <p>🔗 <a href="[Nếu có link đến báo cáo đầy đủ]" target="_blank">Xem báo cáo chi tiết</a></p>
+        
+        <p>Vui lòng kiểm tra và phản hồi nếu cần thêm thông tin.</p>
+        
+        <p>Trân trọng,</p>
+        <p><strong>[Họ tên]</strong><br>
+           [Chức vụ]<br>
+           [Tên công ty/Ứng dụng]
+        </p>
+    </div>
+</body>
+</html>

@@ -1,4 +1,6 @@
 export const sensitive_words : string[] = [
+    'this',
+    'content',
     'nứng_lồn',
     'nứng_cặc',
     'siêu_nứng',

@@ -1,9 +1,11 @@
-import { Controller, Get, Body, Patch, Param, UsePipes, ValidationPipe, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, UsePipes, ValidationPipe, UseGuards, Query, UseInterceptors, Post, BadRequestException, Req } from '@nestjs/common';
 import { PostService } from './post.service';
-import { PostStatus, PostStatusAction } from 'global/enum.global';
-import { UpdatePostStatusDto } from 'dto/poststatus.dto';
+import { PostStatus, TagName } from 'global/enum.global';
 import { RoleGuard } from 'guard/role.guard';
-import { AuthGuard } from 'guard/auth.guard';
+// import { JwtAuthGuard } from 'guard/auth.guard';
+import { CreatePost } from 'dto/createPost.dto';
+import { UpdatePostDto } from 'dto/updatePost.dto';
+import { JwtAuthGuard } from 'guard/jwt.guard';
 
 @Controller('/api/v1/posts')
 export class PostController {
@@ -12,18 +14,16 @@ export class PostController {
   @Patch("/admin/dashboard/:id")
   @UsePipes(new ValidationPipe)
   @UseGuards(new RoleGuard(['ADMIN']))
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   changePostStatus(
     @Param("id") id : string,
-    @Body() status: UpdatePostStatusDto,
-    @Query("action") action: string){
-      const normalizedAction = action.toUpperCase() as PostStatusAction; 
-      return this.postService.changePostStatus(id, status,normalizedAction)
+    @Body() status: string){ 
+      return this.postService.changePostStatus(id, status)
   }
 
-  @Get("/admin/dashboard")
+  @Get("/admin/dashboard/filter")
   @UseGuards(new RoleGuard(['ADMIN']))
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   filterPostByStatus(
     @Query("status") status : string,
     @Query("sort_by") sort_by: string,
@@ -35,4 +35,46 @@ export class PostController {
     return this.postService.searchSortPostByStatus(modifyStatus,modifySortBy,modifyIsAscending)
 
   }
+
+  @Get("/admin/dashboard")
+  getPostAfterNSFWFiltered(){
+    return this.postService.getPostAfterNSFWFiltered()
+  }
+
+  @Get("/admin/dashboard/:id")
+  @UseGuards(new RoleGuard(['ADMIN']))
+  @UseGuards(JwtAuthGuard)
+  getPostDetailAfterNSFWFiltered(@Param("id") id: string){
+    return this.postService.getPostDetailAfterNSFWFiltered(id)
+  }
+
+  @Post("/")
+  @UseGuards(JwtAuthGuard)
+  createPost(@Body() post: CreatePost, @Req() req){
+    if (!Array.isArray(post.tags)) {
+      throw new BadRequestException("Tags must be an array!");
+    }
+    
+    const tags = post.tags.filter(tags => Object.values(TagName).includes(tags))
+    if(tags.length === 0){
+      throw new BadRequestException("Invalid TagName!")
+    }
+    const user_id = req.user["user_id"]
+    return this.postService.createPost(post,user_id)
+  }
+
+  @Patch("/:id")
+  @UseGuards(JwtAuthGuard)
+  updatePost(@Param("id") post_id: string,
+             @Body() updatePost: UpdatePostDto
+  ){
+    return this.postService.updatePost(post_id, updatePost)
+  }
+
+  @Get("/:id")
+  @UseGuards(JwtAuthGuard)
+  getPostDetail(@Param("id") post_id: string){
+    return this.postService.getPostDetail(post_id)
+  }
+
 }

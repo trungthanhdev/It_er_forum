@@ -14,14 +14,55 @@ import { CommentModule } from './modules/comment/comment.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { TagModule } from './modules/tag/tag.module';
 import { TagByModule } from './modules/tag_by/tag_by.module';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from 'filter/httpException.interceptor';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { join } from 'path';
+import { ScheduleModule } from '@nestjs/schedule';
+import { SubscribedTagsModule } from './modules/subscribed_tags/subscribed_tags.module';
+import { JwtService } from '@nestjs/jwt';
+import { RecommendModule } from './modules/recommend/recommend.module';
 
 
 @Module({
-  imports: [UserModule, PostModule, AuthModule,
-    
-    TypeOrmModule.forRoot(pgConfig), BlacklistModule, ReportModule, CommentModule, NotificationModule, TagModule, TagByModule
+  imports: [UserModule, PostModule, AuthModule, SubscribedTagsModule, RecommendModule,
+    TypeOrmModule.forRoot(pgConfig), BlacklistModule, ReportModule, CommentModule, NotificationModule, TagModule, TagByModule,
+    //node-mailer config
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 465,
+        ignoreTLS: true,
+        secure: true,
+        auth: {
+          user: process.env.MAIL_COMPANY,
+          pass: process.env.PASS_COMPANY,
+        },
+      },
+      defaults: {
+        from: '"nest-modules" <modules@nestjs.com>',
+      },
+      template: {
+        dir: process.cwd()+ '/src/mail', 
+        // dir: join(__dirname, 'mail'),
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
+      },
+    }),
+    ScheduleModule.forRoot(),
+    SubscribedTagsModule,
   ],
   controllers: [AppController, AuthController],
-  providers: [AppService, AuthService],
+  providers: [AppService, AuthService,JwtService,
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
-export class AppModule {}
+export class AppModule  {
+  
+}

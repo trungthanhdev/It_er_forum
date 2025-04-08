@@ -1,6 +1,6 @@
 import { Post } from "src/modules/post/entities/post.entity";
 import { User } from "src/modules/user/entities/user.entity";
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Report } from "src/modules/report/entities/report.entity";
 @Entity({name: "comments"})
 export class Comment{
@@ -15,6 +15,9 @@ export class Comment{
 
     @Column()
     downvote: number
+
+    @CreateDateColumn()
+    date_comment: Date
 
     @ManyToOne(() => User, (user) => {user.comments})
     @JoinColumn({name : "user_id"})

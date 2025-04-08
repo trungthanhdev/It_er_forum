@@ -1,18 +1,18 @@
-import { Controller, Get, HttpStatus, Param, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpStatus, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ReportService } from './report.service';
-import { ReportSubject } from 'global/enum.global';
-import { AuthGuard } from 'guard/auth.guard';
+import { ReportSubject, ReportTitle } from 'global/enum.global';
+// import { JwtAuthGuard } from 'guard/auth.guard';
 import { RoleGuard } from 'guard/role.guard';
 import { Subject } from 'rxjs';
+import { SendReportDto } from 'dto/sendReport.dto';
+import { JwtAuthGuard } from 'guard/jwt.guard';
 @Controller('/api/v1/report')
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 
-
-
   @Get('/admin/:subject')
   @UseGuards(new RoleGuard(['ADMIN']))
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   async getReportbySubject(@Param("subject") subject : string){
       let subjectModify = subject as ReportSubject;
       return await this.reportService.getReportbySubject(subjectModify) 
@@ -20,7 +20,7 @@ export class ReportController {
 
   @Get('/admin/search/:subject')
   @UseGuards(new RoleGuard(['ADMIN']))
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   searchSortReport(
     @Param("subject") subject: string,
     @Query("search_value") search_value: string,
@@ -35,7 +35,7 @@ export class ReportController {
 
   @Get("/admin/detail/:subject/:id") 
   @UseGuards(new RoleGuard(['ADMIN']))
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   getReportDetail(
     @Param("subject") subject: string,
     @Param("id") id : string)
@@ -43,6 +43,21 @@ export class ReportController {
       console.log("Controller received request:", subject, id); 
       const modifySubjectDetail = subject as ReportSubject
       return this.reportService.getReportDetail(modifySubjectDetail, id)              
+  }
+
+  @Post("/:subject")
+  @UseGuards(JwtAuthGuard)
+  sendReport(@Param("subject") subject: string,
+             @Body() sendReportDto: SendReportDto)
+  {
+    let modifySubject = subject as ReportSubject
+    if(!Object.values(ReportSubject).includes(modifySubject)){
+      throw new BadRequestException("Invalid subject!")
+    }
+    if(!Object.values(ReportTitle).includes(sendReportDto.report_title)){
+      throw new BadRequestException("Invalid report title!")
+    }
+    return this.reportService.sendReport(modifySubject, sendReportDto)
   }
   
 }

@@ -9,28 +9,13 @@ export enum UserStatus{
     RESTRICTED = "Restricted",
 }
 
-
-export enum HttpCode{
-    SUCCESS = 200,
-    ERROR = 404
-}
-
-export enum HttpMessage{
-    SUCCESS = "SUCCESS",
-    ERROR = "ERROR",
-    INVALID_EMAIL = "INVALID_EMAIL"
-}
-
 export enum PostStatus{
-    PENDING = "PENDING",
-    APPROVED = "APPROVED",
-    REJECTED = "REJECTED"
+    PENDING = "Pending",
+    APPROVED = "Approved",
+    REJECTED = "Rejected"
 }
 
-export enum PostStatusAction{
-    APPROVED= "APPROVED",
-    REJECTED= "REJECTED"
-}
+
 
 export enum ReportSubject{
     COMMENT = "Comment",
