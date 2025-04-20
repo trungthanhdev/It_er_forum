@@ -17,7 +17,7 @@ export class FileStorageService {
                 metadata: { contentType: file.mimetype }
             });
 
-            console.log("✅ Saved file to Firebase Storage");
+            console.log("Saved file to Firebase Storage");
 
             // Lấy URL của file
             const [url] = await fileRef.getSignedUrl({
@@ -50,9 +50,9 @@ export class FileStorageService {
 
             // Xóa file khỏi Firebase Storage
             await file.delete();
-            console.log(`🗑️ File deleted successfully: ${fileUrl}`);
+            console.log(` File deleted successfully: ${fileUrl}`);
         } catch (error) {
-            console.error(`❌ Error deleting file: ${fileUrl}`, error);
+            console.error(`Error deleting file: ${fileUrl}`, error);
             throw new Error('Failed to delete file from Firebase Storage');
         }
     }
