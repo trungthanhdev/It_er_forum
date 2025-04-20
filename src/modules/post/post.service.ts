@@ -21,6 +21,8 @@ import { PostGateway } from 'src/socket/post.gateway';
 import { FileStorageService } from '../file_storage/file_storage.service';
 import { FirebaseService } from '../firebase/firebase.service';
 import * as admin from 'firebase-admin';
+import { PostHelper } from 'helper/post.helper';
+import { log } from 'console';
 
 @Injectable()
 export class PostService {
@@ -85,10 +87,13 @@ export class PostService {
     return responsePostDetail
   }
 
-  async getPostAfterNSFWFiltered(){
+  async getPostAfterNSFWFiltered(postHelper: PostHelper){   
+    // const allPost = await this.postRepo.find({where: {status : PostStatus.PENDING}})
+    // console.log(allPost.length);
+    
     let post = await this.postRepo.find({
       where: {status : PostStatus.PENDING},
-      relations: ["user"]
+      relations: ["user"],
     })
     
     if(!post){
@@ -115,6 +120,12 @@ export class PostService {
 
     resPostArr.sort((a,b) => a.date_updated.getTime() - b.date_updated.getTime())
 
+    const pageNumber = Number(postHelper.pageNumber)
+    const pageSize = Number(postHelper.pageSize)
+    const skipNumber = (pageNumber - 1) * pageSize
+    resPostArr = resPostArr.slice(skipNumber, skipNumber + pageSize)
+    // console.log(resPostArr.length);
+    
     return resPostArr
   }
 
@@ -374,8 +385,22 @@ export class PostService {
     return resPostDetail
   }
 
+  async getPostAfterNSFWFilteredforCountRemaining(){
+    let arrPost: Post[] = []
+    let post = await this.postRepo.find({
+      where: {status : PostStatus.PENDING}
+    })
+    for(const postFiltered of post){
+      const isNSFWPost = await this.containNSFW(postFiltered.post_content, this.badWordsArr)
+      if(!isNSFWPost){
+        arrPost.push(postFiltered)
+      }
+    }
+    return arrPost
+  }  
+
   async counPostRemaining(){
-    const posts = await this.getPostAfterNSFWFiltered()
+    const posts = await this.getPostAfterNSFWFilteredforCountRemaining()
     return posts.length
   }
 

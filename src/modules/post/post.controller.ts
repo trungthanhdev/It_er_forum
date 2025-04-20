@@ -8,6 +8,7 @@ import { UpdatePostDto } from 'dto/updatePost.dto';
 import { JwtAuthGuard } from 'guard/jwt.guard';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { isUUID, validate } from 'class-validator';
+import { PostHelper } from 'helper/post.helper';
 
 @Controller('/api/v1/posts')
 export class PostController {
@@ -39,8 +40,8 @@ export class PostController {
   }
 
   @Get("/admin/dashboard")
-  getPostAfterNSFWFiltered(){
-    return this.postService.getPostAfterNSFWFiltered()
+  getPostAfterNSFWFiltered(@Body() postHelper: PostHelper){  
+    return this.postService.getPostAfterNSFWFiltered(postHelper)
   }
 
   @Get("/admin/dashboard/:id")

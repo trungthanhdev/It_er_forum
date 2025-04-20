@@ -12,6 +12,7 @@ import { PostService } from '../post/post.service';
 import { SubscribedTagsService } from '../subscribed_tags/subscribed_tags.service';
 import { ReportService } from '../report/report.service';
 import { ReportSubject, UserStatus } from 'global/enum.global';
+import { Cron } from '@nestjs/schedule';
 @Injectable()
 export class AuthService {
     constructor(private readonly jwtService: JwtService,
@@ -173,6 +174,7 @@ export class AuthService {
      }
     }
     // @Cron('0 1 0 * * *') (gửi mail vào lúc 00:01)
+    // @Cron('* * * * *')
     async sendEmailReport(){
         console.log("gui gmail...")
         const postRemaining = await this.postService.counPostRemaining()
