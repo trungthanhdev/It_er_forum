@@ -18,8 +18,8 @@ import { isUUID } from 'class-validator';
 import { sensitive_words } from 'src/bad_words';
 import { ResPostShort } from 'dto/resPostShort.dto';
 import { PostGateway } from 'src/socket/post.gateway';
-import { FileStorageService } from '../file_storage/file_storage.service';
-import { FirebaseService } from '../firebase/firebase.service';
+// import { FileStorageService } from '../file_storage/file_storage.service';
+// import { FirebaseService } from '../firebase/firebase.service';
 import * as admin from 'firebase-admin';
 import { PostHelper } from 'helper/post.helper';
 import { log } from 'console';
@@ -33,8 +33,8 @@ export class PostService {
     private readonly tagedByService: TagByService,
     private readonly tagsService: TagService,
     // private readonly postGateway: PostGateway,
-    private readonly fileStorageService: FileStorageService,
-    private readonly firebaseService: FirebaseService
+    // private readonly fileStorageService: FileStorageService,
+    // private readonly firebaseService: FirebaseService
   ){}
   private badWordsArr = sensitive_words 
   private async containNSFW(content: string, sensitiveWordArr: string[]) {
@@ -198,22 +198,23 @@ export class PostService {
       throw new NotFoundException("User not found!")
     }
 
-    let imgUrl: string[] = [];
-    if (post.img_file) { 
-      let uploadedImages: string[] = [];
-      if (Array.isArray(post.img_file) && post.img_file.length > 0) {
-          // Nếu là mảng ảnh, tải tất cả ảnh lên
-          uploadedImages = await Promise.all(
-              post.img_file.map(file => this.fileStorageService.upload(file, user_id))
-          );
-      } else {
-          // Nếu chỉ có một ảnh, tải ảnh đó lên
-          uploadedImages = [await this.fileStorageService.upload(post.img_file, user_id)];
-      }
-      imgUrl = [...imgUrl,...uploadedImages]
-    }
+    // let imgUrl: string[] = [];
+    // if (post.img_file) { 
+    //   let uploadedImages: string[] = [];
+    //   if (Array.isArray(post.img_file) && post.img_file.length > 0) {
+    //       // Nếu là mảng ảnh, tải tất cả ảnh lên
+    //       uploadedImages = await Promise.all(
+    //           post.img_file.map(file => this.fileStorageService.upload(file, user_id))
+    //       );
+    //   } else {
+    //       // Nếu chỉ có một ảnh, tải ảnh đó lên
+    //       uploadedImages = [await this.fileStorageService.upload(post.img_file, user_id)];
+    //   }
+    //   imgUrl = [...imgUrl,...uploadedImages]
+    // }
 
-    const newPost = this.postRepo.create({...post,user: user,img_url: imgUrl})
+    // const newPost = this.postRepo.create({...post,user: user,img_url: imgUrl})
+    const newPost = this.postRepo.create({...post,user: user})
     await this.postRepo.save(newPost)
 
     for(const tagName of post.tags){
@@ -256,51 +257,51 @@ export class PostService {
       throw new NotFoundException("Post not found")
     }
 
-    let newImg: string[] = existedPost.img_url || []
-    if (post.img_file) {
-      try {
-          let uploadedImages: string[] = [];
+    // let newImg: string[] = existedPost.img_url || []
+    // if (post.img_file) {
+    //   try {
+    //       let uploadedImages: string[] = [];
 
-          if (Array.isArray(post.img_file) && post.img_file.length > 0) {
-              uploadedImages = await Promise.all(
-                  post.img_file.map(file => this.fileStorageService.upload(file, existedPost.user.user_id))
-              );
-          } else if (typeof post.img_file === "object") {
-              uploadedImages = [await this.fileStorageService.upload(post.img_file, existedPost.user.user_id)];
-          }
+    //       if (Array.isArray(post.img_file) && post.img_file.length > 0) {
+    //           uploadedImages = await Promise.all(
+    //               post.img_file.map(file => this.fileStorageService.upload(file, existedPost.user.user_id))
+    //           );
+    //       } else if (typeof post.img_file === "object") {
+    //           uploadedImages = [await this.fileStorageService.upload(post.img_file, existedPost.user.user_id)];
+    //       }
 
-          if (uploadedImages.length > 0) {
-              console.log("✅ Uploaded images:", uploadedImages);
+    //       if (uploadedImages.length > 0) {
+    //           console.log("✅ Uploaded images:", uploadedImages);
 
-              // Kiểm tra và xóa ảnh cũ nếu có ảnh mới được upload thành công
-              if (newImg.length > 0) {
-                  console.log("🗑️ Deleting old images:", newImg);
+    //           // Kiểm tra và xóa ảnh cũ nếu có ảnh mới được upload thành công
+    //           if (newImg.length > 0) {
+    //               console.log("🗑️ Deleting old images:", newImg);
 
-                  await Promise.all(newImg.map(async (img) => {
-                      try {
-                          const bucket = admin.storage().bucket();
-                          const file = bucket.file(img);
+    //               await Promise.all(newImg.map(async (img) => {
+    //                   try {
+    //                       const bucket = admin.storage().bucket();
+    //                       const file = bucket.file(img);
 
-                          const [exists] = await file.exists();
-                          if (exists) {
-                              await file.delete();
-                              console.log(`✅ Deleted old image: ${img}`);
-                          } else {
-                              console.warn(`⚠️ Skipped deleting file (not found): ${img}`);
-                          }
-                      } catch (error) {
-                          console.error(`❌ Error deleting file ${img}:`, error.message);
-                      }
-                  }));
-              }
+    //                       const [exists] = await file.exists();
+    //                       if (exists) {
+    //                           await file.delete();
+    //                           console.log(`✅ Deleted old image: ${img}`);
+    //                       } else {
+    //                           console.warn(`⚠️ Skipped deleting file (not found): ${img}`);
+    //                       }
+    //                   } catch (error) {
+    //                       console.error(`❌ Error deleting file ${img}:`, error.message);
+    //                   }
+    //               }));
+    //           }
 
-              newImg = [...new Set(uploadedImages)]; // Loại bỏ ảnh trùng lặp
-          }
-      } catch (error) {
-          console.error("❌ Image upload failed:", error);
-          throw new Error("Failed to upload new images.");
-      }
-    }
+    //           newImg = [...new Set(uploadedImages)]; // Loại bỏ ảnh trùng lặp
+    //       }
+    //   } catch (error) {
+    //       console.error("❌ Image upload failed:", error);
+    //       throw new Error("Failed to upload new images.");
+    //   }
+    // }
 
     // if(Array.isArray(post.tags)){
     //   for(const tagName of post.tags){
@@ -320,7 +321,7 @@ export class PostService {
       post_title: post.post_title,
       post_content: post.post_content,
       // taged_bys: resTag.map(t => t.tag.taged_bys),
-      img_url: newImg
+      // img_url: newImg
     })
     const postAfterUpdate = await this.postRepo.findOne({
       where : {post_id},
