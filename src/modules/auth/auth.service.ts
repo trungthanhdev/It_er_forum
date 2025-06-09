@@ -57,8 +57,11 @@ export class AuthService {
             email: user.email
         }
 
-        const access_token =  await this.jwtService.signAsync(payload_accesstoken,{secret: process.env.JWT_TOKEN, expiresIn: process.env.JWT_TOKEN_EXPIRY})
-        const refresh_token = await this.jwtService.signAsync(payload_refreshtoken,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRY})
+        const access_token =  await this.jwtService.signAsync(payload_accesstoken,{secret: process.env.JWT_TOKEN, expiresIn: parseInt(process.env.JWT_TOKEN_EXPIRY ?? "300", 10) })
+        const refresh_token = await this.jwtService.signAsync(payload_refreshtoken,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRY ?? "1209600", 10)})
+        console.log(`giá trị từ env: ${process.env.JWT_TOKEN}`);
+        console.log(`giá trị từ hardcode expiresIn access_token: ${parseInt(process.env.JWT_TOKEN_EXPIRY ?? "300", 10)}`);
+
         
         return {
             access_token,
