@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: it-er-forum
+    env: docker
+    repo: https://github.com/trungthanhdev/It_er_forum.git
+    branch: developmentv2
+    dockerfilePath: ./Dockerfile
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: JWT_TOKEN
+        value: KP2U2OYH2I7LCWR79NX9XHBQDFC1GP54RZ0IU5OVHLX3ASHJD2M1YINK5UT8
+      - key: JWT_TOKEN_EXPIRY
+        value: 5m
+      - key: JWT_REFRESH_TOKEN
+        value: 0UW62MASKB2K14Q5FZTTJ60TVJYRR05MR0B02QK7IFPUE7XLP6QW10HGYYUL
+      - key: JWT_REFRESH_TOKEN_EXPIRY
+        value: 1h
+      - key: JWT_SECRET
+        value: qN3uWk7zF3rY9pZ6vT5bL1xA8hJ2oC0dR4mN6eQ1wG7kU5sX
+      - key: POSTGRES_HOST
+        value: ep-odd-hall-a8nk8wwj-pooler.eastus2.azure.neon.tech
+      - key: POSTGRES_PORT
+        value: '5432'
+      - key: POSTGRES_USER
+        value: iterforum_owner
+      - key: POSTGRES_PASSWORD
+        value: npg_g5YOA8RkyhlH
+      - key: POSTGRES_DB
+        value: iterforum
+      - key: PORT
+        value: '3000'
+      - key: DATABASE_URL
+        value: postgresql://iterforum_owner:npg_g5YOA8RkyhlH@ep-odd-hall-a8nk8wwj-pooler.eastus2.azure.neon.tech/iterforum?sslmode=require
+      - key: MAIL_COMPANY
+        value: buithanh10112000@gmail.com
+      - key: PASS_COMPANY
+        value: ktwgzlpuuupcwrdd
+      - key: FIREBASE_ADMIN_SDK
+        value: /app/to-do-list-6c37a-firebase-adminsdk-rf827-4a22d84aac.json
+      - key: MONGODB_URI
+        value: mongodb+srv://thanhbui111100:WgyP0UVsVLShUh5I@iterforum.9svba5p.mongodb.net/?retryWrites=true&w=majority&appName=ITerForum
