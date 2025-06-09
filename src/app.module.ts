@@ -22,8 +22,8 @@ import { join } from 'path';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SubscribedTagsModule } from './modules/subscribed_tags/subscribed_tags.module';
 import { JwtService } from '@nestjs/jwt';
-import { FirebaseModule } from './modules/firebase/firebase.module';
-import { FileStorageModule } from './modules/file_storage/file_storage.module';
+// import { FirebaseModule } from './modules/firebase/firebase.module';
+// import { FileStorageModule } from './modules/file_storage/file_storage.module';
 import { RecommendModule } from './modules/recommend/recommend.module';
 
 
@@ -58,8 +58,8 @@ import { RecommendModule } from './modules/recommend/recommend.module';
     ScheduleModule.forRoot(),
     SubscribedTagsModule,
     RecommendModule,
-    FirebaseModule,
-    FileStorageModule,
+    // FirebaseModule,
+    // FileStorageModule,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService,JwtService,
