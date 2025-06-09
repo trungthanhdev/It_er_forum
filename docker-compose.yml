@@ -6,7 +6,7 @@ services:
     restart: always
     ports:
       - "3333:3000"
-    env_file:
+    environment:
       - JWT_TOKEN=KP2U2OYH2I7LCWR79NX9XHBQDFC1GP54RZ0IU5OVHLX3ASHJD2M1YINK5UT8
       - JWT_TOKEN_EXPIRY=5m
       - JWT_REFRESH_TOKEN=0UW62MASKB2K14Q5FZTTJ60TVJYRR05MR0B02QK7IFPUE7XLP6QW10HGYYUL
@@ -21,7 +21,6 @@ services:
       - DATABASE_URL=postgresql://iterforum_owner:npg_g5YOA8RkyhlH@ep-odd-hall-a8nk8wwj-pooler.eastus2.azure.neon.tech/iterforum?sslmode=require
       - MAIL_COMPANY=buithanh10112000@gmail.com
       - PASS_COMPANY=ktwgzlpuuupcwrdd
-      - FIREBASE_ADMIN_SDK=/app/to-do-list-6c37a-firebase-adminsdk-rf827-4a22d84aac.json
       - MONGODB_URI=mongodb+srv://thanhbui111100:WgyP0UVsVLShUh5I@iterforum.9svba5p.mongodb.net/?retryWrites=true&w=majority&appName=ITerForum
     volumes:
       - ./to-do-list-6c37a-firebase-adminsdk-rf827-4a22d84aac.json:/app/to-do-list-6c37a-firebase-adminsdk-rf827-4a22d84aac.json
