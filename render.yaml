@@ -36,7 +36,3 @@ services:
         value: buithanh10112000@gmail.com
       - key: PASS_COMPANY
         value: ktwgzlpuuupcwrdd
-      - key: FIREBASE_ADMIN_SDK
-        value: /app/to-do-list-6c37a-firebase-adminsdk-rf827-4a22d84aac.json
-      - key: MONGODB_URI
-        value: mongodb+srv://thanhbui111100:WgyP0UVsVLShUh5I@iterforum.9svba5p.mongodb.net/?retryWrites=true&w=majority&appName=ITerForum
