@@ -135,7 +135,7 @@ export class AuthService {
                 email: email
             }
 
-            const access_token = await this.jwtService.signAsync(payload,{secret: process.env.JWT_TOKEN, expiresIn: process.env.JWT_TOKEN_EXPIRY})
+            const access_token = await this.jwtService.signAsync(payload,{secret: process.env.JWT_TOKEN, expiresIn: parseInt(process.env.JWT_TOKEN_EXPIRY ?? "300", 10)})
 
             return {access_token}
         } catch (error) {
