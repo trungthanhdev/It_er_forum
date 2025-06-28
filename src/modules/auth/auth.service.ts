@@ -102,8 +102,8 @@ export class AuthService {
                 email: saveUser.email
             }
 
-            const access_token =  await this.jwtService.signAsync(access_payload,{secret: process.env.JWT_TOKEN, expiresIn: process.env.JWT_TOKEN_EXPIRY})
-            const refresh_token = await this.jwtService.signAsync(refresh_payload,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRY})
+            const access_token =  await this.jwtService.signAsync(access_payload,{secret: process.env.JWT_TOKEN, expiresIn: parseInt(process.env.JWT_TOKEN_EXPIRY ?? "300", 10)})
+            const refresh_token = await this.jwtService.signAsync(refresh_payload,{secret: process.env.JWT_REFRESH_TOKEN, expiresIn: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRY ?? "1209600", 10)})
             
             await this.subscribedTagsService.subscribeTagDefault(saveUser)
             
