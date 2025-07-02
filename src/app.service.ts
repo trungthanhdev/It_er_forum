@@ -12,7 +12,7 @@ export class AppService {
   async pingSelf() {
     const url = 'https://it-er-forum.onrender.com/keep-awake'; 
     try {
-      await firstValueFrom(this.httpService.get(url));
+      // await firstValueFrom(this.httpService.get(url));
       console.log(' Ping self to stay awake');
     } catch (error) {
       console.error(' Error ping self:', error.message);
