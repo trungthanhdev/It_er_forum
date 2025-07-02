@@ -9,4 +9,9 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+   @Get('keep-awake')
+  keepAwake() {
+    console.log('Keep awake ping received at', new Date().toISOString());
+    return { message: 'I am awake!' };
+  }
 }
