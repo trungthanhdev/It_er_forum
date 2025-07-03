@@ -8,7 +8,7 @@ export class AppService {
   getHello(): string {
     return 'Hello World!';
   }
-  @Cron('*/14 * * * *') 
+  @Cron('*/10 * * * *') 
   async pingSelf() {
     const url = 'https://it-er-forum.onrender.com/keep-awake'; 
     try {
