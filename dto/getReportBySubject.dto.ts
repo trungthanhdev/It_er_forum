@@ -1,19 +1,18 @@
-import { IsString } from "class-validator"
+import { IsString } from 'class-validator';
 
-export class GetReportBySubjectDto{
-    @IsString()
-    report_id: string
-    
-    @IsString()
-    reported_user_id: string
+export class GetReportBySubjectDto {
+  @IsString()
+  report_id: string;
 
-    @IsString()
-    reported_user_name: string
+  @IsString()
+  reported_user_id: string;
 
-    @IsString()
-    ava_img_path: string
+  @IsString()
+  reported_user_name: string;
 
-    @IsString()
-    report_title: string
+  @IsString()
+  ava_img_path: string;
+
+  @IsString()
+  report_title: string;
 }
-    

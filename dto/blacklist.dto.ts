@@ -1,10 +1,9 @@
-import { IsString } from "class-validator";
-import { User } from "src/modules/user/entities/user.entity";
+import { IsString } from 'class-validator';
+import { User } from 'src/modules/user/entities/user.entity';
 
-export class BlacklistDto{
-    @IsString()
-    token_id?: string;
+export class BlacklistDto {
+  @IsString()
+  token_id?: string;
 
-    user: User;
-
+  user: User;
 }

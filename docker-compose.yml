@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - "3333:3000"
+      - '3333:3000'
     environment:
       - JWT_TOKEN=KP2U2OYH2I7LCWR79NX9XHBQDFC1GP54RZ0IU5OVHLX3ASHJD2M1YINK5UT8
       - JWT_TOKEN_EXPIRY=5m
@@ -21,5 +21,3 @@ services:
       - DATABASE_URL=postgresql://iterforum_owner:npg_g5YOA8RkyhlH@ep-odd-hall-a8nk8wwj-pooler.eastus2.azure.neon.tech/iterforum?sslmode=require
       - MAIL_COMPANY=buithanh10112000@gmail.com
       - PASS_COMPANY=ktwgzlpuuupcwrdd
-    
-    

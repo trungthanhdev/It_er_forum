@@ -35,7 +35,7 @@
 //     async delete(fileUrl: string): Promise<void> {
 //         try {
 //             const filePath = this.extractFilePath(fileUrl);
-            
+
 //             if (!filePath) {
 //                 throw new Error('Invalid file URL');
 //             }

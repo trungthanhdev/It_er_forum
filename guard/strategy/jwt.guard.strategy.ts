@@ -12,7 +12,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     @Inject(jwtConfig.KEY)
     jwtConfiguration: ConfigType<typeof jwtConfig>,
-    private readonly blacklistService: BlacklistService
+    private readonly blacklistService: BlacklistService,
   ) {
     console.log('JWT Config:', jwtConfiguration);
     super({
@@ -23,20 +23,26 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-    async validate(payload: any) {
-        console.log("Validate");
-        // Ở đây bạn có thể kiểm tra thêm điều kiện nếu cần
-        //Check thêm black list
-        const isInBlacklist = await this.blacklistService.findTokenInBlacklist(payload.id);
-        if(isInBlacklist){
-          throw new UnauthorizedException();
-        }
-
-        if(payload.status === UserStatus.BANNED){
-            throw new UnauthorizedException("Account has been banned!")
-        }
-        return {id: payload.id, user_id: payload.sub, email: payload.email, role: payload.role,status: payload.status};
+  async validate(payload: any) {
+    console.log('Validate');
+    // Ở đây bạn có thể kiểm tra thêm điều kiện nếu cần
+    //Check thêm black list
+    const isInBlacklist = await this.blacklistService.findTokenInBlacklist(
+      payload.id,
+    );
+    if (isInBlacklist) {
+      throw new UnauthorizedException();
     }
 
-
+    if (payload.status === UserStatus.BANNED) {
+      throw new UnauthorizedException('Account has been banned!');
+    }
+    return {
+      id: payload.id,
+      user_id: payload.sub,
+      email: payload.email,
+      role: payload.role,
+      status: payload.status,
+    };
+  }
 }

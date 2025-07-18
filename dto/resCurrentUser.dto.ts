@@ -1,29 +1,29 @@
-import { IsEmail, IsNumber, IsString } from "class-validator"
+import { IsEmail, IsNumber, IsString } from 'class-validator';
 
-export class ResCurrentUserDto{
-    @IsString()
-    user_id: string
+export class ResCurrentUserDto {
+  @IsString()
+  user_id: string;
 
-    @IsString()
-    first_name: string
+  @IsString()
+  first_name: string;
 
-    @IsString()
-    last_name: string
+  @IsString()
+  last_name: string;
 
-    @IsString()
-    user_name: string
+  @IsString()
+  user_name: string;
 
-    @IsEmail()
-    email: string 
+  @IsEmail()
+  email: string;
 
-    @IsString()
-    phone_num: string
+  @IsString()
+  phone_num: string;
 
-    @IsNumber()
-    age: number
+  @IsNumber()
+  age: number;
 
-    @IsString()
-    ava_img_path: string
+  @IsString()
+  ava_img_path: string;
 
-    user_posts: any[]
+  user_posts: any[];
 }

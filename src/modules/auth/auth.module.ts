@@ -17,17 +17,16 @@ import { UserGateWay } from 'src/socket/user.gateway';
 import { NotificationModule } from '../notification/notification.module';
 import { CommentModule } from '../comment/comment.module';
 
-
 @Module({
-    imports: [
+  imports: [
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
     ConfigModule.forFeature(refreshConfig),
     JwtModule.registerAsync(refreshConfig.asProvider()),
-      // JwtModule.register({
-      // global: true,
-      // signOptions: { expiresIn: '1h' },
-      // }),
+    // JwtModule.register({
+    // global: true,
+    // signOptions: { expiresIn: '1h' },
+    // }),
     // forwardRef(() => UserModule),
     UserModule,
     BlacklistModule,
@@ -35,9 +34,9 @@ import { CommentModule } from '../comment/comment.module';
     SubscribedTagsModule,
     ReportModule,
     NotificationModule,
-    ],
-    providers:[AuthService, JwtStrategy, JwtRefreshStrategy,UserGateWay],
-    controllers: [AuthController],
-    exports: [AuthService, JwtStrategy,JwtRefreshStrategy,UserGateWay]
+  ],
+  providers: [AuthService, JwtStrategy, JwtRefreshStrategy, UserGateWay],
+  controllers: [AuthController],
+  exports: [AuthService, JwtStrategy, JwtRefreshStrategy, UserGateWay],
 })
 export class AuthModule {}

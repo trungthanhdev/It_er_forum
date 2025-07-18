@@ -1,91 +1,98 @@
-import { MaxLength } from "class-validator";
-import { Roles, UserStatus } from "global/enum.global";
-import { BeforeInsert, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { MaxLength } from 'class-validator';
+import { Roles, UserStatus } from 'global/enum.global';
+import {
+  BeforeInsert,
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { Post } from "src/modules/post/entities/post.entity";
-import { Report } from "src/modules/report/entities/report.entity";
-import { Comment } from "src/modules/comment/entities/comment.entity";
-import { NotificationEntity } from "src/modules/notification/entities/notification.entity";
-import { InvalidTokenEntity } from "src/modules/blacklist/entities/invalidatedToken.entity";
-import { SubscribedTag } from "src/modules/subscribed_tags/entities/subscribed_tag.entity";
-import { subscribe } from "diagnostics_channel";
-@Entity({name: "users"})
-@Unique(["email"])
+import { Post } from 'src/modules/post/entities/post.entity';
+import { Report } from 'src/modules/report/entities/report.entity';
+import { Comment } from 'src/modules/comment/entities/comment.entity';
+import { NotificationEntity } from 'src/modules/notification/entities/notification.entity';
+import { InvalidTokenEntity } from 'src/modules/blacklist/entities/invalidatedToken.entity';
+import { SubscribedTag } from 'src/modules/subscribed_tags/entities/subscribed_tag.entity';
+import { subscribe } from 'diagnostics_channel';
+@Entity({ name: 'users' })
+@Unique(['email'])
 export class User {
-    @PrimaryGeneratedColumn("uuid")
-    // @Exclude()
-    user_id : string
+  @PrimaryGeneratedColumn('uuid')
+  // @Exclude()
+  user_id: string;
 
-    @Column({nullable: true})
-    @MaxLength(20)
-    first_name: string
+  @Column({ nullable: true })
+  @MaxLength(20)
+  first_name: string;
 
-    @Column({nullable: true})
-    @MaxLength(20)
-    last_name: string
+  @Column({ nullable: true })
+  @MaxLength(20)
+  last_name: string;
 
-    @Column()
-    @MaxLength(20)
-    user_name: string
+  @Column()
+  @MaxLength(20)
+  user_name: string;
 
-    @Column()
-    @MaxLength(30)
-    email: string
+  @Column()
+  @MaxLength(30)
+  email: string;
 
-    @Column()
-    @Exclude()
-    @MaxLength(61)
-    password: string
+  @Column()
+  @Exclude()
+  @MaxLength(61)
+  password: string;
 
-    @Column({nullable: true})
-    @MaxLength(11)
-    phone_num: string
+  @Column({ nullable: true })
+  @MaxLength(11)
+  phone_num: string;
 
-    @Column({nullable: true})
-    @MaxLength(20)
-    country: string
+  @Column({ nullable: true })
+  @MaxLength(20)
+  country: string;
 
-    @Column({ type: 'int', nullable: true })
-    age: number
+  @Column({ type: 'int', nullable: true })
+  age: number;
 
-    @Column({nullable: true})
-    ava_img_path: string
+  @Column({ nullable: true })
+  ava_img_path: string;
 
-    @CreateDateColumn()
-    time_stamp: Date
+  @CreateDateColumn()
+  time_stamp: Date;
 
-    @Column({default: UserStatus.ACTIVE})
-    status: UserStatus
+  @Column({ default: UserStatus.ACTIVE })
+  status: UserStatus;
 
-    @Column({default: Roles.USER})
-    // @Exclude()
-    @MaxLength(10)
-    role: Roles
+  @Column({ default: Roles.USER })
+  // @Exclude()
+  @MaxLength(10)
+  role: Roles;
 
-    @OneToMany(() => Post, (post) => post.user)
-    posts: Post[] 
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
 
-    @OneToMany(() => Report, (report) => report.user)
-    reports: Report[]
+  @OneToMany(() => Report, (report) => report.user)
+  reports: Report[];
 
-    @OneToMany(() => Comment, (comment) => comment.user)
-    comments: Comment[]
-    
-    @OneToMany(() => NotificationEntity, (notification) => notification.user)
-    notifications: NotificationEntity[]
-    
-    @OneToMany(() => InvalidTokenEntity, (invalidToken) => invalidToken.user)
-    invalidated_tokens: NotificationEntity[]
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[];
 
-    @OneToMany(() => SubscribedTag, (subscribed_tag) => subscribed_tag.user)
-    subscribed_tags: SubscribedTag[]
+  @OneToMany(() => NotificationEntity, (notification) => notification.user)
+  notifications: NotificationEntity[];
 
-    @BeforeInsert()
-    setVietnamTime() {
-        this.time_stamp = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
-        // this.date_updated = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
-    }
+  @OneToMany(() => InvalidTokenEntity, (invalidToken) => invalidToken.user)
+  invalidated_tokens: NotificationEntity[];
+
+  @OneToMany(() => SubscribedTag, (subscribed_tag) => subscribed_tag.user)
+  subscribed_tags: SubscribedTag[];
+
+  @BeforeInsert()
+  setVietnamTime() {
+    this.time_stamp = new Date(
+      new Date().toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
+    );
+    // this.date_updated = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
+  }
 }
-
-
-

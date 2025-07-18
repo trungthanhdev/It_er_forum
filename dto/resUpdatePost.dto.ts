@@ -1,34 +1,33 @@
-import { IsArray, IsDate, IsNumber, IsString } from "class-validator"
+import { IsArray, IsDate, IsNumber, IsString } from 'class-validator';
 
-export class ResUpdatePost{
-    @IsString()
-    post_id: string
+export class ResUpdatePost {
+  @IsString()
+  post_id: string;
 
-    @IsString()
-    post_title: string
+  @IsString()
+  post_title: string;
 
-    @IsString()
-    post_content: string
+  @IsString()
+  post_content: string;
 
-    @IsArray()
-    img_url: string[]
+  @IsArray()
+  img_url: string[];
 
-    @IsString()
-    user_id: string
+  @IsString()
+  user_id: string;
 
-    @IsString()
-    user_name: string
+  @IsString()
+  user_name: string;
 
-    @IsString()
-    ava_img_path: string
+  @IsString()
+  ava_img_path: string;
 
+  @IsDate()
+  date_updated: Date;
 
-    @IsDate()
-    date_updated: Date
+  @IsString()
+  status: string;
 
-    @IsString()
-    status: string
-
-    @IsArray()
-    tags: string[]
+  @IsArray()
+  tags: string[];
 }

@@ -9,9 +9,14 @@ import { NotificationModule } from '../notification/notification.module';
 import { PostGateway } from 'src/socket/post.gateway';
 
 @Module({
-  imports : [TypeOrmModule.forFeature([Comment]),UserModule, PostModule, NotificationModule],
+  imports: [
+    TypeOrmModule.forFeature([Comment]),
+    UserModule,
+    PostModule,
+    NotificationModule,
+  ],
   controllers: [CommentController],
   providers: [CommentService, PostGateway],
-  exports: [CommentService, PostGateway]
+  exports: [CommentService, PostGateway],
 })
 export class CommentModule {}

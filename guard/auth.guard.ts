@@ -1,4 +1,3 @@
-
 // import { Injectable, CanActivate, ExecutionContext, BadRequestException, UnauthorizedException } from '@nestjs/common';
 // import { JwtService } from '@nestjs/jwt';
 // import { BlacklistService } from 'src/modules/blacklist/blacklist.service';
@@ -13,7 +12,7 @@
 //   async canActivate(
 //     context: ExecutionContext,
 //   ):  Promise<boolean> {
-//     const request = context.switchToHttp().getRequest();    
+//     const request = context.switchToHttp().getRequest();
 //     try {
 //     const access_token = request.headers.authorization?.split(' ')[1]
 
@@ -32,10 +31,10 @@
 //     if(!user){
 //       throw new BadRequestException("Please login again!")
 //     }
-    
+
 //     request.currentUser = user
 //     request.tokens = {access_token}
-    
+
 //     } catch (error) {
 //       if(error instanceof UnauthorizedException || error instanceof BadRequestException){
 //         throw error

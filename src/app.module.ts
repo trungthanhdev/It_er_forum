@@ -26,11 +26,18 @@ import { JwtService } from '@nestjs/jwt';
 // import { FileStorageModule } from './modules/file_storage/file_storage.module';
 import { RecommendModule } from './modules/recommend/recommend.module';
 
-
-
 @Module({
-  imports: [UserModule, PostModule, AuthModule,
-    TypeOrmModule.forRoot(pgConfig), BlacklistModule, ReportModule, CommentModule, NotificationModule, TagModule, TagByModule,
+  imports: [
+    UserModule,
+    PostModule,
+    AuthModule,
+    TypeOrmModule.forRoot(pgConfig),
+    BlacklistModule,
+    ReportModule,
+    CommentModule,
+    NotificationModule,
+    TagModule,
+    TagByModule,
     //node-mailer config
     MailerModule.forRoot({
       transport: {
@@ -47,7 +54,7 @@ import { RecommendModule } from './modules/recommend/recommend.module';
         from: '"nest-modules" <modules@nestjs.com>',
       },
       template: {
-        dir: process.cwd()+ '/src/mail', 
+        dir: process.cwd() + '/src/mail',
         // dir: join(__dirname, 'mail'),
         adapter: new HandlebarsAdapter(),
         options: {
@@ -62,13 +69,14 @@ import { RecommendModule } from './modules/recommend/recommend.module';
     // FileStorageModule,
   ],
   controllers: [AppController, AuthController],
-  providers: [AppService, AuthService,JwtService,
+  providers: [
+    AppService,
+    AuthService,
+    JwtService,
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
     },
   ],
 })
-export class AppModule  {
-  
-}
+export class AppModule {}

@@ -1,64 +1,81 @@
-import { MaxLength } from "class-validator";
-import { PostStatus } from "global/enum.global";
-import { User } from "src/modules/user/entities/user.entity";
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Report } from "src/modules/report/entities/report.entity";
-import { Comment } from "src/modules/comment/entities/comment.entity";
-import { TagedByEntity } from "src/modules/tag_by/entities/Taged_by.entity";
-@Entity({name : "posts"})
+import { MaxLength } from 'class-validator';
+import { PostStatus } from 'global/enum.global';
+import { User } from 'src/modules/user/entities/user.entity';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Report } from 'src/modules/report/entities/report.entity';
+import { Comment } from 'src/modules/comment/entities/comment.entity';
+import { TagedByEntity } from 'src/modules/tag_by/entities/Taged_by.entity';
+@Entity({ name: 'posts' })
 export class Post {
-    @PrimaryGeneratedColumn("uuid")
-    post_id: string
+  @PrimaryGeneratedColumn('uuid')
+  post_id: string;
 
-    @Column()
-    @MaxLength(50)
-    post_title: string
+  @Column()
+  @MaxLength(50)
+  post_title: string;
 
-    @Column({nullable: true})
-    @MaxLength(255)
-    post_content: string
+  @Column({ nullable: true })
+  @MaxLength(255)
+  post_content: string;
 
-    @Column("text",{nullable: true, array: true})
-    img_url: string[]
+  @Column('text', { nullable: true, array: true })
+  img_url: string[];
 
-    @CreateDateColumn()
-    date_created: Date
+  @CreateDateColumn()
+  date_created: Date;
 
-    @UpdateDateColumn()
-    date_updated: Date
+  @UpdateDateColumn()
+  date_updated: Date;
 
-    @Column({ default : 0})
-    upvote : number
+  @Column({ default: 0 })
+  upvote: number;
 
-    @Column({ default : 0})
-    downvote : number
+  @Column({ default: 0 })
+  downvote: number;
 
-    @Column({default: PostStatus.PENDING})
-    status: PostStatus
+  @Column({ default: PostStatus.PENDING })
+  status: PostStatus;
 
-    @ManyToOne(() => User,(user) => user.posts)
-    @JoinColumn({name: "user_id"})
-    user: User
+  @ManyToOne(() => User, (user) => user.posts)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
-    @OneToMany(() => Report, (report) => report.post)
-    reports: Report[]
+  @OneToMany(() => Report, (report) => report.post)
+  reports: Report[];
 
-    @OneToMany(() => Comment, (comment) => comment.post)
-    comments: Comment[]
+  @OneToMany(() => Comment, (comment) => comment.post)
+  comments: Comment[];
 
-    @OneToMany(() => TagedByEntity, (taged_by) => taged_by.post, { cascade: true })
-    taged_bys: TagedByEntity[]
+  @OneToMany(() => TagedByEntity, (taged_by) => taged_by.post, {
+    cascade: true,
+  })
+  taged_bys: TagedByEntity[];
 
-    @BeforeInsert()
-    setVietnamTime() {
-        const now = new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" });
-        this.date_created = new Date(now);
-        this.date_updated = new Date(now);
-    }
+  @BeforeInsert()
+  setVietnamTime() {
+    const now = new Date().toLocaleString('en-US', {
+      timeZone: 'Asia/Ho_Chi_Minh',
+    });
+    this.date_created = new Date(now);
+    this.date_updated = new Date(now);
+  }
 
-    @BeforeUpdate()
-    updateVietnamTime() {
-        this.date_updated = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
-    }
-
+  @BeforeUpdate()
+  updateVietnamTime() {
+    this.date_updated = new Date(
+      new Date().toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }),
+    );
+  }
 }

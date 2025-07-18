@@ -1,56 +1,77 @@
-<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset='UTF-8' />
     <title>User Banned Notification</title>
-</head>
-<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
-    <table width="100%" bgcolor="#f4f4f4" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-            <td>
-                <table align="center" width="600" bgcolor="#ffffff" cellpadding="20" cellspacing="0" border="0" style="border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);">
-                    <tr>
-                        <td align="center" style="padding: 20px 0;">
-                            <h2 style="color: #d9534f;">Tài khoản của bạn đã bị khóa</h2>
-                        </td>
-                    </tr>
-                  
-                    <tr>
-                        <td>
-                            <p>Xin chào <strong>{{first_name}} {{last_name}}</strong> ({{email}}),</p>
-                            <p><strong>Tuổi:</strong> {{age}}</p>
-                            <p><strong>Quốc gia:</strong> {{country}}</p>
-                            <p><strong>Số điện thoại:</strong> {{phone_num}}</p>
-                            <p><strong>Trạng thái tài khoản:</strong> {{status}}</p>
-                            <p>Chúng tôi xin thông báo rằng tài khoản của bạn đã bị khóa do vi phạm chính sách cộng đồng.</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <h3>Lý do bị khóa:</h3>
-                            <ul>
-                                <li><strong>Tiêu đề báo cáo:</strong> {{title_report}}</li>
-                                <li><strong>Nội dung:</strong> {{report_content}}</li>
-                                <li><strong>Ngày bị báo cáo:</strong> {{date_reported}}</li>
-                                <li><strong>Loại báo cáo:</strong> {{subject}}</li>
-                            </ul>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td align="center">
-                            <p>Nếu bạn cho rằng đây là sai sót, vui lòng liên hệ với chúng tôi.</p>
-                            <a style="background-color: #0275d8; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Khiếu nại</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td align="center" style="padding: 20px 0; color: #666;">
-                            <p>Trân trọng,</p>
-                            <p><strong>Đội ngũ Hỗ trợ</strong></p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
+  </head>
+  <body
+    style='font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;'
+  >
+    <table
+      width='100%'
+      bgcolor='#f4f4f4'
+      cellpadding='0'
+      cellspacing='0'
+      border='0'
+    >
+      <tr>
+        <td>
+          <table
+            align='center'
+            width='600'
+            bgcolor='#ffffff'
+            cellpadding='20'
+            cellspacing='0'
+            border='0'
+            style='border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);'
+          >
+            <tr>
+              <td align='center' style='padding: 20px 0;'>
+                <h2 style='color: #d9534f;'>Tài khoản của bạn đã bị khóa</h2>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <p>Xin chào
+                  <strong>{{first_name}} {{last_name}}</strong>
+                  ({{email}}),</p>
+                <p><strong>Tuổi:</strong> {{age}}</p>
+                <p><strong>Quốc gia:</strong> {{country}}</p>
+                <p><strong>Số điện thoại:</strong> {{phone_num}}</p>
+                <p><strong>Trạng thái tài khoản:</strong> {{status}}</p>
+                <p>Chúng tôi xin thông báo rằng tài khoản của bạn đã bị khóa do
+                  vi phạm chính sách cộng đồng.</p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h3>Lý do bị khóa:</h3>
+                <ul>
+                  <li><strong>Tiêu đề báo cáo:</strong> {{title_report}}</li>
+                  <li><strong>Nội dung:</strong> {{report_content}}</li>
+                  <li><strong>Ngày bị báo cáo:</strong> {{date_reported}}</li>
+                  <li><strong>Loại báo cáo:</strong> {{subject}}</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td align='center'>
+                <p>Nếu bạn cho rằng đây là sai sót, vui lòng liên hệ với chúng
+                  tôi.</p>
+                <a
+                  style='background-color: #0275d8; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'
+                >Khiếu nại</a>
+              </td>
+            </tr>
+            <tr>
+              <td align='center' style='padding: 20px 0; color: #666;'>
+                <p>Trân trọng,</p>
+                <p><strong>Đội ngũ Hỗ trợ</strong></p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
     </table>
-</body>
+  </body>
 </html>

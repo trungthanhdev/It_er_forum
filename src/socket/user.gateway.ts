@@ -14,99 +14,116 @@ import { NotificationGatewayService } from './notfication.gateway.service';
   },
 })
 export class UserGateWay implements OnModuleInit {
-  constructor(private readonly userService: UserService,
-              private readonly authService: AuthService,
-              private readonly notificationGatewayService: NotificationGatewayService,
-              private readonly postService: PostService
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+    private readonly notificationGatewayService: NotificationGatewayService,
+    private readonly postService: PostService,
   ) {}
   @WebSocketServer() server: Server;
 
-//   onModuleInit() {
-//     this.server.on('connection', (socket) => {
-//       console.log('A user connected');
+  //   onModuleInit() {
+  //     this.server.on('connection', (socket) => {
+  //       console.log('A user connected');
 
-//     //   socket.on('joinRoom',  (user_id) => {
-//     //     socket.join(user_id);
-//     //     console.log("join r"); 
-//     //   });
-     
+  //     //   socket.on('joinRoom',  (user_id) => {
+  //     //     socket.join(user_id);
+  //     //     console.log("join r");
+  //     //   });
 
-//       //Lắng nghe onBan từ admin
-//       //data {user_id: string, report_id: string, subject: string}
+  //       //Lắng nghe onBan từ admin
+  //       //data {user_id: string, report_id: string, subject: string}
 
-//       socket.on('onBan', async (data) => {
-//         //Thay doi trang thai 
-        
-//         await this.userService.changeUserStatus(data.user_id,{ status: 'Banned' });
-//         //Gui mail
-//         let modifySubject = data.subject as ReportSubject
-//         await this.authService.sendEmailtoUserBanned(data.user_id,data.report_id, modifySubject)
-//         //Emit chi danh cho room dang join vao
-//         let payload = {message: "Your account has been banned, you will be logged out in 5s"}
-//         this.server.emit(`banAlert_${data.user_id}`, payload);
-//       });
+  //       socket.on('onBan', async (data) => {
+  //         //Thay doi trang thai
 
-//     //   socket.on('leaveRoom', (user_id) => {
-//     //     socket.leave(user_id);
-//     //   });
+  //         await this.userService.changeUserStatus(data.user_id,{ status: 'Banned' });
+  //         //Gui mail
+  //         let modifySubject = data.subject as ReportSubject
+  //         await this.authService.sendEmailtoUserBanned(data.user_id,data.report_id, modifySubject)
+  //         //Emit chi danh cho room dang join vao
+  //         let payload = {message: "Your account has been banned, you will be logged out in 5s"}
+  //         this.server.emit(`banAlert_${data.user_id}`, payload);
+  //       });
 
-//       socket.on('disconnect', () => {
-//         console.log('User disconnected');
-//       });
-//     });
-//   }
+  //     //   socket.on('leaveRoom', (user_id) => {
+  //     //     socket.leave(user_id);
+  //     //   });
 
-onModuleInit() {  
-	this.server.on('connection', (socket) => {  
-		console.log('User connected');
-	
-		socket.on('joinRoom', async (user_id)=> { 
-			console.log("User joined room User"); 
-                	socket.join(user_id); 
-            	});
+  //       socket.on('disconnect', () => {
+  //         console.log('User disconnected');
+  //       });
+  //     });
+  //   }
 
-		socket.on('banUser', async (data) => {
-			await this.userService.changeUserStatus(data.user_id, {status: "Banned"});
+  onModuleInit() {
+    this.server.on('connection', (socket) => {
+      console.log('User connected');
 
-			let modifySubject = data.subject as ReportSubject;
-			await this.authService.sendEmailtoUserBanned(data.user_id, data.reported_id, modifySubject);
-            const payload = {message :  "Your account has been banned!"} 
-            this.server.to(data.user_id).emit("banAlert",payload);
-		});
-        
-        //restricted
-        socket.on('restrictUser', async (data) => {
-			await this.userService.changeUserStatus(data.user_id, {status: "Restricted"});
-            let payload =  {
-                is_comment: false,
-                content: "Tài khoản của bạn đã bị hạn chế vì vi phạm tiêu chuẩn cộng đồng", 
-                post_id: (data.subject === "User") ? "" : data.post_id    
-            }
-            await this.notificationGatewayService.sendNotification(data.user_id, payload);
-		});
+      socket.on('joinRoom', async (user_id) => {
+        console.log('User joined room User');
+        socket.join(user_id);
+      });
 
-        //review post
-        socket.on('reviewPost', async (data) => {
-			await this.postService.changePostStatus(data.post_id, {status: data.status});
-			
-			let payload = {
-				is_comment: false,
-				content: (data.status === "Approved") ? "Bài post của bạn đã được admin duyệt" 
-				: "Bài post của bạn đã bị từ chối vì vi phạm tiêu chuẩn cộng đồng",
-				post_id: data.post_id
-			};
-			await this.notificationGatewayService.sendNotification(data.user_id, payload);
+      socket.on('banUser', async (data) => {
+        await this.userService.changeUserStatus(data.user_id, {
+          status: 'Banned',
+        });
 
-		});
+        let modifySubject = data.subject as ReportSubject;
+        await this.authService.sendEmailtoUserBanned(
+          data.user_id,
+          data.reported_id,
+          modifySubject,
+        );
+        const payload = { message: 'Your account has been banned!' };
+        this.server.to(data.user_id).emit('banAlert', payload);
+      });
 
-		socket.on('leaveRoom', async (user_id)=> {
-			console.log("User left room User");  
-                	socket.leave(user_id); 
-            	});
-		socket.on('disconnect', () => {  
-        		console.log('User disconnected');  
-        	});  
+      //restricted
+      socket.on('restrictUser', async (data) => {
+        await this.userService.changeUserStatus(data.user_id, {
+          status: 'Restricted',
+        });
+        let payload = {
+          is_comment: false,
+          content:
+            'Tài khoản của bạn đã bị hạn chế vì vi phạm tiêu chuẩn cộng đồng',
+          post_id: data.subject === 'User' ? '' : data.post_id,
+        };
+        await this.notificationGatewayService.sendNotification(
+          data.user_id,
+          payload,
+        );
+      });
 
+      //review post
+      socket.on('reviewPost', async (data) => {
+        await this.postService.changePostStatus(data.post_id, {
+          status: data.status,
+        });
+
+        let payload = {
+          is_comment: false,
+          content:
+            data.status === 'Approved'
+              ? 'Bài post của bạn đã được admin duyệt'
+              : 'Bài post của bạn đã bị từ chối vì vi phạm tiêu chuẩn cộng đồng',
+          post_id: data.post_id,
+        };
+        await this.notificationGatewayService.sendNotification(
+          data.user_id,
+          payload,
+        );
+      });
+
+      socket.on('leaveRoom', async (user_id) => {
+        console.log('User left room User');
+        socket.leave(user_id);
+      });
+      socket.on('disconnect', () => {
+        console.log('User disconnected');
+      });
     });
-}
+  }
 }

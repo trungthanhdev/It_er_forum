@@ -8,6 +8,6 @@ import { InvalidTokenEntity } from './entities/invalidatedToken.entity';
   imports: [TypeOrmModule.forFeature([InvalidTokenEntity])],
   controllers: [BlacklistController],
   providers: [BlacklistService],
-  exports: [BlacklistService]
+  exports: [BlacklistService],
 })
 export class BlacklistModule {}

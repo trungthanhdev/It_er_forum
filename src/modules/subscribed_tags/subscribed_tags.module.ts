@@ -9,11 +9,14 @@ import { StatisticsGateway } from 'src/socket/statistics.gateway';
 import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SubscribedTag]),
-            TagModule,TagByModule, UserModule
+  imports: [
+    TypeOrmModule.forFeature([SubscribedTag]),
+    TagModule,
+    TagByModule,
+    UserModule,
   ],
   controllers: [SubscribedTagsController],
   providers: [SubscribedTagsService, StatisticsGateway],
-  exports: [SubscribedTagsService, StatisticsGateway]
+  exports: [SubscribedTagsService, StatisticsGateway],
 })
 export class SubscribedTagsModule {}

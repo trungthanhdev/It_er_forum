@@ -10,14 +10,15 @@ import { CommentModule } from '../comment/comment.module';
 import { ReportGateway } from 'src/socket/report.gateway';
 
 @Module({
-  imports : [TypeOrmModule.forFeature([Report]),
-            PostModule,
-            UserModule,
-            BlacklistModule,
-            CommentModule
-            ],
+  imports: [
+    TypeOrmModule.forFeature([Report]),
+    PostModule,
+    UserModule,
+    BlacklistModule,
+    CommentModule,
+  ],
   controllers: [ReportController],
-  providers: [ReportService, ReportGateway], 
-  exports:[ReportService]
+  providers: [ReportService, ReportGateway],
+  exports: [ReportService],
 })
 export class ReportModule {}

@@ -18,7 +18,7 @@ import { JwtAuthGuard } from 'guard/jwt.guard';
 import { JwtRefreshAuthGuard } from 'guard/refresh.guard';
 import { ReportSubject, UserStatus } from 'global/enum.global';
 @Controller('api/v1/auth')
-export class AuthController  {
+export class AuthController {
   constructor(
     private readonly authService: AuthService,
     // private readonly userService: UserService,

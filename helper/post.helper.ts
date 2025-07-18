@@ -1,8 +1,8 @@
-import { IsNumber } from "class-validator"
+import { IsNumber } from 'class-validator';
 
 export class PostHelper {
-    @IsNumber()
-    public pageSize: number
-    @IsNumber()
-    public pageNumber: number
+  @IsNumber()
+  public pageSize: number;
+  @IsNumber()
+  public pageNumber: number;
 }

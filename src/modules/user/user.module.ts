@@ -7,13 +7,14 @@ import { BlacklistModule } from '../blacklist/blacklist.module';
 import { StatisticsGateway } from 'src/socket/statistics.gateway';
 // import { UserGateWay } from 'src/socket/user.gateway';
 
-
 @Module({
-  imports: [TypeOrmModule.forFeature([User]),
-  // forwardRef(() => PostModule),
-  BlacklistModule],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    // forwardRef(() => PostModule),
+    BlacklistModule,
+  ],
   controllers: [UserController],
   providers: [UserService],
-  exports: [UserService]
+  exports: [UserService],
 })
 export class UserModule {}

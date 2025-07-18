@@ -1,16 +1,28 @@
-import { User } from "src/modules/user/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { User } from 'src/modules/user/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-@Entity({name : "invalidated_tokens"})
-export class InvalidTokenEntity{
-    @PrimaryColumn()
-    token_id: string
+@Entity({ name: 'invalidated_tokens' })
+export class InvalidTokenEntity {
+  @PrimaryColumn()
+  token_id: string;
 
-    
-    @CreateDateColumn()
-    time_stamp: Date
+  @CreateDateColumn()
+  time_stamp: Date;
 
-    @ManyToOne(() => User, (user) => {user.invalidated_tokens})
-    @JoinColumn({name: "user_id"})
-    user: User
+  @ManyToOne(
+    () => User,
+    (user) => {
+      user.invalidated_tokens;
+    },
+  )
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

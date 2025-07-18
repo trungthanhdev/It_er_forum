@@ -9,6 +9,6 @@ import { StatisticsGateway } from 'src/socket/statistics.gateway';
   imports: [TypeOrmModule.forFeature([TagedByEntity])],
   controllers: [TagByController],
   providers: [TagByService],
-  exports: [TagByService]
+  exports: [TagByService],
 })
 export class TagByModule {}

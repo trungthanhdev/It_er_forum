@@ -14,19 +14,21 @@ import { PostGateway } from 'src/socket/post.gateway';
 import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Post]),
-  UserModule,
-  BlacklistModule, 
-  TagByModule,
-  TagModule, 
-  // FileStorageModule,
-  // FirebaseModule,
-  NotificationModule],
+  imports: [
+    TypeOrmModule.forFeature([Post]),
+    UserModule,
+    BlacklistModule,
+    TagByModule,
+    TagModule,
+    // FileStorageModule,
+    // FirebaseModule,
+    NotificationModule,
+  ],
   controllers: [PostController],
   providers: [
-    PostService, 
+    PostService,
     // PostGateway
   ],
-  exports: [PostService]
+  exports: [PostService],
 })
 export class PostModule {}

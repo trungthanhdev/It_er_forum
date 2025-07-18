@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SubscribedTag } from './entities/subscribed_tag.entity';
 import { Between, MoreThanOrEqual, Repository } from 'typeorm';
@@ -82,12 +86,10 @@ export class SubscribedTagsService {
 
   private async calculateTrendingTag(tag: TagEntity) {}
 
-  async getAllSubscribedTags(oneHourAgo : Date) {
+  async getAllSubscribedTags(oneHourAgo: Date) {
     return this.subscribedTagRepo.find({
-        where:{time_stamp: MoreThanOrEqual(oneHourAgo)},
-        relations: ['tag'],
+      where: { time_stamp: MoreThanOrEqual(oneHourAgo) },
+      relations: ['tag'],
     });
   }
 }
-
-

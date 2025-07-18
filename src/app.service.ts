@@ -8,9 +8,9 @@ export class AppService {
   getHello(): string {
     return 'Hello World!';
   }
-  @Cron('*/10 * * * *') 
+  @Cron('*/10 * * * *')
   async pingSelf() {
-    const url = 'https://it-er-forum.onrender.com/keep-awake'; 
+    const url = 'https://it-er-forum.onrender.com/keep-awake';
     try {
       // await firstValueFrom(this.httpService.get(url));
       console.log(' Ping self to stay awake');

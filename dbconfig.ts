@@ -5,7 +5,7 @@ dotenv.config();
 
 export const pgConfig: TypeOrmModuleOptions = {
   type: 'postgres',
-  url: process.env.DATABASE_URL, 
+  url: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
   autoLoadEntities: true,
   synchronize: true,

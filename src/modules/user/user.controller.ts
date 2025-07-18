@@ -1,4 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, ClassSerializerInterceptor, UseInterceptors, UseGuards, UsePipes, ValidationPipe, Res, Req, UnauthorizedException, BadRequestException, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  ClassSerializerInterceptor,
+  UseInterceptors,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+  Res,
+  Req,
+  UnauthorizedException,
+  BadRequestException,
+  Put,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from '../../../dto/update-user.dto';
 // import { AuthGuard } from 'guard/auth.guard';
@@ -9,62 +27,61 @@ import { JwtAuthGuard } from 'guard/jwt.guard';
 @Controller('/api/v1/users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-  
+
   @Get()
   // @UseGuards(new RoleGuard(['ADMIN']))
   // @UseGuards(AuthGuard)
   async findAllUser() {
     console.log(`Fetch successfully!`);
-    return this.userService.findAllUser()
+    return this.userService.findAllUser();
   }
 
-  @Get("/profile")
+  @Get('/profile')
   @UseGuards(JwtAuthGuard)
-  getProfile(@Req() req){
-    let user = req.user
+  getProfile(@Req() req) {
+    let user = req.user;
     console.log(req.user);
-    
-    return this.userService.getProfile(user)
-  }
 
- 
+    return this.userService.getProfile(user);
+  }
 
   @Put('/profile/:id')
   @UseGuards(JwtAuthGuard)
-  updateProfile(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Req() req) {
-    let currentUser_id = req.user["user_id"]
+  updateProfile(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @Req() req,
+  ) {
+    let currentUser_id = req.user['user_id'];
     return this.userService.updateProfile(id, updateUserDto, currentUser_id);
   }
 
-  @Get("/:user_name")
+  @Get('/:user_name')
   @UseGuards(JwtAuthGuard)
-  searchUserByUserName(
-    @Param("user_name") user_name : string){
-      return this.userService.searchUserByUserName(user_name)
+  searchUserByUserName(@Param('user_name') user_name: string) {
+    return this.userService.searchUserByUserName(user_name);
   }
 
-  @Get("/user-detail/:id")
+  @Get('/user-detail/:id')
   @UseGuards(JwtAuthGuard)
-  async findUserById(@Param('id') id : string){
-    return await this.userService.getUserById(id)
+  async findUserById(@Param('id') id: string) {
+    return await this.userService.getUserById(id);
   }
-  
-  @Post("/:id/update-password")
+
+  @Post('/:id/update-password')
   @UseGuards(JwtAuthGuard)
   updatePassword(
-    @Param("id") id : string,
-    @Body() updatPasswordDto: UpdatePasswordDto){
-    return this.userService.updatePassword(id,updatPasswordDto)
+    @Param('id') id: string,
+    @Body() updatPasswordDto: UpdatePasswordDto,
+  ) {
+    return this.userService.updatePassword(id, updatPasswordDto);
   }
 
-  @Patch("/admin/:id")
-  @UsePipes(new ValidationPipe)
+  @Patch('/admin/:id')
+  @UsePipes(new ValidationPipe())
   @UseGuards(new RoleGuard(['ADMIN']))
   @UseGuards(JwtAuthGuard)
-  async changeUserStatus(@Param("id") id: string, @Body() status : string){
-    return await this.userService.changeUserStatus(id,status)
+  async changeUserStatus(@Param('id') id: string, @Body() status: string) {
+    return await this.userService.changeUserStatus(id, status);
   }
-
 }
-
-

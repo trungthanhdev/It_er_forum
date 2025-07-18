@@ -7,11 +7,14 @@ import { BlacklistService } from 'src/modules/blacklist/blacklist.service';
 import { UserStatus } from 'global/enum.global';
 
 @Injectable()
-export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
+export class JwtRefreshStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-refresh',
+) {
   constructor(
     @Inject(refreshConfig.KEY)
     refresConfiguration: ConfigType<typeof refreshConfig>,
-    private readonly blacklistService: BlacklistService
+    private readonly blacklistService: BlacklistService,
   ) {
     console.log('Refresh Config:', refresConfiguration);
     super({
@@ -24,14 +27,21 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
 
   async validate(payload: any) {
     // Ở đây bạn có thể kiểm tra thêm điều kiện nếu cần
-    const isInBlacklist = await this.blacklistService.findTokenInBlacklist(payload.id);
-        if(isInBlacklist){
-          throw new UnauthorizedException();
-        }
-        if(payload.status === UserStatus.BANNED){
-          throw new UnauthorizedException("Account has been banned!")
-        }
-    return {id: payload.id, user_id: payload.sub, email: payload.email, role: payload.role,status: payload.status};
+    const isInBlacklist = await this.blacklistService.findTokenInBlacklist(
+      payload.id,
+    );
+    if (isInBlacklist) {
+      throw new UnauthorizedException();
+    }
+    if (payload.status === UserStatus.BANNED) {
+      throw new UnauthorizedException('Account has been banned!');
+    }
+    return {
+      id: payload.id,
+      user_id: payload.sub,
+      email: payload.email,
+      role: payload.role,
+      status: payload.status,
+    };
   }
-
 }
