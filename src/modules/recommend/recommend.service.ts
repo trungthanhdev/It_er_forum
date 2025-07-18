@@ -38,11 +38,11 @@ export class RecommendService {
       await this.notificationService.getNotificationByUserId(user_id);
     let subscribed_tags: any[] =
       await this.subscribedTagService.getUserSubscribedTag(user_id);
-    const user: User = await this.userService.findUserById(user_id);
+    // const user: User = await this.userService.findUserById(user_id);
     const res_layout = new ResLayout();
     // await this.updateNumberOfTagPosts(subscribed_tags);
-    res_layout.username = user.user_name;
-    res_layout.ava_img_path = user.ava_img_path;
+    // res_layout.username = user.user_name;
+    // res_layout.ava_img_path = user.ava_img_path;
     res_layout.notifications = notifications;
     res_layout.subscribed_tags = subscribed_tags;
     return res_layout;
