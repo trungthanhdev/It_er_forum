@@ -45,7 +45,7 @@ export class UserController {
     return this.userService.getProfile(user);
   }
 
-  @Put('/profile/:id')
+  @Patch('/profile/:id')
   @UseGuards(JwtAuthGuard)
   updateProfile(
     @Param('id') id: string,

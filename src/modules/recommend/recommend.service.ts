@@ -132,7 +132,7 @@ export class RecommendService {
     //Quy về thành dạng short post và xoá các bài trùng
     const trending_posts: ResPostShort[] =
       await this.listShortPostWithCondition(taged_bys);
-
+    console.log("trending posts: ", trending_posts);
     //Sort theo tuong tac
     trending_posts.sort((post_a, post_b) =>
       post_a.upvote > post_b.upvote || post_a.comments_num > post_b.comments_num
