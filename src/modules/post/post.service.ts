@@ -469,6 +469,7 @@ export class PostService {
       userPost.upvote = up.upvote;
       userPost.downvote = up.downvote;
       userPost.comments_num = up.comments.length;
+      userPost.date_updated = up.date_updated;
       return userPost;
     });
 
