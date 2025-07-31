@@ -21,3 +21,7 @@ services:
       - DATABASE_URL=postgresql://iterforum_owner:npg_g5YOA8RkyhlH@ep-odd-hall-a8nk8wwj-pooler.eastus2.azure.neon.tech/iterforum?sslmode=require
       - MAIL_COMPANY=buithanh10112000@gmail.com
       - PASS_COMPANY=ktwgzlpuuupcwrdd
+      - CLOUDINARY_NAME=dabbl1kwh
+      - CLOUDINARY_API_KEY=646158362893856 
+      - CLOUDINARY_API_SECRET=pOiVXzxgpNNqtr3jCnB6mgIojTI
+      - CLOUDINARY_URL=cloudinary://646158362893856:pOiVXzxgpNNqtr3jCnB6mgIojTI@dabbl1kwh
