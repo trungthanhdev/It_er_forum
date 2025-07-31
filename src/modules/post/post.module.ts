@@ -12,6 +12,9 @@ import { PostGateway } from 'src/socket/post.gateway';
 // import { FirebaseService } from '../firebase/firebase.service';
 // import { FirebaseModule } from '../firebase/firebase.module';
 import { NotificationModule } from '../notification/notification.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+import { CloudinaryModule } from '../Cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -20,6 +23,10 @@ import { NotificationModule } from '../notification/notification.module';
     BlacklistModule,
     TagByModule,
     TagModule,
+    CloudinaryModule,
+    MulterModule.register({
+      storage: memoryStorage(), 
+    }),
     // FileStorageModule,
     // FirebaseModule,
     NotificationModule,

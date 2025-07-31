@@ -16,7 +16,7 @@ export class CreatePost {
   // @IsString()
   // img_url: string[]
   @IsOptional()
-  img_file?: Express.Multer.File;
+  img_file?: Express.Multer.File | Express.Multer.File[];
 
   @IsEnum(TagName, { each: true })
   tags: TagName[];

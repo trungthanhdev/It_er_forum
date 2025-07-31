@@ -73,10 +73,10 @@ export class PostController {
   @Post('/')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FilesInterceptor('img_file'))
-  createPost(
+createPost(
     @Body() post: CreatePost,
     @Req() req,
-    @UploadedFiles() img_file?: Express.Multer.File,
+    @UploadedFiles() img_file?: Express.Multer.File | Express.Multer.File[],
   ) {
     if (!Array.isArray(post.tags)) {
       throw new BadRequestException('Tags must be an array!');
@@ -89,8 +89,10 @@ export class PostController {
     if (tags.length === 0) {
       throw new BadRequestException('Invalid TagName!');
     }
+
+    post.img_file = img_file;
     const user_id = req.user['user_id'];
-    return this.postService.createPost({ ...post, img_file }, user_id);
+    return this.postService.createPost(post, user_id);
   }
 
   @Put('/:id')

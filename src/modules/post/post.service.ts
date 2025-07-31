@@ -30,6 +30,7 @@ import { PostGateway } from 'src/socket/post.gateway';
 import * as admin from 'firebase-admin';
 import { PostHelper } from 'helper/post.helper';
 import { log } from 'console';
+import { CloudinaryService } from '../Cloudinary/cloudinary.service';
 
 @Injectable()
 export class PostService {
@@ -39,6 +40,7 @@ export class PostService {
     private readonly userService: UserService,
     private readonly tagedByService: TagByService,
     private readonly tagsService: TagService,
+    private readonly cloudinaryService: CloudinaryService
     // private readonly postGateway: PostGateway,
     // private readonly fileStorageService: FileStorageService,
     // private readonly firebaseService: FirebaseService
@@ -223,39 +225,39 @@ export class PostService {
       throw new NotFoundException('User not found!');
     }
 
-    // let imgUrl: string[] = [];
-    // if (post.img_file) {
-    //   let uploadedImages: string[] = [];
-    //   if (Array.isArray(post.img_file) && post.img_file.length > 0) {
-    //       // Nếu là mảng ảnh, tải tất cả ảnh lên
-    //       uploadedImages = await Promise.all(
-    //           post.img_file.map(file => this.fileStorageService.upload(file, user_id))
-    //       );
-    //   } else {
-    //       // Nếu chỉ có một ảnh, tải ảnh đó lên
-    //       uploadedImages = [await this.fileStorageService.upload(post.img_file, user_id)];
-    //   }
-    //   imgUrl = [...imgUrl,...uploadedImages]
-    // }
+    let imgUrl: string[] = [];
+    if (post.img_file) {
+      if (Array.isArray(post.img_file)) {
+        // Upload nhiều ảnh
+        imgUrl = await Promise.all(
+          post.img_file.map(async (file) => {
+            const result = await this.cloudinaryService.uploadImage(file, `posts/${user_id}`);
+            return result.secure_url;
+          }),
+        );
+      } else {
+        // Upload một ảnh
+        const result = await this.cloudinaryService.uploadImage(post.img_file, `posts/${user_id}`);
+        imgUrl = [result.secure_url];
+      }
+    }
 
-    // const newPost = this.postRepo.create({...post,user: user,img_url: imgUrl})
-    const newPost = this.postRepo.create({ ...post, user: user });
+    const newPost = this.postRepo.create({ ...post, user, img_url: imgUrl });
     await this.postRepo.save(newPost);
 
     for (const tagName of post.tags) {
       let tag = await this.tagsService.findOneTag(tagName);
-
       if (!tag) {
-        let tag = await this.tagsService.addTag(tagName);
+        tag = await this.tagsService.addTag(tagName);
         await this.tagedByService.addTagedBy(newPost, tag);
       } else {
         await this.tagedByService.addTagedBy(newPost, tag);
       }
     }
 
-    let resTag = await this.tagedByService.findAllTag(newPost);
+    const resTag = await this.tagedByService.findAllTag(newPost);
 
-    let resPost = new ResCreatePost();
+    const resPost = new ResCreatePost();
     resPost.user_id = user.user_id;
     resPost.user_name = user.user_name;
     resPost.ava_img_path = user.ava_img_path;
@@ -264,12 +266,9 @@ export class PostService {
     resPost.post_content = newPost.post_content;
     resPost.img_url = newPost.img_url;
     resPost.date_created = newPost.date_created;
-    resPost.tags = resTag.map((tag) => {
-      return tag.tag.tag_name;
-    });
+    resPost.tags = resTag.map((tag) => tag.tag.tag_name);
     resPost.status = newPost.status;
 
-    // this.postGateway.sendNewPostNotificationToAdmin(resPost)
     return resPost;
   }
 
