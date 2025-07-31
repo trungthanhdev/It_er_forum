@@ -25,6 +25,7 @@ import { JwtService } from '@nestjs/jwt';
 // import { FirebaseModule } from './modules/firebase/firebase.module';
 // import { FileStorageModule } from './modules/file_storage/file_storage.module';
 import { RecommendModule } from './modules/recommend/recommend.module';
+import { CloudinaryModule } from './modules/Cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { RecommendModule } from './modules/recommend/recommend.module';
     ScheduleModule.forRoot(),
     SubscribedTagsModule,
     RecommendModule,
+    CloudinaryModule
     // FirebaseModule,
     // FileStorageModule,
   ],

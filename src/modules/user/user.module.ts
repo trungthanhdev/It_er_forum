@@ -5,11 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { BlacklistModule } from '../blacklist/blacklist.module';
 import { StatisticsGateway } from 'src/socket/statistics.gateway';
+import { CloudinaryModule } from '../Cloudinary/cloudinary.module';
 // import { UserGateWay } from 'src/socket/user.gateway';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
+    CloudinaryModule,
     // forwardRef(() => PostModule),
     BlacklistModule,
   ],

@@ -88,30 +88,46 @@ export class UserService {
     }
   }
 
-  async updateProfile(
+ async updateProfile(
     id: string,
     updateUserDto: Partial<UpdateUserDto>,
     reqCurrentUser_id: string,
-  ) {
+    ava_img_path?: string,
+  ): Promise<ResCurrentUserDto> {
     let user = await this.userRepo.findOne({ where: { user_id: id } });
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new BadRequestException('Người dùng không tồn tại');
     }
     if (reqCurrentUser_id !== id) {
-      throw new UnauthorizedException("Can't change another profile!");
+      throw new UnauthorizedException('Không thể chỉnh sửa hồ sơ của người khác!');
     }
 
-    let newUser = this.userRepo.merge(user, updateUserDto);
-    this.userRepo.save(newUser);
+    //? Tạo object chứa dữ liệu cập nhật
+    const updatedData: Partial<User> = { ...updateUserDto };
+    if (ava_img_path) {
+      updatedData.ava_img_path = ava_img_path;
+    }
+    // console.log('Updated data:', updatedData); 
+
+    //? Áp dụng dữ liệu cập nhật vào entity
+    Object.assign(user, updatedData);
+    // console.log('User before save:', user); 
+
+    //? Lưu vào database
+    const savedUser = await this.userRepo.save(user);
+    // console.log('Saved user:', savedUser);
+
+
     let resUser = new ResCurrentUserDto();
-    resUser.user_id = newUser.user_id;
-    resUser.user_name = newUser.user_name;
-    resUser.last_name = newUser.last_name;
-    resUser.first_name = newUser.first_name;
-    resUser.age = newUser.age;
-    resUser.ava_img_path = newUser.ava_img_path;
-    resUser.email = newUser.email;
-    resUser.phone_num = newUser.phone_num;
+    resUser.user_id = savedUser.user_id;
+    resUser.user_name = savedUser.user_name;
+    resUser.last_name = savedUser.last_name;
+    resUser.first_name = savedUser.first_name;
+    resUser.age = savedUser.age;
+    resUser.ava_img_path = savedUser.ava_img_path;
+    resUser.email = savedUser.email;
+    resUser.phone_num = savedUser.phone_num;
+    // console.log('Response user:', resUser); 
     return resUser;
   }
 
