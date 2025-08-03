@@ -26,12 +26,11 @@ export class CloudinaryService {
   ): Promise<UploadApiResponse> {
     try {
       if (typeof file === 'string') {
-        // Upload từ đường dẫn file (cho updateProfile)
         const result = await this.cloudinary.uploader.upload(file, {
           folder,
           public_id: publicId,
           overwrite: true,
-          transformation: [{ width: 200, height: 200, crop: 'fill' }],
+          // transformation: [{ width: 200, height: 200, crop: 'fill' }],
           // resource_type: 'image',
         });
         return result;
