@@ -25,5 +25,8 @@ export class ResCurrentUserDto {
   @IsString()
   ava_img_path: string;
 
+  @IsString()
+  background_img: string;
+
   user_posts: any[];
 }

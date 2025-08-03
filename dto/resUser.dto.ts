@@ -15,6 +15,9 @@ export class ResUserDto {
 
   @IsString()
   ava_img_path: string;
+  
+  @IsString()
+  background_img: string;
 
   @IsString()
   email: string;

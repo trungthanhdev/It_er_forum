@@ -18,6 +18,7 @@ import {
   Put,
   Inject,
   UploadedFile,
+  UploadedFiles,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from '../../../dto/update-user.dto';
@@ -25,7 +26,7 @@ import { UpdateUserDto } from '../../../dto/update-user.dto';
 import { RoleGuard } from 'guard/role.guard';
 import { UpdatePasswordDto } from 'dto/updatePassword.dto';
 import { JwtAuthGuard } from 'guard/jwt.guard';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs'; 
 import { CloudinaryService } from '../Cloudinary/cloudinary.service';
 import { diskStorage, MulterError } from 'multer';
@@ -57,7 +58,7 @@ export class UserController {
   @Patch('/profile/:id')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
-    FileInterceptor('avatar', {
+    AnyFilesInterceptor({
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {
@@ -73,45 +74,60 @@ export class UserController {
         if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
           return cb(new MulterError('LIMIT_UNEXPECTED_FILE', 'Chỉ hỗ trợ file ảnh (jpg, jpeg, png, gif)'), false);
         }
+        if (!['avatar', 'background_img'].includes(file.fieldname)) {
+          return cb(new MulterError('LIMIT_UNEXPECTED_FILE', `Chỉ hỗ trợ field avatar hoặc background_img, nhận được ${file.fieldname}`), false);
+        }
         cb(null, true);
       },
-      limits: { fileSize: 5 * 1024 * 1024 }, 
+      limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
     }),
   )
   async updateProfile(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles() files: Array<Express.Multer.File>,
     @Req() req,
   ) {
-    console.log('File in updateProfile:', file);
+    console.log('Files in updateProfile:', files);
     const currentUser_id = req.user['user_id'];
     if (currentUser_id !== id) {
       throw new BadRequestException('Không thể chỉnh sửa hồ sơ của người khác!');
     }
 
     let ava_img_path: string | undefined;
-    if (file) {
+    let background_img_path: string | undefined;
+
+    for (const file of files) {
       try {
-        console.log('Uploading to Cloudinary:', file.path); 
-        const uploadResult = await this.cloudinaryService.uploadImage(
-          file.path,
-          'user_avatars',
-          `${id}_avatar`,
-        );
-        console.log('Cloudinary upload result:', uploadResult); 
-        ava_img_path = uploadResult.secure_url;
-        fs.unlinkSync(file.path); //--> Xóa file tạm
+        if (file.fieldname === 'avatar') {
+          console.log('Uploading avatar to Cloudinary:', file.path);
+          const uploadResult = await this.cloudinaryService.uploadImage(
+            file.path,
+            'user_avatars',
+            `${id}_avatar`,
+          );
+          console.log('Cloudinary upload result (avatar):', uploadResult);
+          ava_img_path = uploadResult.secure_url;
+          fs.unlinkSync(file.path); // Xóa file tạm
+        } else if (file.fieldname === 'background_img') {
+          console.log('Uploading background_img to Cloudinary:', file.path);
+          const uploadResult = await this.cloudinaryService.uploadImage(
+            file.path,
+            'user_backgrounds',
+            `${id}_background`,
+          );
+          console.log('Cloudinary upload result (background_img):', uploadResult);
+          background_img_path = uploadResult.secure_url;
+          fs.unlinkSync(file.path); // Xóa file tạm
+        }
       } catch (error) {
-        console.error('Cloudinary upload error:', error);
-        throw new BadRequestException(`Lỗi khi upload ảnh lên Cloudinary: ${error.message}`);
+        console.error(`Cloudinary upload error (${file.fieldname}):`, error);
+        throw new BadRequestException(`Lỗi khi upload ảnh ${file.fieldname} lên Cloudinary: ${error.message}`);
       }
-    } else {
-      console.log('No file uploaded'); 
     }
 
-    console.log('Updating profile with ava_img_path:', ava_img_path);
-    return this.userService.updateProfile(id, updateUserDto, currentUser_id, ava_img_path);
+    console.log('Updating profile with:', { ava_img_path, background_img_path });
+    return this.userService.updateProfile(id, updateUserDto, currentUser_id, ava_img_path, background_img_path);
   }
 
   @Get('/:user_name')

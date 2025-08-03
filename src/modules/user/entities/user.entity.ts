@@ -59,6 +59,9 @@ export class User {
   @Column({ nullable: true })
   ava_img_path: string;
 
+  @Column({ nullable: true })
+  background_img: string;
+  
   @CreateDateColumn()
   time_stamp: Date;
 
