@@ -154,6 +154,8 @@ async updateProfile(
       (resUser.first_name = user.first_name),
       (resUser.last_name = user.last_name),
       (resUser.status = user.status);
+      (resUser.background_img = user.background_img);
+      
     return resUser;
   }
 
